@@ -9,19 +9,13 @@ import { Role } from './roles/roles.model';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { JwtStrategy } from './auth/strategy/jwt.strategy';
+import { RolesGuard } from './auth/guards/role.guard';
 
 @Module({
-  controllers: [],
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
-    JwtStrategy,
-  ],
   imports: [
     ConfigModule.forRoot({
       envFilePath: `.env`,
+      isGlobal: true,
     }),
     SequelizeModule.forRoot({
       dialect: 'postgres',
@@ -38,6 +32,19 @@ import { JwtStrategy } from './auth/strategy/jwt.strategy';
     UsersModule,
     RolesModule,
     AuthModule,
+  ],
+  controllers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+
+    JwtStrategy,
   ],
 })
 export class AppModule {}

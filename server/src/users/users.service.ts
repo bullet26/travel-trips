@@ -1,9 +1,15 @@
 import { InjectModel } from '@nestjs/sequelize';
-import { Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { User } from './users.model';
 import { CreateUserDto } from './dto/create-user.dto';
 import { RolesService } from '../roles/roles.service';
 import { Role } from '../roles/roles.model';
+import { AddRoleDto } from './dto/add-role.dto';
 
 @Injectable()
 export class UsersService {
@@ -36,5 +42,20 @@ export class UsersService {
       include: { model: Role, attributes: ['role'] },
     });
     return user;
+  }
+
+  async addRole(dto: AddRoleDto) {
+    const user = await this.userModel.findByPk(dto.userId); // primary key
+    const role = await this.roleService.getRoleByValue(dto.role);
+
+    if (role && user) {
+      await user.$set('role', role.id);
+      return {
+        message: 'Role successfully set for user',
+        userId: user.id,
+        role: dto.role,
+      };
+    }
+    throw new NotFoundException('User or role wasn`t found');
   }
 }

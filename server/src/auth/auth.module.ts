@@ -13,11 +13,11 @@ import { UsersModule } from 'src/users/users.module';
   imports: [
     UsersModule,
     PassportModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || 'SECRET',
-      signOptions: {
-        expiresIn: '24h',
-      },
+    JwtModule.registerAsync({
+      useFactory: async () => ({
+        secret: process.env.JWT_SECRET,
+        signOptions: { expiresIn: '24h' },
+      }),
     }),
   ],
   exports: [AuthService, JwtModule],

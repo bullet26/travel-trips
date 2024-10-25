@@ -1,14 +1,5 @@
 import { Response, Request as ExpressRequest } from 'express';
-import {
-  Body,
-  Controller,
-  Post,
-  UseGuards,
-  Request,
-  Res,
-  Req,
-} from '@nestjs/common';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { Controller, Post, UseGuards, Request, Res, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { Public } from './decorators/public.decorator';
@@ -38,8 +29,16 @@ export class AuthController {
   }
 
   @Post('/registration')
-  registration(@Body() userDTO: CreateUserDto) {
-    return this.authService.registration(userDTO);
+  async registration(
+    @Request() req,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const tokens = await this.authService.registration(req.user);
+    res.cookie('refreshToken', tokens.refreshToken, {
+      httpOnly: true,
+    });
+
+    return { accessToken: tokens.accessToken };
   }
 
   @Post('/refresh-token')
