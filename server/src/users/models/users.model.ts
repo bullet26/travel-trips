@@ -3,11 +3,13 @@ import {
   Column,
   DataType,
   ForeignKey,
+  HasMany,
   HasOne,
   Model,
   Table,
 } from 'sequelize-typescript';
-import { Role } from '../roles/roles.model';
+import { Role } from 'src/roles/models/roles.model';
+import { Trip } from 'src/trips/models/trip.model';
 
 interface UserCreationAttrs {
   name: string;
@@ -40,4 +42,7 @@ export class User extends Model<User, UserCreationAttrs> {
 
   @BelongsTo(() => Role)
   role: Role;
+
+  @HasMany(() => Trip)
+  trips: Trip[];
 }
