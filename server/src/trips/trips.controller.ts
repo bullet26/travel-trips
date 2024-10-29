@@ -21,9 +21,15 @@ export class TripsController {
     return this.tripsService.create(createTripDto);
   }
 
+  @Roles('ADMIN')
   @Get()
   findAll() {
     return this.tripsService.findAll();
+  }
+
+  @Get('/user/:userId')
+  findAllByUser(@Param('userId') userId: string) {
+    return this.tripsService.findAllByUser(Number(userId));
   }
 
   @Get(':id')

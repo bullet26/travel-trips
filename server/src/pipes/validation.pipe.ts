@@ -6,6 +6,14 @@ import { ValidationException } from './validation.exception';
 @Injectable()
 export class ValidationPipe implements PipeTransform<any> {
   async transform(value: any, metadata: ArgumentMetadata): Promise<any> {
+    const metatype = metadata.metatype as Function | undefined;
+    if (
+      !metatype ||
+      [String, Boolean, Number, Array].includes(metatype as any)
+    ) {
+      return value; // Пропускаем валидацию для базовых типов
+    }
+
     const obj = plainToClass(metadata.metatype, value);
     const errors = await validate(obj);
 

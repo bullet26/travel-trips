@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateTripDto } from './dto/create-trip.dto';
 import { UpdateTripDto } from './dto/update-trip.dto';
 import { InjectModel } from '@nestjs/sequelize';
@@ -27,6 +31,10 @@ export class TripsService {
   }
 
   async findById(id: number) {
+    if (!id) {
+      throw new BadRequestException('id wasn`t set');
+    }
+
     const trip = await this.tripModel.findByPk(id, {
       include: {
         model: Images,
@@ -37,7 +45,27 @@ export class TripsService {
     return trip;
   }
 
+  async findAllByUser(userId: number) {
+    if (!userId) {
+      throw new BadRequestException('id wasn`t set');
+    }
+
+    const trips = await this.tripModel.findAll({
+      where: { userId },
+      include: {
+        model: Images,
+        where: { entityType: EntityType.TRIP },
+        attributes: ['url'],
+      },
+    });
+    return trips;
+  }
+
   async update(id: number, updateTripDto: UpdateTripDto) {
+    if (!id) {
+      throw new BadRequestException('id wasn`t set');
+    }
+
     const trip = await this.tripModel.findByPk(id);
 
     if (!trip) {
@@ -49,6 +77,10 @@ export class TripsService {
   }
 
   async remove(id: number) {
+    if (!id) {
+      throw new BadRequestException('id wasn`t set');
+    }
+
     const trip = await this.tripModel.findByPk(id);
     if (!trip) {
       throw new NotFoundException(`Trip with id ${id} not found`);

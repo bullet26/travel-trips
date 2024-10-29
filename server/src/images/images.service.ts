@@ -44,6 +44,10 @@ export class ImagesService {
   }
 
   async findById(id: number) {
+    if (!id) {
+      throw new BadRequestException('id wasn`t set');
+    }
+
     const image = await this.imageModel.findByPk(id);
     if (!image) {
       throw new NotFoundException(`Image with id ${id} not found`);
@@ -52,6 +56,10 @@ export class ImagesService {
   }
 
   async remove(id: number) {
+    if (!id) {
+      throw new BadRequestException('id wasn`t set');
+    }
+
     const image = await this.imageModel.findByPk(id);
     if (!image) {
       throw new NotFoundException(`Image with id ${id} not found`);

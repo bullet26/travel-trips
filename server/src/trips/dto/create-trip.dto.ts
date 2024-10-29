@@ -1,15 +1,18 @@
-import { IsDateString, IsString } from 'class-validator';
+import { IsDateString, IsString, IsNumber } from 'class-validator';
 
 export class CreateTripDto {
-  @IsString()
-  title: string;
-
-  @IsDateString()
-  startDate: string;
-
-  @IsDateString()
-  finishDate: string;
+  @IsNumber()
+  readonly userId: number;
 
   @IsString()
-  comment: string;
+  readonly title: string;
+
+  @IsDateString()
+  readonly startDate: string;
+
+  @IsDateString()
+  readonly finishDate: string;
+
+  @IsString()
+  readonly comment: string;
 }

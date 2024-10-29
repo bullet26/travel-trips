@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ImagesService } from './images.service';
 import { CreateImageDto } from './dto/create-image.dto';
 import { Roles } from 'src/auth/decorators/role.decorator';
@@ -8,8 +18,12 @@ export class ImagesController {
   constructor(private readonly imagesService: ImagesService) {}
 
   @Post()
-  create(@Body() createImageDto: CreateImageDto) {
-    return this.imagesService.create(createImageDto);
+  @UseInterceptors(FileInterceptor('file'))
+  create(
+    @Body() createImageDto: Omit<CreateImageDto, 'file'>,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.imagesService.create({ ...createImageDto, file });
   }
 
   @Get()
