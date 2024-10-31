@@ -27,6 +27,11 @@ export class WishlistsController {
     return this.wishlistsService.findAll();
   }
 
+  @Get('/user/:userId')
+  findAllByUser(@Param('userId') userId: string) {
+    return this.wishlistsService.findAllByUser(Number(userId));
+  }
+
   @Get(':id')
   findById(@Param('id') id: string) {
     return this.wishlistsService.findById(Number(id));

@@ -28,6 +28,15 @@ export class WishlistsService {
     return wishlists;
   }
 
+  async findAllByUser(userId: number) {
+    if (!userId) {
+      throw new BadRequestException('id wasn`t set');
+    }
+
+    const wishlists = await this.wishlistModel.findAll({ where: { userId } });
+    return wishlists;
+  }
+
   async findById(id: number) {
     if (!id) {
       throw new BadRequestException('id wasn`t set');
