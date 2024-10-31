@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -12,6 +13,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ImagesService } from './images.service';
 import { CreateImageDto } from './dto/create-image.dto';
 import { Roles } from 'src/auth/decorators/role.decorator';
+import { SetImgToEntityDto } from './dto/set-image-to-entity.dto';
 
 @Controller('images')
 export class ImagesController {
@@ -34,6 +36,15 @@ export class ImagesController {
   @Get(':id')
   findById(@Param('id') id: string) {
     return this.imagesService.findById(Number(id));
+  }
+
+  @Roles('ADMIN')
+  @Patch(':id')
+  setImgToEntity(
+    @Param('id') id: string,
+    @Body() setImgToEntityDto: SetImgToEntityDto,
+  ) {
+    return this.imagesService.setImgToEntity(Number(id), setImgToEntityDto);
   }
 
   @Roles('ADMIN')

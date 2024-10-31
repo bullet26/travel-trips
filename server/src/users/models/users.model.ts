@@ -4,12 +4,12 @@ import {
   DataType,
   ForeignKey,
   HasMany,
-  HasOne,
   Model,
   Table,
 } from 'sequelize-typescript';
 import { Role } from 'src/roles/models/roles.model';
 import { Trip } from 'src/trips/models/trip.model';
+import { Wishlist } from 'src/wishlists/models/wishlist.model';
 
 interface UserCreationAttrs {
   name: string;
@@ -45,4 +45,7 @@ export class User extends Model<User, UserCreationAttrs> {
 
   @HasMany(() => Trip)
   trips: Trip[];
+
+  @HasMany(() => Wishlist)
+  wishlists: Wishlist[];
 }

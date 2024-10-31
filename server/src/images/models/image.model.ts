@@ -2,12 +2,12 @@ import {
   BelongsTo,
   Column,
   DataType,
-  ForeignKey,
   Model,
   Table,
 } from 'sequelize-typescript';
 import { EntityType } from '../types/EntityType';
 import { Trip } from 'src/trips/models/trip.model';
+import { Place } from 'src/places/models/place.model';
 
 interface ImageCreationAttrs {
   url: string;
@@ -43,4 +43,10 @@ export class Images extends Model<Images, ImageCreationAttrs> {
     constraints: false, // убираем ограничения для полиморфной связи
   })
   trip: Trip;
+
+  @BelongsTo(() => Place, {
+    foreignKey: 'entityId',
+    constraints: false, // убираем ограничения для полиморфной связи
+  })
+  place: Place;
 }

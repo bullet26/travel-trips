@@ -3,16 +3,24 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
 import { CreateTripDto } from './dto/create-trip.dto';
 import { UpdateTripDto } from './dto/update-trip.dto';
-import { InjectModel } from '@nestjs/sequelize';
 import { Trip } from './models/trip.model';
 import { Images } from 'src/images/models/image.model';
 import { EntityType } from 'src/images/types/EntityType';
+import { TripDay } from 'src/trips-day/models/trips-day.model';
+import { UnassignedPlaces } from 'src/unassigned-places/models/unassigned-places.model';
+import { TripsDayService } from 'src/trips-day/trips-day.service';
+import { UnassignedPlacesService } from 'src/unassigned-places/unassigned-places.service';
 
 @Injectable()
 export class TripsService {
-  constructor(@InjectModel(Trip) private tripModel: typeof Trip) {}
+  constructor(
+    @InjectModel(Trip) private tripModel: typeof Trip,
+    private tripsDayService: TripsDayService,
+    private unassignedPlacesService: UnassignedPlacesService,
+  ) {}
 
   async create(createTripDto: CreateTripDto) {
     const trip = await this.tripModel.create(createTripDto);
@@ -36,11 +44,21 @@ export class TripsService {
     }
 
     const trip = await this.tripModel.findByPk(id, {
-      include: {
-        model: Images,
-        where: { entityType: EntityType.TRIP },
-        attributes: ['url'],
-      },
+      include: [
+        {
+          model: Images,
+          where: { entityType: EntityType.TRIP },
+          attributes: ['url'],
+        },
+        {
+          model: UnassignedPlaces,
+          attributes: ['id'],
+        },
+        {
+          model: TripDay,
+          attributes: ['id', 'date'],
+        },
+      ],
     });
     return trip;
   }
@@ -85,6 +103,14 @@ export class TripsService {
     if (!trip) {
       throw new NotFoundException(`Trip with id ${id} not found`);
     }
+
     await trip.destroy();
+
+    await Promise.all([
+      this.unassignedPlacesService.findByTripIdAndRemove(id),
+      this.tripsDayService.removeAllByTripId(id),
+    ]);
+
+    return { message: 'Trip and related entities successfully deleted' };
   }
 }

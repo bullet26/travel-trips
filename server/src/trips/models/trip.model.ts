@@ -4,15 +4,18 @@ import {
   DataType,
   ForeignKey,
   HasMany,
+  HasOne,
   Model,
   Table,
 } from 'sequelize-typescript';
 import { Images } from 'src/images/models/image.model';
 import { EntityType } from 'src/images/types/EntityType';
+import { TripDay } from 'src/trips-day/models/trips-day.model';
+import { UnassignedPlaces } from 'src/unassigned-places/models/unassigned-places.model';
 import { User } from 'src/users/models/users.model';
 
 interface TripCreationAttrs {
-  title: string;
+  name: string;
   startDate: string;
   finishDate: string;
   comment?: string;
@@ -29,7 +32,7 @@ export class Trip extends Model<Trip, TripCreationAttrs> {
   id: number;
 
   @Column({ type: DataType.STRING, allowNull: false })
-  title: string;
+  name: string;
 
   @Column({ type: DataType.STRING, allowNull: false })
   startDate: string;
@@ -53,4 +56,10 @@ export class Trip extends Model<Trip, TripCreationAttrs> {
     scope: { entityType: EntityType.TRIP }, // устанавливаем тип сущности
   })
   images: Images[];
+
+  @HasMany(() => TripDay)
+  tripDays: TripDay[];
+
+  @HasOne(() => UnassignedPlaces)
+  unassignedPlaces: UnassignedPlaces;
 }

@@ -9,6 +9,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Images } from './models/image.model';
 import { EntityType } from './types/EntityType';
 import { validateEntityExists } from './utils/entityValidator.util';
+import { SetImgToEntityDto } from './dto/set-image-to-entity.dto';
 
 @Injectable()
 export class ImagesService {
@@ -65,5 +66,26 @@ export class ImagesService {
       throw new NotFoundException(`Image with id ${id} not found`);
     }
     await image.destroy();
+  }
+
+  async setImgToEntity(id: number, setImgToEntityDto: SetImgToEntityDto) {
+    const { entityId, entityType } = setImgToEntityDto;
+
+    if (!entityType || !entityId) {
+      throw new BadRequestException(
+        `Set entityType (one of: ${Object.values(EntityType).join(', ')}) and entityId for link`,
+      );
+    }
+
+    await validateEntityExists(entityType, entityId);
+
+    const image = await this.imageModel.findByPk(id);
+
+    if (!image) {
+      throw new NotFoundException(`Image with id ${id} not found`);
+    }
+
+    await image.update({ entityType, entityId });
+    return image;
   }
 }
