@@ -29,7 +29,7 @@ export class TripsDayController {
   }
 
   @Get('/trip/:tripId')
-  findAllByUser(@Param('tripId') tripId: string) {
+  findAllByTrip(@Param('tripId') tripId: string) {
     return this.tripsDayService.findAllByTrip(Number(tripId));
   }
 

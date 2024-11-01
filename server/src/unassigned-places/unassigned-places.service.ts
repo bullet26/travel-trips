@@ -39,6 +39,13 @@ export class UnassignedPlacesService {
     return unassignedPlaces;
   }
 
+  async findByTripId(tripId: number) {
+    const unassignedPlace = await this.unassignedPlacesModel.findOne({
+      where: { tripId },
+    });
+    return unassignedPlace;
+  }
+
   async addPlace(id: number, AddPlaceDto: AddPlaceDto) {
     const { placeId } = AddPlaceDto;
 

@@ -12,6 +12,7 @@ import { WishlistsService } from './wishlists.service';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { AddPlaceDto } from 'src/trips-day/dto/add-place-dto.dto';
+import { TransformWLToTripDto } from './dto/transform-wl-to-trip.dto';
 
 @Controller('wishlists')
 export class WishlistsController {
@@ -56,8 +57,14 @@ export class WishlistsController {
   }
 
   @Put(':id')
-  transformWishlistToTrip(@Param('/transform-to-trip/:id') id: string) {
-    return this.wishlistsService.transformWishlistToTrip(Number(id));
+  transformWishlistToTrip(
+    @Param('/transform-to-trip/:id') id: string,
+    @Body() transformWLToTripDto: TransformWLToTripDto,
+  ) {
+    return this.wishlistsService.transformWishlistToTrip(
+      Number(id),
+      transformWLToTripDto,
+    );
   }
 
   @Delete(':id')

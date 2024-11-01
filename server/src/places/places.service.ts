@@ -52,6 +52,11 @@ export class PlacesService {
     return place;
   }
 
+  async findAllByWishlistId(wishlistId: number) {
+    const places = await this.placeModel.findAll({ where: { wishlistId } });
+    return places;
+  }
+
   async update(id: number, updatePlaceDto: UpdatePlaceDto) {
     if (!id) {
       throw new BadRequestException('id wasn`t set');

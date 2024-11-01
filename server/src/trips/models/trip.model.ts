@@ -16,8 +16,8 @@ import { User } from 'src/users/models/users.model';
 
 interface TripCreationAttrs {
   name: string;
-  startDate: string;
-  finishDate: string;
+  startDate: Date;
+  finishDate: Date;
   comment?: string;
 }
 
@@ -34,11 +34,11 @@ export class Trip extends Model<Trip, TripCreationAttrs> {
   @Column({ type: DataType.STRING, allowNull: false })
   name: string;
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  startDate: string;
+  @Column({ type: DataType.DATE, allowNull: false })
+  startDate: Date;
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  finishDate: string;
+  @Column({ type: DataType.DATE, allowNull: false })
+  finishDate: Date;
 
   @Column({ type: DataType.STRING })
   comment: string;

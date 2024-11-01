@@ -7,6 +7,7 @@ import { Place } from 'src/places/models/place.model';
 import { Wishlist } from './models/wishlist.model';
 import { TripsModule } from 'src/trips/trips.module';
 import { PlacesModule } from 'src/places/places.module';
+import { UnassignedPlacesModule } from 'src/unassigned-places/unassigned-places.module';
 
 @Module({
   controllers: [WishlistsController],
@@ -15,6 +16,7 @@ import { PlacesModule } from 'src/places/places.module';
     SequelizeModule.forFeature([Wishlist, User, Place]),
     PlacesModule,
     TripsModule,
+    UnassignedPlacesModule,
   ],
 })
 export class WishlistsModule {}

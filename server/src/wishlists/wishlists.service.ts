@@ -10,12 +10,17 @@ import { Wishlist } from './models/wishlist.model';
 import { Place } from 'src/places/models/place.model';
 import { AddPlaceDto } from 'src/trips-day/dto/add-place-dto.dto';
 import { PlacesService } from 'src/places/places.service';
+import { TransformWLToTripDto } from './dto/transform-wl-to-trip.dto';
+import { TripsService } from 'src/trips/trips.service';
+import { UnassignedPlacesService } from 'src/unassigned-places/unassigned-places.service';
 
 @Injectable()
 export class WishlistsService {
   constructor(
     @InjectModel(Wishlist) private wishlistModel: typeof Wishlist,
     private placesService: PlacesService,
+    private tripsService: TripsService,
+    private unassignedPlacesService: UnassignedPlacesService,
   ) {}
 
   async create(createWishlistDto: CreateWishlistDto) {
@@ -120,5 +125,50 @@ export class WishlistsService {
     return wishlist;
   }
 
-  async transformWishlistToTrip(id: number) {}
+  async transformWishlistToTrip(
+    id: number,
+    transformWLToTripDto: TransformWLToTripDto,
+  ) {
+    if (!id) {
+      throw new BadRequestException('id wasn`t set');
+    }
+
+    const wishlist = await this.wishlistModel.findByPk(id);
+    if (!wishlist) {
+      throw new NotFoundException(`Wishlist not found by ${id}`);
+    }
+
+    const trip = await this.tripsService.create({
+      ...transformWLToTripDto,
+      userId: wishlist.userId,
+    });
+
+    const places = await this.placesService.findAllByWishlistId(wishlist.id);
+
+    const unlinkPlacePromises = places.map(
+      async (item) => await wishlist.$remove('places', item.id),
+    );
+    await Promise.all(unlinkPlacePromises);
+
+    let unassignedPlaces = await this.unassignedPlacesService.findByTripId(
+      trip.id,
+    );
+    if (!unassignedPlaces) {
+      unassignedPlaces = await this.unassignedPlacesService.create({
+        tripId: trip.id,
+      });
+    }
+
+    const linkPlacePromises = places.map(
+      async (item) =>
+        await this.unassignedPlacesService.addPlace(unassignedPlaces.id, {
+          placeId: item.id,
+        }),
+    );
+    await Promise.all(linkPlacePromises);
+
+    await wishlist.destroy();
+
+    return trip;
+  }
 }

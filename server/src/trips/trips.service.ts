@@ -23,7 +23,36 @@ export class TripsService {
   ) {}
 
   async create(createTripDto: CreateTripDto) {
+    const { startDate, finishDate } = createTripDto;
+    const start = new Date(startDate).setHours(0, 0, 0, 0);
+    const finish = new Date(finishDate).setHours(0, 0, 0, 0);
+
+    if (finish <= start) {
+      throw new BadRequestException(
+        'Дата окончания поездки должна быть позже даты начала.',
+      );
+    }
+
     const trip = await this.tripModel.create(createTripDto);
+
+    let currentDate = new Date(start);
+    const createDayPromises = [];
+
+    while (currentDate.getTime() <= finish) {
+      createDayPromises.push(
+        this.tripsDayService.create({
+          date: new Date(currentDate),
+          tripId: trip.id,
+        }),
+      );
+
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    await Promise.all(createDayPromises);
+
+    await this.unassignedPlacesService.create({ tripId: trip.id });
+
     return trip;
   }
 

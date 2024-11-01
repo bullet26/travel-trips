@@ -12,7 +12,7 @@ import { Trip } from 'src/trips/models/trip.model';
 
 interface TripDayCreationAttrs {
   tripId: number;
-  date: string;
+  date: Date;
 }
 
 @Table({ tableName: 'trip-day' })
@@ -25,8 +25,8 @@ export class TripDay extends Model<TripDay, TripDayCreationAttrs> {
   })
   id: number;
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  date: string;
+  @Column({ type: DataType.DATE, allowNull: false })
+  date: Date;
 
   @ForeignKey(() => Trip)
   @Column({ type: DataType.INTEGER })

@@ -5,5 +5,5 @@ export class CreateTripsDayDto {
   readonly tripId: number;
 
   @IsDateString()
-  readonly date: string;
+  readonly date: Date;
 }

@@ -8,11 +8,11 @@ export class CreateTripDto {
   readonly title: string;
 
   @IsDateString()
-  readonly startDate: string;
+  readonly startDate: Date;
 
   @IsDateString()
-  readonly finishDate: string;
+  readonly finishDate: Date;
 
   @IsString()
-  readonly comment: string;
+  readonly comment?: string;
 }
