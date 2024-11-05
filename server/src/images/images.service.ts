@@ -3,13 +3,12 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateImageDto } from './dto/create-image.dto';
-import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { InjectModel } from '@nestjs/sequelize';
+import { CloudinaryService } from 'src/cloudinary';
 import { Images } from './models/image.model';
 import { EntityType } from './types/EntityType';
 import { validateEntityExists } from './utils/entityValidator.util';
-import { SetImgToEntityDto } from './dto/set-image-to-entity.dto';
+import { SetImgToEntityDto, CreateImageDto } from './dto';
 
 @Injectable()
 export class ImagesService {

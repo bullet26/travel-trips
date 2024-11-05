@@ -8,10 +8,8 @@ import {
   Delete,
 } from '@nestjs/common';
 import { PlacesService } from './places.service';
-import { CreatePlaceDto } from './dto/create-place.dto';
-import { UpdatePlaceDto } from './dto/update-place.dto';
-import { Roles } from 'src/auth/decorators/role.decorator';
-import { AddTagDto } from './dto/add-tag-dto.dto';
+import { CreatePlaceDto, UpdatePlaceDto, AddTagDto } from './dto';
+import { Roles } from 'src/auth';
 
 @Controller('places')
 export class PlacesController {

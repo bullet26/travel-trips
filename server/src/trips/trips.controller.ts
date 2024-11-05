@@ -8,9 +8,8 @@ import {
   Delete,
 } from '@nestjs/common';
 import { TripsService } from './trips.service';
-import { CreateTripDto } from './dto/create-trip.dto';
-import { UpdateTripDto } from './dto/update-trip.dto';
-import { Roles } from 'src/auth/decorators/role.decorator';
+import { CreateTripDto, UpdateTripDto } from './dto';
+import { Roles } from 'src/auth';
 
 @Controller('trips')
 export class TripsController {
@@ -42,7 +41,6 @@ export class TripsController {
     return this.tripsService.update(Number(id), updateTripDto);
   }
 
-  @Roles('ADMIN')
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.tripsService.remove(Number(id));

@@ -4,14 +4,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { CreatePlaceDto } from './dto/create-place.dto';
-import { UpdatePlaceDto } from './dto/update-place.dto';
+import { CreatePlaceDto, UpdatePlaceDto, AddTagDto } from './dto';
 import { Place } from './models/place.model';
-import { Tag } from 'src/tags/models/tag.model';
-import { AddTagDto } from './dto/add-tag-dto.dto';
-import { TagsService } from 'src/tags/tags.service';
-import { Images } from 'src/images/models/image.model';
-import { EntityType } from 'src/images/types/EntityType';
+import { Tag, TagsService } from 'src/tags';
+import { Images, EntityType } from 'src/images';
 
 @Injectable()
 export class PlacesService {

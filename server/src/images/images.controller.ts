@@ -11,9 +11,8 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImagesService } from './images.service';
-import { CreateImageDto } from './dto/create-image.dto';
-import { Roles } from 'src/auth/decorators/role.decorator';
-import { SetImgToEntityDto } from './dto/set-image-to-entity.dto';
+import { CreateImageDto, SetImgToEntityDto } from './dto';
+import { Roles } from 'src/auth';
 
 @Controller('images')
 export class ImagesController {

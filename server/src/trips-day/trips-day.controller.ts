@@ -8,10 +8,13 @@ import {
   Delete,
 } from '@nestjs/common';
 import { TripsDayService } from './trips-day.service';
-import { CreateTripsDayDto } from './dto/create-trips-day.dto';
-import { UpdateTripsDayDto } from './dto/update-trips-day.dto';
-import { Roles } from 'src/auth/decorators/role.decorator';
-import { AddPlaceDto } from './dto/add-place-dto.dto';
+import { Roles } from 'src/auth';
+import {
+  MovePlaceToUnassignedPlacesDto,
+  AddPlaceDto,
+  UpdateTripsDayDto,
+  CreateTripsDayDto,
+} from './dto';
 
 @Controller('trips-day')
 export class TripsDayController {
@@ -46,6 +49,17 @@ export class TripsDayController {
   @Patch('/place/remove/:id')
   removePlace(@Param('id') id: string, @Body() addPlaceDto: AddPlaceDto) {
     return this.tripsDayService.removePlace(Number(id), addPlaceDto);
+  }
+
+  @Patch('/place/move/:id')
+  movePlaceToTripDay(
+    @Param('id') id: string,
+    @Body() movePlaceToUnassignedPlacesDto: MovePlaceToUnassignedPlacesDto,
+  ) {
+    return this.tripsDayService.movePlaceToUnassignedPlaces(
+      Number(id),
+      movePlaceToUnassignedPlacesDto,
+    );
   }
 
   @Patch(':id')

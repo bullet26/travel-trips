@@ -4,15 +4,16 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { CreateWishlistDto } from './dto/create-wishlist.dto';
-import { UpdateWishlistDto } from './dto/update-wishlist.dto';
+import {
+  CreateWishlistDto,
+  TransformWLToTripDto,
+  UpdateWishlistDto,
+} from './dto';
 import { Wishlist } from './models/wishlist.model';
-import { Place } from 'src/places/models/place.model';
-import { AddPlaceDto } from 'src/trips-day/dto/add-place-dto.dto';
-import { PlacesService } from 'src/places/places.service';
-import { TransformWLToTripDto } from './dto/transform-wl-to-trip.dto';
-import { TripsService } from 'src/trips/trips.service';
-import { UnassignedPlacesService } from 'src/unassigned-places/unassigned-places.service';
+import { PlacesService, Place } from 'src/places';
+import { TripsService } from 'src/trips';
+import { UnassignedPlacesService } from 'src/unassigned-places';
+import { AddPlaceDto } from 'src/trips-day/dto';
 
 @Injectable()
 export class WishlistsService {

@@ -1,14 +1,16 @@
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { CreateUnassignedPlaceDto } from './dto/create-unassigned-place.dto';
+import { CreateUnassignedPlaceDto } from './dto';
 import { UnassignedPlaces } from './models/unassigned-places.model';
-import { Place } from 'src/places/models/place.model';
-import { PlacesService } from 'src/places/places.service';
-import { AddPlaceDto } from 'src/trips-day/dto/add-place-dto.dto';
+import { Place, PlacesService } from 'src/places';
+import { AddPlaceDto, MovePlaceToTripDayDto } from 'src/trips-day/dto';
+import { TripsDayService } from 'src/trips-day/trips-day.service';
 
 @Injectable()
 export class UnassignedPlacesService {
@@ -16,6 +18,8 @@ export class UnassignedPlacesService {
     @InjectModel(UnassignedPlaces)
     private unassignedPlacesModel: typeof UnassignedPlaces,
     private placesService: PlacesService,
+    @Inject(forwardRef(() => TripsDayService))
+    private tripsDayService: TripsDayService,
   ) {}
 
   async create(createUnassignedPlaceDto: CreateUnassignedPlaceDto) {
@@ -63,6 +67,17 @@ export class UnassignedPlacesService {
       throw new NotFoundException(`Place not found by ${placeId}`);
     }
 
+    const tripDays = unassignedPlaces.trip.tripDays;
+    const isPlaceAlreadyAddedToTrip = tripDays.some((item) =>
+      item.places.some((place) => place.id === placeId),
+    );
+
+    if (isPlaceAlreadyAddedToTrip) {
+      throw new BadRequestException(
+        'This place already added to this trip (trip day)',
+      );
+    }
+
     await unassignedPlaces.$add('places', place.id);
     return unassignedPlaces;
   }
@@ -86,6 +101,36 @@ export class UnassignedPlacesService {
 
     await unassignedPlaces.$remove('places', place.id);
     return unassignedPlaces;
+  }
+
+  async movePlaceToTripDay(
+    id: number,
+    movePlaceToTripDayDto: MovePlaceToTripDayDto,
+  ) {
+    const { placeId, tripDayId } = movePlaceToTripDayDto;
+
+    if (!id || !placeId || !tripDayId) {
+      throw new BadRequestException('id wasn`t set');
+    }
+
+    const unassignedPlaces = await this.unassignedPlacesModel.findByPk(id);
+    const place = await this.placesService.findById(placeId);
+    const tripDay = await this.tripsDayService.findById(tripDayId);
+
+    if (!unassignedPlaces) {
+      throw new NotFoundException(`Unassigned_Places not found by ${id}`);
+    }
+    if (!place) {
+      throw new NotFoundException(`Place not found by ${placeId}`);
+    }
+    if (!tripDay) {
+      throw new NotFoundException(`Trip day not found by ${tripDay}`);
+    }
+
+    await unassignedPlaces.$remove('places', place.id);
+    await this.tripsDayService.addPlace(tripDayId, { placeId });
+
+    return tripDay;
   }
 
   async findByTripIdAndRemove(tripId: number) {

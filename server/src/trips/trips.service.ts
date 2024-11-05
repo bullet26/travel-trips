@@ -4,15 +4,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { CreateTripDto } from './dto/create-trip.dto';
-import { UpdateTripDto } from './dto/update-trip.dto';
+import { CreateTripDto, UpdateTripDto } from './dto';
 import { Trip } from './models/trip.model';
-import { Images } from 'src/images/models/image.model';
-import { EntityType } from 'src/images/types/EntityType';
-import { TripDay } from 'src/trips-day/models/trips-day.model';
-import { UnassignedPlaces } from 'src/unassigned-places/models/unassigned-places.model';
-import { TripsDayService } from 'src/trips-day/trips-day.service';
-import { UnassignedPlacesService } from 'src/unassigned-places/unassigned-places.service';
+import { Images, EntityType } from 'src/images';
+import { TripDay, TripsDayService } from 'src/trips-day';
+import {
+  UnassignedPlaces,
+  UnassignedPlacesService,
+} from 'src/unassigned-places';
 
 @Injectable()
 export class TripsService {

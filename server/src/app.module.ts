@@ -2,31 +2,18 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { UsersModule } from './users/users.module';
-import { RolesModule } from './roles/roles.module';
-import { AuthModule } from './auth/auth.module';
-import { ImagesModule } from './images/images.module';
-import { CloudinaryModule } from './cloudinary/cloudinary.module';
-import { TripsModule } from './trips/trips.module';
-import { TripsDayModule } from './trips-day/trips-day.module';
-import { User } from './users/models/users.model';
-import { Role } from './roles/models/roles.model';
-import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
-import { JwtStrategy } from './auth/strategy/jwt.strategy';
-import { RolesGuard } from './auth/guards/role.guard';
-import { Images } from './images/models/image.model';
-import { Trip } from './trips/models/trip.model';
-import { TripDay } from './trips-day/models/trips-day.model';
-import { CloudinaryProvider } from './cloudinary/cloudinary.provider';
-import { PlacesModule } from './places/places.module';
-import { TagsModule } from './tags/tags.module';
-import { Place } from './places/models/place.model';
-import { PlacesTags } from './tags/models/places-tags.model';
-import { Tag } from './tags/models/tag.model';
-import { WishlistsModule } from './wishlists/wishlists.module';
-import { UnassignedPlacesModule } from './unassigned-places/unassigned-places.module';
-import { Wishlist } from './wishlists/models/wishlist.model';
-import { UnassignedPlaces } from './unassigned-places/models/unassigned-places.model';
+
+import { Wishlist, WishlistsModule } from './wishlists';
+import { User, UsersModule } from './users';
+import { Role, RolesModule } from './roles';
+import { Images, ImagesModule } from './images';
+import { Trip, TripsModule } from './trips';
+import { TripDay, TripsDayModule } from './trips-day';
+import { Place, PlacesModule } from './places';
+import { PlacesTags, Tag, TagsModule } from './tags';
+import { UnassignedPlaces, UnassignedPlacesModule } from './unassigned-places';
+import { AuthModule, JwtAuthGuard, JwtStrategy, RolesGuard } from './auth';
+import { CloudinaryModule, CloudinaryProvider } from './cloudinary';
 
 @Module({
   imports: [
