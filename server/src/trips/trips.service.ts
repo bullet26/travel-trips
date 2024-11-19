@@ -12,6 +12,7 @@ import {
   UnassignedPlaces,
   UnassignedPlacesService,
 } from 'src/unassigned-places';
+import { Transaction } from 'sequelize';
 
 @Injectable()
 export class TripsService {
@@ -21,28 +22,29 @@ export class TripsService {
     private unassignedPlacesService: UnassignedPlacesService,
   ) {}
 
-  async create(createTripDto: CreateTripDto) {
+  async create(createTripDto: CreateTripDto, transaction?: Transaction) {
     const { startDate, finishDate } = createTripDto;
-    const start = new Date(startDate).setHours(0, 0, 0, 0);
-    const finish = new Date(finishDate).setHours(0, 0, 0, 0);
 
-    if (finish <= start) {
+    if (finishDate.getTime() <= startDate.getTime()) {
       throw new BadRequestException(
         'Дата окончания поездки должна быть позже даты начала.',
       );
     }
 
-    const trip = await this.tripModel.create(createTripDto);
+    const trip = await this.tripModel.create(createTripDto, { transaction });
 
-    let currentDate = new Date(start);
+    let currentDate = new Date(startDate);
     const createDayPromises = [];
 
-    while (currentDate.getTime() <= finish) {
+    while (currentDate.getTime() <= finishDate.getTime()) {
       createDayPromises.push(
-        this.tripsDayService.create({
-          date: new Date(currentDate),
-          tripId: trip.id,
-        }),
+        this.tripsDayService.create(
+          {
+            date: new Date(currentDate),
+            tripId: trip.id,
+          },
+          transaction,
+        ),
       );
 
       currentDate.setDate(currentDate.getDate() + 1);
@@ -50,7 +52,7 @@ export class TripsService {
 
     await Promise.all(createDayPromises);
 
-    await this.unassignedPlacesService.create({ tripId: trip.id });
+    await this.unassignedPlacesService.create({ tripId: trip.id }, transaction);
 
     return trip;
   }

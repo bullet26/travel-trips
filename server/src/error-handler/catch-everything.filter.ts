@@ -4,11 +4,14 @@ import {
   ArgumentsHost,
   HttpException,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 
 @Catch()
 export class CatchEverythingFilter implements ExceptionFilter {
+  private readonly logger = new Logger(CatchEverythingFilter.name);
+
   constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
   catch(exception: unknown, host: ArgumentsHost) {
@@ -34,6 +37,11 @@ export class CatchEverythingFilter implements ExceptionFilter {
       path,
       message,
     };
+
+    this.logger.error(
+      `Error occurred on path: ${path}`,
+      JSON.stringify(responseBody),
+    );
 
     httpAdapter.reply(response, responseBody, httpStatus);
   }

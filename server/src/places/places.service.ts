@@ -8,6 +8,7 @@ import { CreatePlaceDto, UpdatePlaceDto, AddTagDto } from './dto';
 import { Place } from './models/place.model';
 import { Tag, TagsService } from 'src/tags';
 import { Images, EntityType } from 'src/images';
+import { Transaction } from 'sequelize';
 
 @Injectable()
 export class PlacesService {
@@ -26,12 +27,13 @@ export class PlacesService {
     return places;
   }
 
-  async findById(id: number) {
+  async findById(id: number, transaction?: Transaction) {
     if (!id) {
       throw new BadRequestException('id wasn`t set');
     }
 
     const place = await this.placeModel.findByPk(id, {
+      transaction,
       include: [
         {
           model: Tag,
@@ -48,8 +50,11 @@ export class PlacesService {
     return place;
   }
 
-  async findAllByWishlistId(wishlistId: number) {
-    const places = await this.placeModel.findAll({ where: { wishlistId } });
+  async findAllByWishlistId(wishlistId: number, transaction?: Transaction) {
+    const places = await this.placeModel.findAll({
+      where: { wishlistId },
+      transaction,
+    });
     return places;
   }
 

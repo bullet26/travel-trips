@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
@@ -14,6 +15,7 @@ import { PlacesService, Place } from 'src/places';
 import { TripsService } from 'src/trips';
 import { UnassignedPlacesService } from 'src/unassigned-places';
 import { AddPlaceDto } from 'src/trips-day/dto';
+import { Transaction } from 'sequelize';
 
 @Injectable()
 export class WishlistsService {
@@ -134,42 +136,68 @@ export class WishlistsService {
       throw new BadRequestException('id wasn`t set');
     }
 
-    const wishlist = await this.wishlistModel.findByPk(id);
-    if (!wishlist) {
-      throw new NotFoundException(`Wishlist not found by ${id}`);
+    const transaction: Transaction =
+      await this.wishlistModel.sequelize.transaction();
+
+    try {
+      const wishlist = await this.wishlistModel.findByPk(id, { transaction });
+      if (!wishlist) {
+        throw new NotFoundException(`Wishlist not found by ${id}`);
+      }
+
+      const trip = await this.tripsService.create(
+        {
+          ...transformWLToTripDto,
+          userId: wishlist.userId,
+        },
+        transaction,
+      );
+
+      const places = await this.placesService.findAllByWishlistId(
+        wishlist.id,
+        transaction,
+      );
+
+      const unlinkPlacePromises = places.map(
+        async (item) =>
+          await wishlist.$remove('places', item.id, { transaction }),
+      );
+      await Promise.all(unlinkPlacePromises);
+
+      let unassignedPlaces = await this.unassignedPlacesService.findByTripId(
+        trip.id,
+        transaction,
+      );
+      if (!unassignedPlaces) {
+        unassignedPlaces = await this.unassignedPlacesService.create(
+          {
+            tripId: trip.id,
+          },
+          transaction,
+        );
+      }
+
+      const linkPlacePromises = places.map(
+        async (item) =>
+          await this.unassignedPlacesService.addPlace(
+            unassignedPlaces.id,
+            {
+              placeId: item.id,
+            },
+            transaction,
+          ),
+      );
+      await Promise.all(linkPlacePromises);
+
+      await wishlist.destroy({ transaction });
+
+      await transaction.commit();
+      return trip;
+    } catch (error) {
+      await transaction.rollback();
+      throw new InternalServerErrorException(
+        error.message || 'Internal server error',
+      );
     }
-
-    const trip = await this.tripsService.create({
-      ...transformWLToTripDto,
-      userId: wishlist.userId,
-    });
-
-    const places = await this.placesService.findAllByWishlistId(wishlist.id);
-
-    const unlinkPlacePromises = places.map(
-      async (item) => await wishlist.$remove('places', item.id),
-    );
-    await Promise.all(unlinkPlacePromises);
-
-    let unassignedPlaces = await this.unassignedPlacesService.findByTripId(
-      trip.id,
-    );
-    if (!unassignedPlaces) {
-      unassignedPlaces = await this.unassignedPlacesService.create({
-        tripId: trip.id,
-      });
-    }
-
-    const linkPlacePromises = places.map(
-      async (item) =>
-        await this.unassignedPlacesService.addPlace(unassignedPlaces.id, {
-          placeId: item.id,
-        }),
-    );
-    await Promise.all(linkPlacePromises);
-
-    await wishlist.destroy();
-
-    return trip;
   }
 }

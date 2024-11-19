@@ -3,9 +3,11 @@ import {
   forwardRef,
   Inject,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
+import { Transaction } from 'sequelize';
 import { TripDay } from './models/trips-day.model';
 import { Place, PlacesService } from 'src/places';
 import {
@@ -15,6 +17,7 @@ import {
   UpdateTripsDayDto,
 } from './dto';
 import { UnassignedPlacesService } from 'src/unassigned-places/unassigned-places.service';
+import sequelize from 'sequelize';
 
 @Injectable()
 export class TripsDayService {
@@ -25,8 +28,13 @@ export class TripsDayService {
     private unassignedPlacesService: UnassignedPlacesService,
   ) {}
 
-  async create(createTripsDayDto: CreateTripsDayDto) {
-    const tripDay = await this.tripDayModel.create(createTripsDayDto);
+  async create(
+    createTripsDayDto: CreateTripsDayDto,
+    transaction?: Transaction,
+  ) {
+    const tripDay = await this.tripDayModel.create(createTripsDayDto, {
+      transaction,
+    });
     return tripDay;
   }
 
@@ -35,17 +43,22 @@ export class TripsDayService {
     return tripDays;
   }
 
-  async findById(id: number) {
+  async findById(id: number, transaction?: Transaction) {
     if (!id) {
       throw new BadRequestException('id wasn`t set');
     }
 
     const tripDay = await this.tripDayModel.findByPk(id, {
+      transaction,
       include: {
         model: Place,
         attributes: ['name', 'description'],
       },
     });
+
+    if (!tripDay) {
+      throw new NotFoundException(`TripDay with id ${id} not found`);
+    }
     return tripDay;
   }
 
@@ -101,15 +114,19 @@ export class TripsDayService {
     });
   }
 
-  async addPlace(id: number, AddPlaceDto: AddPlaceDto) {
+  async addPlace(
+    id: number,
+    AddPlaceDto: AddPlaceDto,
+    transaction?: Transaction,
+  ) {
     const { placeId } = AddPlaceDto;
 
     if (!id || !placeId) {
       throw new BadRequestException('id wasn`t set');
     }
 
-    const tripDay = await this.tripDayModel.findByPk(id);
-    const place = await this.placesService.findById(placeId);
+    const tripDay = await this.tripDayModel.findByPk(id, { transaction });
+    const place = await this.placesService.findById(placeId, transaction);
 
     if (!tripDay) {
       throw new NotFoundException(`Trip day not found by ${id}`);
@@ -129,7 +146,7 @@ export class TripsDayService {
       );
     }
 
-    await tripDay.$add('places', place.id);
+    await tripDay.$add('places', place.id, { transaction });
     return tripDay;
   }
 
@@ -164,26 +181,43 @@ export class TripsDayService {
       throw new BadRequestException('id wasn`t set');
     }
 
-    const tripDay = await this.tripDayModel.findByPk(id);
-    const place = await this.placesService.findById(placeId);
-    const unassignedPlaces =
-      await this.unassignedPlacesService.findById(unassignedPlacesId);
+    const transaction: Transaction =
+      await this.tripDayModel.sequelize.transaction();
 
-    if (!unassignedPlaces) {
-      throw new NotFoundException(`Unassigned_Places not found by ${id}`);
-    }
-    if (!place) {
-      throw new NotFoundException(`Place not found by ${placeId}`);
-    }
-    if (!tripDay) {
-      throw new NotFoundException(`Trip day not found by ${tripDay}`);
-    }
+    try {
+      const tripDay = await this.tripDayModel.findByPk(id, { transaction });
+      const place = await this.placesService.findById(placeId, transaction);
+      const unassignedPlaces = await this.unassignedPlacesService.findById(
+        unassignedPlacesId,
+        transaction,
+      );
 
-    await tripDay.$remove('places', place.id);
-    await this.unassignedPlacesService.addPlace(unassignedPlacesId, {
-      placeId,
-    });
+      if (!unassignedPlaces) {
+        throw new NotFoundException(`Unassigned_Places not found by ${id}`);
+      }
+      if (!place) {
+        throw new NotFoundException(`Place not found by ${placeId}`);
+      }
+      if (!tripDay) {
+        throw new NotFoundException(`Trip day not found by ${tripDay}`);
+      }
 
-    return tripDay;
+      await tripDay.$remove('places', place.id, { transaction });
+      await this.unassignedPlacesService.addPlace(
+        unassignedPlacesId,
+        {
+          placeId,
+        },
+        transaction,
+      );
+
+      await transaction.commit();
+      return tripDay;
+    } catch (error) {
+      await transaction.rollback();
+      throw new InternalServerErrorException(
+        error.message || 'Internal server error',
+      );
+    }
   }
 }

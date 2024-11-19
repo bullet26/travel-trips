@@ -27,9 +27,11 @@ export class ImagesService {
     }
     await validateEntityExists(entityType, entityId);
 
-    const uploadResult = await this.cloudinary.uploadImage(file).catch(() => {
-      throw new BadRequestException('Invalid file type.');
-    });
+    const uploadResult = await this.cloudinary
+      .uploadImage(file)
+      .catch((error) => {
+        throw new BadRequestException(`Image upload failed: ${error.message}`);
+      });
 
     return this.imageModel.create({
       url: uploadResult.secure_url,
@@ -45,7 +47,7 @@ export class ImagesService {
 
   async findById(id: number) {
     if (!id) {
-      throw new BadRequestException('id wasn`t set');
+      throw new BadRequestException('Entity ID must be provided.');
     }
 
     const image = await this.imageModel.findByPk(id);
@@ -57,7 +59,7 @@ export class ImagesService {
 
   async remove(id: number) {
     if (!id) {
-      throw new BadRequestException('id wasn`t set');
+      throw new BadRequestException('Entity ID must be provided.');
     }
 
     const image = await this.imageModel.findByPk(id);

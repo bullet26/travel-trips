@@ -22,7 +22,7 @@ export class Tag extends Model<Tag, TagCreationAttrs> {
   })
   id: number;
 
-  @Column({ type: DataType.STRING, allowNull: false })
+  @Column({ type: DataType.STRING, allowNull: false, unique: true })
   name: string;
 
   @BelongsToMany(() => Place, () => PlacesTags)
