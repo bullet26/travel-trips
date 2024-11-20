@@ -17,7 +17,7 @@ import {
   UpdateTripsDayDto,
 } from './dto';
 import { UnassignedPlacesService } from 'src/unassigned-places/unassigned-places.service';
-import sequelize from 'sequelize';
+import { ensureEntityExists, ensureId } from 'src/utils';
 
 @Injectable()
 export class TripsDayService {
@@ -44,9 +44,7 @@ export class TripsDayService {
   }
 
   async findById(id: number, transaction?: Transaction) {
-    if (!id) {
-      throw new BadRequestException('id wasn`t set');
-    }
+    ensureId(id);
 
     const tripDay = await this.tripDayModel.findByPk(id, {
       transaction,
@@ -56,16 +54,13 @@ export class TripsDayService {
       },
     });
 
-    if (!tripDay) {
-      throw new NotFoundException(`TripDay with id ${id} not found`);
-    }
+    ensureEntityExists({ entity: tripDay, entityName: 'Trip_Day', value: id });
+
     return tripDay;
   }
 
   async findAllByTrip(tripId: number) {
-    if (!tripId) {
-      throw new BadRequestException('id wasn`t set');
-    }
+    ensureId(tripId);
 
     const tripDays = await this.tripDayModel.findAll({
       where: { tripId },
@@ -78,36 +73,29 @@ export class TripsDayService {
   }
 
   async update(id: number, updateTripsDayDto: UpdateTripsDayDto) {
-    if (!id) {
-      throw new BadRequestException('id wasn`t set');
-    }
+    ensureId(id);
 
     const tripDay = await this.tripDayModel.findByPk(id);
 
-    if (!tripDay) {
-      throw new NotFoundException(`Trip day with id ${id} not found`);
-    }
+    ensureEntityExists({ entity: tripDay, entityName: 'Trip_Day', value: id });
 
     await tripDay.update(updateTripsDayDto);
     return tripDay;
   }
 
   async remove(id: number) {
-    if (!id) {
-      throw new BadRequestException('id wasn`t set');
-    }
+    ensureId(id);
 
     const tripDay = await this.tripDayModel.findByPk(id);
-    if (!tripDay) {
-      throw new NotFoundException(`Trip day with id ${id} not found`);
-    }
+
+    ensureEntityExists({ entity: tripDay, entityName: 'Trip_Day', value: id });
+
     await tripDay.destroy();
+    return { message: 'Trip_Day was successfully deleted' };
   }
 
   async removeAllByTripId(tripId: number) {
-    if (!tripId) {
-      throw new BadRequestException('id wasn`t set');
-    }
+    ensureId(tripId);
 
     await this.tripDayModel.destroy({
       where: { tripId },
@@ -121,19 +109,14 @@ export class TripsDayService {
   ) {
     const { placeId } = AddPlaceDto;
 
-    if (!id || !placeId) {
-      throw new BadRequestException('id wasn`t set');
-    }
+    ensureId(id);
+    ensureId(placeId);
 
     const tripDay = await this.tripDayModel.findByPk(id, { transaction });
-    const place = await this.placesService.findById(placeId, transaction);
+    ensureEntityExists({ entity: tripDay, entityName: 'Trip_Day', value: id });
 
-    if (!tripDay) {
-      throw new NotFoundException(`Trip day not found by ${id}`);
-    }
-    if (!place) {
-      throw new NotFoundException(`Place not found by ${placeId}`);
-    }
+    const place = await this.placesService.findById(placeId, transaction);
+    ensureEntityExists({ entity: place, entityName: 'Place', value: placeId });
 
     const unassignedPlaces = tripDay.trip.unassignedPlaces.places;
     const isPlaceAlreadyAddedToTrip = unassignedPlaces.some(
@@ -153,19 +136,14 @@ export class TripsDayService {
   async removePlace(id: number, AddPlaceDto: AddPlaceDto) {
     const { placeId } = AddPlaceDto;
 
-    if (!id || !placeId) {
-      throw new BadRequestException('id wasn`t set');
-    }
+    ensureId(id);
+    ensureId(placeId);
 
     const tripDay = await this.tripDayModel.findByPk(id);
-    const place = await this.placesService.findById(placeId);
+    ensureEntityExists({ entity: tripDay, entityName: 'Trip_Day', value: id });
 
-    if (!tripDay) {
-      throw new NotFoundException(`Trip day not found by ${id}`);
-    }
-    if (!place) {
-      throw new NotFoundException(`Place not found by ${placeId}`);
-    }
+    const place = await this.placesService.findById(placeId);
+    ensureEntityExists({ entity: place, entityName: 'Place', value: placeId });
 
     await tripDay.$remove('places', place.id);
     return tripDay;
@@ -177,30 +155,37 @@ export class TripsDayService {
   ) {
     const { placeId, unassignedPlacesId } = movePlaceToUnassignedPlacesDto;
 
-    if (!id || !placeId || !unassignedPlacesId) {
-      throw new BadRequestException('id wasn`t set');
-    }
+    ensureId(id);
+    ensureId(placeId);
+    ensureId(unassignedPlacesId);
 
     const transaction: Transaction =
       await this.tripDayModel.sequelize.transaction();
 
     try {
       const tripDay = await this.tripDayModel.findByPk(id, { transaction });
+      ensureEntityExists({
+        entity: tripDay,
+        entityName: 'Trip_Day',
+        value: id,
+      });
+
       const place = await this.placesService.findById(placeId, transaction);
+      ensureEntityExists({
+        entity: place,
+        entityName: 'Place',
+        value: placeId,
+      });
+
       const unassignedPlaces = await this.unassignedPlacesService.findById(
         unassignedPlacesId,
         transaction,
       );
-
-      if (!unassignedPlaces) {
-        throw new NotFoundException(`Unassigned_Places not found by ${id}`);
-      }
-      if (!place) {
-        throw new NotFoundException(`Place not found by ${placeId}`);
-      }
-      if (!tripDay) {
-        throw new NotFoundException(`Trip day not found by ${tripDay}`);
-      }
+      ensureEntityExists({
+        entity: unassignedPlaces,
+        entityName: 'Unassigned_Places',
+        value: unassignedPlacesId,
+      });
 
       await tripDay.$remove('places', place.id, { transaction });
       await this.unassignedPlacesService.addPlace(

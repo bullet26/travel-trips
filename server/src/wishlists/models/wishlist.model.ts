@@ -28,6 +28,9 @@ export class Wishlist extends Model<Wishlist, WishlistCreationAttrs> {
   @Column({ type: DataType.STRING, allowNull: false })
   name: string;
 
+  @Column({ type: DataType.STRING, allowNull: true })
+  comment: string;
+
   @ForeignKey(() => User)
   @Column({ type: DataType.INTEGER })
   userId: number;

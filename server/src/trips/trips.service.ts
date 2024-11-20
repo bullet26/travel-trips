@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateTripDto, UpdateTripDto } from './dto';
 import { Trip } from './models/trip.model';
@@ -13,6 +9,7 @@ import {
   UnassignedPlacesService,
 } from 'src/unassigned-places';
 import { Transaction } from 'sequelize';
+import { ensureEntityExists, ensureId } from 'src/utils';
 
 @Injectable()
 export class TripsService {
@@ -27,7 +24,7 @@ export class TripsService {
 
     if (finishDate.getTime() <= startDate.getTime()) {
       throw new BadRequestException(
-        'Дата окончания поездки должна быть позже даты начала.',
+        'The end date of the trip must be later than the start date.',
       );
     }
 
@@ -69,9 +66,7 @@ export class TripsService {
   }
 
   async findById(id: number) {
-    if (!id) {
-      throw new BadRequestException('id wasn`t set');
-    }
+    ensureId(id);
 
     const trip = await this.tripModel.findByPk(id, {
       include: [
@@ -90,13 +85,14 @@ export class TripsService {
         },
       ],
     });
+
+    ensureEntityExists({ entity: trip, entityName: 'Trip', value: id });
+
     return trip;
   }
 
   async findAllByUser(userId: number) {
-    if (!userId) {
-      throw new BadRequestException('id wasn`t set');
-    }
+    ensureId(userId);
 
     const trips = await this.tripModel.findAll({
       where: { userId },
@@ -110,29 +106,20 @@ export class TripsService {
   }
 
   async update(id: number, updateTripDto: UpdateTripDto) {
-    if (!id) {
-      throw new BadRequestException('id wasn`t set');
-    }
+    ensureId(id);
 
     const trip = await this.tripModel.findByPk(id);
-
-    if (!trip) {
-      throw new NotFoundException(`Trip with id ${id} not found`);
-    }
+    ensureEntityExists({ entity: trip, entityName: 'Trip', value: id });
 
     await trip.update(updateTripDto);
     return trip;
   }
 
   async remove(id: number) {
-    if (!id) {
-      throw new BadRequestException('id wasn`t set');
-    }
+    ensureId(id);
 
     const trip = await this.tripModel.findByPk(id);
-    if (!trip) {
-      throw new NotFoundException(`Trip with id ${id} not found`);
-    }
+    ensureEntityExists({ entity: trip, entityName: 'Trip', value: id });
 
     await trip.destroy();
 

@@ -1,12 +1,9 @@
 import { InjectModel } from '@nestjs/sequelize';
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { User } from './models/users.model';
 import { RolesService, Role } from 'src/roles';
 import { UpdateUserDto, AddRoleDto, CreateUserDto } from './dto';
+import { ensureEntityExists } from 'src/utils';
 
 @Injectable()
 export class UsersService {
@@ -40,6 +37,13 @@ export class UsersService {
       attributes: { exclude: ['password'] },
       include: { model: Role, attributes: ['role'] },
     });
+    ensureEntityExists({
+      entity: user,
+      entityName: 'User',
+      value: email,
+      fieldName: 'email',
+    });
+
     return user;
   }
 
@@ -47,14 +51,16 @@ export class UsersService {
     const user = await this.userModel.findByPk(dto.userId, {
       include: { model: Role },
     });
-    const role = await this.roleService.getRoleByValue(dto.role);
+    ensureEntityExists({ entity: user, entityName: 'User', value: dto.userId });
 
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    if (!role) {
-      throw new NotFoundException('Role not found');
-    }
+    const role = await this.roleService.getRoleByValue(dto.role);
+    ensureEntityExists({
+      entity: role,
+      entityName: 'Role',
+      value: dto.role,
+      fieldName: 'role',
+    });
+
     if (user.role?.role === dto.role) {
       throw new BadRequestException(`User already have this role ${dto.role}`);
     }
@@ -71,10 +77,7 @@ export class UsersService {
     const user = await User.findByPk(id, {
       attributes: { exclude: ['password'] },
     });
-
-    if (!user) {
-      throw new NotFoundException(`User with id ${id} not found`);
-    }
+    ensureEntityExists({ entity: user, entityName: 'User', value: id });
 
     await user.update(updatedUserDto);
     return user;

@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsLatitude, IsLongitude, IsString } from 'class-validator';
 
 export class CreatePlaceDto {
   @IsString()
@@ -7,8 +7,11 @@ export class CreatePlaceDto {
   @IsString()
   readonly description: string;
 
-  @IsString()
-  readonly coordinates: string;
+  @IsLatitude()
+  readonly latitude: number;
+
+  @IsLongitude()
+  readonly longitude: number;
 
   @IsString()
   readonly address: string;

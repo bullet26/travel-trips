@@ -28,7 +28,7 @@ export class UnassignedPlaces extends Model<
   id: number;
 
   @ForeignKey(() => Trip)
-  @Column({ type: DataType.INTEGER })
+  @Column({ type: DataType.INTEGER, unique: true })
   tripId: number;
 
   @BelongsTo(() => Trip)

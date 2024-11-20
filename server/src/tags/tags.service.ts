@@ -1,12 +1,9 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateTagDto, UpdateTagDto } from './dto';
 import { Tag } from './models/tag.model';
 import { Place } from 'src/places';
+import { ensureEntityExists, ensureId } from 'src/utils';
 
 @Injectable()
 export class TagsService {
@@ -23,9 +20,7 @@ export class TagsService {
   }
 
   async findById(id: number) {
-    if (!id) {
-      throw new BadRequestException('id wasn`t set');
-    }
+    ensureId(id);
 
     const tag = await this.tagModel.findByPk(id, {
       include: {
@@ -34,33 +29,28 @@ export class TagsService {
         attributes: ['name', 'description'],
       },
     });
+    ensureEntityExists({ entity: tag, entityName: 'Tag', value: id });
+
     return tag;
   }
 
   async update(id: number, updateTagDto: UpdateTagDto) {
-    if (!id) {
-      throw new BadRequestException('id wasn`t set');
-    }
+    ensureId(id);
 
     const tag = await this.tagModel.findByPk(id);
-
-    if (!tag) {
-      throw new NotFoundException(`Tag with id ${id} not found`);
-    }
+    ensureEntityExists({ entity: tag, entityName: 'Tag', value: id });
 
     await tag.update(updateTagDto);
     return tag;
   }
 
   async remove(id: number) {
-    if (!id) {
-      throw new BadRequestException('id wasn`t set');
-    }
+    ensureId(id);
 
     const tag = await this.tagModel.findByPk(id);
-    if (!tag) {
-      throw new NotFoundException(`Tag with id ${id} not found`);
-    }
+    ensureEntityExists({ entity: tag, entityName: 'Tag', value: id });
+
     await tag.destroy();
+    return { message: 'Tag was successfully deleted' };
   }
 }

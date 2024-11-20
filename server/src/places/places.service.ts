@@ -1,14 +1,11 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreatePlaceDto, UpdatePlaceDto, AddTagDto } from './dto';
 import { Place } from './models/place.model';
 import { Tag, TagsService } from 'src/tags';
 import { Images, EntityType } from 'src/images';
 import { Transaction } from 'sequelize';
+import { ensureEntityExists, ensureId } from 'src/utils';
 
 @Injectable()
 export class PlacesService {
@@ -28,9 +25,7 @@ export class PlacesService {
   }
 
   async findById(id: number, transaction?: Transaction) {
-    if (!id) {
-      throw new BadRequestException('id wasn`t set');
-    }
+    ensureId(id);
 
     const place = await this.placeModel.findByPk(id, {
       transaction,
@@ -47,6 +42,9 @@ export class PlacesService {
         },
       ],
     });
+
+    ensureEntityExists({ entity: place, entityName: 'Place', value: id });
+
     return place;
   }
 
@@ -59,48 +57,36 @@ export class PlacesService {
   }
 
   async update(id: number, updatePlaceDto: UpdatePlaceDto) {
-    if (!id) {
-      throw new BadRequestException('id wasn`t set');
-    }
+    ensureId(id);
 
     const place = await this.placeModel.findByPk(id);
-
-    if (!place) {
-      throw new NotFoundException(`Place with id ${id} not found`);
-    }
+    ensureEntityExists({ entity: place, entityName: 'Place', value: id });
 
     await place.update(updatePlaceDto);
     return place;
   }
 
   async remove(id: number) {
-    if (!id) {
-      throw new BadRequestException('id wasn`t set');
-    }
+    ensureId(id);
 
     const place = await this.placeModel.findByPk(id);
-    if (!place) {
-      throw new NotFoundException(`Place with id ${id} not found`);
-    }
+    ensureEntityExists({ entity: place, entityName: 'Place', value: id });
+
     await place.destroy();
+    return { message: 'Place was successfully deleted' };
   }
 
   async addTag(id: number, AddPlaceDto: AddTagDto) {
     const { tagId } = AddPlaceDto;
 
-    if (!tagId || !id) {
-      throw new BadRequestException('id wasn`t set');
-    }
+    ensureId(id);
+    ensureId(tagId);
 
     const place = await this.placeModel.findByPk(id);
-    const tag = await this.tagService.findById(tagId);
+    ensureEntityExists({ entity: place, entityName: 'Place', value: id });
 
-    if (!tag) {
-      throw new NotFoundException(`Tag not found by ${tagId}`);
-    }
-    if (!place) {
-      throw new NotFoundException(`Place not found by ${id}`);
-    }
+    const tag = await this.tagService.findById(tagId);
+    ensureEntityExists({ entity: tag, entityName: 'Tag', value: tagId });
 
     await place.$add('tags', tag.id);
     return place;
@@ -109,19 +95,14 @@ export class PlacesService {
   async removeTag(id: number, AddPlaceDto: AddTagDto) {
     const { tagId } = AddPlaceDto;
 
-    if (!tagId || !id) {
-      throw new BadRequestException('id wasn`t set');
-    }
+    ensureId(id);
+    ensureId(tagId);
 
     const place = await this.placeModel.findByPk(id);
-    const tag = await this.tagService.findById(tagId);
+    ensureEntityExists({ entity: place, entityName: 'Place', value: id });
 
-    if (!tag) {
-      throw new NotFoundException(`Tag not found by ${tagId}`);
-    }
-    if (!place) {
-      throw new NotFoundException(`Place not found by ${id}`);
-    }
+    const tag = await this.tagService.findById(tagId);
+    ensureEntityExists({ entity: tag, entityName: 'Tag', value: tagId });
 
     await place.$remove('tags', tag.id);
     return place;

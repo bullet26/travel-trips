@@ -8,6 +8,7 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
+import { City } from 'src/cities/models/city.model';
 import { Images } from 'src/images/models/image.model';
 import { EntityType } from 'src/images/types/EntityType';
 import { PlacesTags } from 'src/tags/models/places-tags.model';
@@ -19,7 +20,8 @@ import { Wishlist } from 'src/wishlists/models/wishlist.model';
 interface PlaceCreationAttrs {
   name: string;
   description: string;
-  coordinates: string;
+  latitude: number;
+  longitude: number;
   address: string;
 }
 
@@ -39,8 +41,11 @@ export class Place extends Model<Place, PlaceCreationAttrs> {
   @Column({ type: DataType.STRING, allowNull: false })
   description: string;
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  coordinates: string;
+  @Column({ type: DataType.FLOAT, allowNull: false })
+  latitude: number;
+
+  @Column({ type: DataType.FLOAT, allowNull: false })
+  longitude: number;
 
   @Column({ type: DataType.STRING, allowNull: false })
   address: string;
@@ -65,6 +70,13 @@ export class Place extends Model<Place, PlaceCreationAttrs> {
 
   @BelongsTo(() => UnassignedPlaces)
   unassignedPlaces: UnassignedPlaces;
+
+  @ForeignKey(() => City)
+  @Column({ type: DataType.INTEGER })
+  cityId: number;
+
+  @BelongsTo(() => City)
+  city: City;
 
   @HasMany(() => Images, {
     foreignKey: 'entityId',

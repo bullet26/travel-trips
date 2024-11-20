@@ -1,7 +1,7 @@
 import {
   BadRequestException,
   Injectable,
-  NotFoundException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CloudinaryService } from 'src/cloudinary';
@@ -9,6 +9,7 @@ import { Images } from './models/image.model';
 import { EntityType } from './types/EntityType';
 import { validateEntityExists } from './utils/entityValidator.util';
 import { SetImgToEntityDto, CreateImageDto } from './dto';
+import { ensureEntityExists, ensureId } from 'src/utils';
 
 @Injectable()
 export class ImagesService {
@@ -20,9 +21,10 @@ export class ImagesService {
   async create(createImageDto: CreateImageDto) {
     const { entityType, entityId, file } = createImageDto;
 
-    if (!entityType || !entityId) {
+    ensureId(entityId);
+    if (!entityType) {
       throw new BadRequestException(
-        `Set entityType (one of: ${Object.values(EntityType).join(', ')}) and entityId for link`,
+        `Set entityType (one of: ${Object.values(EntityType).join(', ')}) for link`,
       );
     }
     await validateEntityExists(entityType, entityId);
@@ -30,7 +32,9 @@ export class ImagesService {
     const uploadResult = await this.cloudinary
       .uploadImage(file)
       .catch((error) => {
-        throw new BadRequestException(`Image upload failed: ${error.message}`);
+        throw new InternalServerErrorException(
+          `Image upload failed: ${error.message}`,
+        );
       });
 
     return this.imageModel.create({
@@ -46,45 +50,38 @@ export class ImagesService {
   }
 
   async findById(id: number) {
-    if (!id) {
-      throw new BadRequestException('Entity ID must be provided.');
-    }
+    ensureId(id);
 
     const image = await this.imageModel.findByPk(id);
-    if (!image) {
-      throw new NotFoundException(`Image with id ${id} not found`);
-    }
+    ensureEntityExists({ entity: image, entityName: 'Image', value: id });
+
     return image;
   }
 
   async remove(id: number) {
-    if (!id) {
-      throw new BadRequestException('Entity ID must be provided.');
-    }
+    ensureId(id);
 
     const image = await this.imageModel.findByPk(id);
-    if (!image) {
-      throw new NotFoundException(`Image with id ${id} not found`);
-    }
+    ensureEntityExists({ entity: image, entityName: 'Image', value: id });
+
     await image.destroy();
+    return { message: 'Image was successfully deleted' };
   }
 
   async setImgToEntity(id: number, setImgToEntityDto: SetImgToEntityDto) {
     const { entityId, entityType } = setImgToEntityDto;
 
-    if (!entityType || !entityId) {
+    ensureId(entityId);
+    if (!entityType) {
       throw new BadRequestException(
-        `Set entityType (one of: ${Object.values(EntityType).join(', ')}) and entityId for link`,
+        `Set entityType (one of: ${Object.values(EntityType).join(', ')}) for link`,
       );
     }
 
     await validateEntityExists(entityType, entityId);
 
     const image = await this.imageModel.findByPk(id);
-
-    if (!image) {
-      throw new NotFoundException(`Image with id ${id} not found`);
-    }
+    ensureEntityExists({ entity: image, entityName: 'Image', value: id });
 
     await image.update({ entityType, entityId });
     return image;
