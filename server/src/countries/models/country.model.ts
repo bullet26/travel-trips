@@ -1,26 +1,16 @@
-import {
-  BelongsTo,
-  Column,
-  DataType,
-  ForeignKey,
-  HasMany,
-  Model,
-  Table,
-} from 'sequelize-typescript';
+import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
 import { EntityType } from 'src/images/types/EntityType';
-import { Country } from 'src/countries/models/country.model';
 import { Images } from 'src/images/models/image.model';
-import { Place } from 'src/places/models/place.model';
+import { City } from 'src/cities/models/city.model';
 
-interface CityCreationAttrs {
-  countryId: number;
+interface CountryCreationAttrs {
   name: string;
   latitude: number;
   longitude: number;
 }
 
-@Table({ tableName: 'city' })
-export class City extends Model<City, CityCreationAttrs> {
+@Table({ tableName: 'country' })
+export class Country extends Model<Country, CountryCreationAttrs> {
   @Column({
     type: DataType.INTEGER,
     unique: true,
@@ -38,20 +28,13 @@ export class City extends Model<City, CityCreationAttrs> {
   @Column({ type: DataType.FLOAT, allowNull: false })
   longitude: number;
 
-  @HasMany(() => Place)
-  places: Place[];
-
-  @ForeignKey(() => Country)
-  @Column({ type: DataType.INTEGER })
-  countryId: number;
-
-  @BelongsTo(() => Country)
-  country: Country;
+  @HasMany(() => City)
+  cities: City[];
 
   @HasMany(() => Images, {
     foreignKey: 'entityId',
     constraints: false, // убираем ограничения для полиморфной связи
-    scope: { entityType: EntityType.CITY }, // устанавливаем тип сущности
+    scope: { entityType: EntityType.COUNTRY }, // устанавливаем тип сущности
   })
   images: Images[];
 }

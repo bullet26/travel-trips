@@ -15,6 +15,7 @@ import { UnassignedPlaces, UnassignedPlacesModule } from './unassigned-places';
 import { AuthModule, JwtAuthGuard, JwtStrategy, RolesGuard } from './auth';
 import { CloudinaryModule, CloudinaryProvider } from './cloudinary';
 import { CitiesModule, City } from './cities';
+import { CountriesModule, Country } from './countries';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { CitiesModule, City } from './cities';
         Wishlist,
         UnassignedPlaces,
         City,
+        Country,
       ],
       dialectOptions: { ssl: { require: true, rejectUnauthorized: false } },
       autoLoadModels: true,
@@ -58,6 +60,7 @@ import { CitiesModule, City } from './cities';
     WishlistsModule,
     UnassignedPlacesModule,
     CitiesModule,
+    CountriesModule,
   ],
   controllers: [],
   providers: [

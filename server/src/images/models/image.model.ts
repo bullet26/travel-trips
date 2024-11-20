@@ -9,6 +9,7 @@ import { EntityType } from '../types/EntityType';
 import { Trip } from 'src/trips/models/trip.model';
 import { Place } from 'src/places/models/place.model';
 import { City } from 'src/cities/models/city.model';
+import { Country } from 'src/countries/models/country.model';
 
 interface ImageCreationAttrs {
   url: string;
@@ -56,4 +57,10 @@ export class Images extends Model<Images, ImageCreationAttrs> {
     constraints: false, // убираем ограничения для полиморфной связи
   })
   city: City;
+
+  @BelongsTo(() => Country, {
+    foreignKey: 'entityId',
+    constraints: false, // убираем ограничения для полиморфной связи
+  })
+  country: Country;
 }

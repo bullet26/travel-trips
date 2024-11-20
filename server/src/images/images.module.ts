@@ -7,10 +7,11 @@ import { Images } from './models/image.model';
 import { Trip } from 'src/trips/models/trip.model';
 import { Place } from 'src/places/models/place.model';
 import { City } from 'src/cities/models/city.model';
+import { Country } from 'src/countries/models/country.model';
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([Images, Trip, Place, City]),
+    SequelizeModule.forFeature([Images, Trip, Place, City, Country]),
     CloudinaryModule,
   ],
   controllers: [ImagesController],

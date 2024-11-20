@@ -9,11 +9,13 @@ import {
 } from '@nestjs/common';
 import { CitiesService } from './cities.service';
 import { CreateCityDto, UpdateCityDto } from './dto';
+import { Roles } from 'src/auth';
 
 @Controller('cities')
 export class CitiesController {
   constructor(private readonly citiesService: CitiesService) {}
 
+  @Roles('ADMIN')
   @Post()
   create(@Body() createCityDto: CreateCityDto) {
     return this.citiesService.create(createCityDto);
@@ -25,17 +27,19 @@ export class CitiesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.citiesService.findOne(+id);
+  findById(@Param('id') id: string) {
+    return this.citiesService.findById(Number(id));
   }
 
+  @Roles('ADMIN')
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCityDto: UpdateCityDto) {
-    return this.citiesService.update(+id, updateCityDto);
+    return this.citiesService.update(Number(id), updateCityDto);
   }
 
+  @Roles('ADMIN')
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.citiesService.remove(+id);
+    return this.citiesService.remove(Number(id));
   }
 }

@@ -5,6 +5,7 @@ import { Place } from './models/place.model';
 import { Tag, TagsService } from 'src/tags';
 import { Images, EntityType } from 'src/images';
 import { Transaction } from 'sequelize';
+import { City } from 'src/cities/models/city.model';
 import { ensureEntityExists, ensureId } from 'src/utils';
 
 @Injectable()
@@ -39,6 +40,10 @@ export class PlacesService {
           model: Images,
           where: { entityType: EntityType.PLACE },
           attributes: ['url'],
+        },
+        {
+          model: City,
+          attributes: ['name'],
         },
       ],
     });

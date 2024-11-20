@@ -1,6 +1,7 @@
 import { Trip } from 'src/trips/models/trip.model';
 import { Place } from 'src/places';
 import { City } from 'src/cities/models/city.model';
+import { Country } from 'src/countries/models/country.model';
 import { EntityType } from '../types/EntityType';
 import { ensureEntityExists } from 'src/utils';
 
@@ -18,6 +19,11 @@ export async function validateEntityExists(
     const city = await City.findByPk(entityId);
     ensureEntityExists({ entity: city, entityName: 'City', value: entityId });
   } else if (entityType === EntityType.COUNTRY) {
-    // TODO
+    const country = await Country.findByPk(entityId);
+    ensureEntityExists({
+      entity: country,
+      entityName: 'Country',
+      value: entityId,
+    });
   }
 }
