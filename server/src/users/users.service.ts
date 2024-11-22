@@ -2,8 +2,8 @@ import { InjectModel } from '@nestjs/sequelize';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { User } from './models/users.model';
 import { RolesService, Role } from 'src/roles';
-import { UpdateUserDto, AddRoleDto, CreateUserDto } from './dto';
-import { ensureEntityExists } from 'src/utils';
+import { UpdateUserDto, AddRoleDto, CreateUserDto, LinkGoogleDto } from './dto';
+import { ensureEntityExists, ensureId } from 'src/utils';
 
 @Injectable()
 export class UsersService {
@@ -47,6 +47,24 @@ export class UsersService {
     return user;
   }
 
+  async getUserByProviderId(providerId: string) {
+    const user = await this.userModel.findOne({
+      where: {
+        providerId: providerId,
+      },
+      attributes: { exclude: ['password'] },
+      include: { model: Role, attributes: ['role'] },
+    });
+    ensureEntityExists({
+      entity: user,
+      entityName: 'User',
+      value: providerId,
+      fieldName: 'providerId',
+    });
+
+    return user;
+  }
+
   async addRole(dto: AddRoleDto) {
     const user = await this.userModel.findByPk(dto.userId, {
       include: { model: Role },
@@ -74,12 +92,23 @@ export class UsersService {
   }
 
   async update(id: number, updatedUserDto: UpdateUserDto) {
+    ensureId(id);
     const user = await User.findByPk(id, {
       attributes: { exclude: ['password'] },
     });
     ensureEntityExists({ entity: user, entityName: 'User', value: id });
 
     await user.update(updatedUserDto);
+    return user;
+  }
+
+  async linkGoogleToLocalAccount(linkDto: LinkGoogleDto) {
+    const { userId, providerId } = linkDto;
+    ensureId(userId);
+    const user = await User.findByPk(userId);
+    ensureEntityExists({ entity: user, entityName: 'User', value: userId });
+
+    await user.update({ providerId, provider: 'google' });
     return user;
   }
 }

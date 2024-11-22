@@ -15,6 +15,8 @@ interface UserCreationAttrs {
   name: string;
   email: string;
   password: string;
+  provider: string;
+  providerId?: string | null;
 }
 
 @Table({ tableName: 'users' })
@@ -29,6 +31,12 @@ export class User extends Model<User, UserCreationAttrs> {
 
   @Column({ type: DataType.STRING, allowNull: false })
   name: string;
+
+  @Column({ type: DataType.STRING, allowNull: false })
+  provider: string;
+
+  @Column({ type: DataType.STRING, unique: true, allowNull: true })
+  providerId: string | null;
 
   @Column({ type: DataType.STRING, unique: true, allowNull: false })
   email: string;

@@ -6,7 +6,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { CreateUserDto } from 'src/users/dto';
-import { LoginUserDto } from './dto/login-user.dto';
+import { LoginUserDto } from './dto';
 import { User, UsersService } from 'src/users';
 
 @Injectable()
@@ -29,10 +29,37 @@ export class AuthService {
     const hashPassword = await bcrypt.hash(userDTO.password, 5);
     const newUser = await this.userService.createUser({
       ...userDTO,
+      provider: userDTO.provider || 'local',
+      providerId: userDTO.providerId || null,
       password: hashPassword,
     });
 
     return this.generateTokens(newUser);
+  }
+
+  async googleSignIn(userDTO: User) {
+    const { email, providerId } = userDTO;
+
+    const candidateByEmail = await this.userService.getUserByEmail(email);
+
+    if (candidateByEmail && candidateByEmail.provider !== 'google') {
+      throw new BadRequestException({
+        message:
+          'This email is already registered with another provider. Please log in locally or link your accounts.',
+        providerId: providerId,
+      });
+    }
+
+    const candidateByProviderId =
+      await this.userService.getUserByProviderId(providerId);
+
+    if (candidateByProviderId) {
+      const res = await this.login(candidateByProviderId);
+      return res;
+    }
+
+    const res = await this.registration(userDTO);
+    return res;
   }
 
   async refreshToken(refreshToken: string) {

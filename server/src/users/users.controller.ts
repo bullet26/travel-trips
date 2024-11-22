@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Roles } from 'src/auth/decorators/role.decorator';
-import { AddRoleDto, UpdateUserDto, CreateUserDto } from './dto';
+import { AddRoleDto, UpdateUserDto, CreateUserDto, LinkGoogleDto } from './dto';
 
 @Controller('users')
 export class UsersController {
@@ -27,5 +27,11 @@ export class UsersController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateTripDto: UpdateUserDto) {
     return this.userService.update(Number(id), updateTripDto);
+  }
+
+  @Post('/link-google')
+  async linkGoogleAccount(@Body() linkDto: LinkGoogleDto) {
+    await this.userService.linkGoogleToLocalAccount(linkDto);
+    return { message: 'Google account linked successfully' };
   }
 }
