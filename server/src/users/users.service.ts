@@ -37,12 +37,6 @@ export class UsersService {
       attributes: { exclude: ['password'] },
       include: { model: Role, attributes: ['role'] },
     });
-    ensureEntityExists({
-      entity: user,
-      entityName: 'User',
-      value: email,
-      fieldName: 'email',
-    });
 
     return user;
   }
@@ -54,12 +48,6 @@ export class UsersService {
       },
       attributes: { exclude: ['password'] },
       include: { model: Role, attributes: ['role'] },
-    });
-    ensureEntityExists({
-      entity: user,
-      entityName: 'User',
-      value: providerId,
-      fieldName: 'providerId',
     });
 
     return user;

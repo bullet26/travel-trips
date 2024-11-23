@@ -78,6 +78,8 @@ export class AuthController {
       secure: process.env.NODE_ENV === 'production',
     });
 
-    return { accessToken: tokens.accessToken };
+    return res.redirect(
+      `${process.env.FRONTEND_URL}/auth-success?accessToken=${tokens.accessToken}`,
+    );
   }
 }

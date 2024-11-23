@@ -40,6 +40,20 @@ export class AuthService {
   async googleSignIn(userDTO: User) {
     const { email, providerId } = userDTO;
 
+    const candidateByProviderId =
+      await this.userService.getUserByProviderId(providerId);
+
+    if (candidateByProviderId && email === candidateByProviderId.email) {
+      const res = await this.generateTokens(candidateByProviderId);
+      return res;
+    }
+
+    if (candidateByProviderId) {
+      throw new BadRequestException({
+        message: `Provider ID already linked to another email. ${candidateByProviderId.email}`,
+      });
+    }
+
     const candidateByEmail = await this.userService.getUserByEmail(email);
 
     if (candidateByEmail && candidateByEmail.provider !== 'google') {
@@ -48,14 +62,6 @@ export class AuthService {
           'This email is already registered with another provider. Please log in locally or link your accounts.',
         providerId: providerId,
       });
-    }
-
-    const candidateByProviderId =
-      await this.userService.getUserByProviderId(providerId);
-
-    if (candidateByProviderId) {
-      const res = await this.login(candidateByProviderId);
-      return res;
     }
 
     const res = await this.registration(userDTO);
@@ -78,6 +84,13 @@ export class AuthService {
 
   async validateUser(userDto: LoginUserDto) {
     const user = await this.userService.getUserByEmail(userDto.email);
+
+    if (user.provider !== 'local') {
+      throw new BadRequestException({
+        message: `Cannot log in directly. This account is registered via ${user.provider}. Use the ${user.provider} provider to authenticate.`,
+      });
+    }
+
     const isPasswordEquals = await bcrypt.compare(
       userDto.password,
       user.password,
