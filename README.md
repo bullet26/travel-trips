@@ -14,6 +14,6 @@ This project is designed to help you keep track of the places you've visited, yo
 
 ## Project Stack:
 
-**Frontend:** Deployed on Vercel using Next.js.
-**Backend:** Deployed on Render using NestJS.
-**Database:** PostgreSQL on Neon, managed through Sequelize ORM.
+- **Frontend:** Deployed on Vercel using Next.js.
+- **Backend:** Deployed on Render using NestJS. 
+- **Database:** PostgreSQL on Neon, managed through Sequelize ORM.
