@@ -1,5 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { RootService } from './root.service';
+import { Public } from 'src/auth';
 
 @Public()
 @Controller()
