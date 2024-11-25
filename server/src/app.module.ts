@@ -16,6 +16,7 @@ import { AuthModule, JwtAuthGuard, JwtStrategy, RolesGuard } from './auth';
 import { CloudinaryModule, CloudinaryProvider } from './cloudinary';
 import { CitiesModule, City } from './cities';
 import { CountriesModule, Country } from './countries';
+import { RootModule } from './root';
 
 @Module({
   imports: [
@@ -61,6 +62,7 @@ import { CountriesModule, Country } from './countries';
     UnassignedPlacesModule,
     CitiesModule,
     CountriesModule,
+    RootModule,
   ],
   controllers: [],
   providers: [
