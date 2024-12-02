@@ -3,9 +3,9 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "dev": "concurrently \"npm run start-client\" \"npm run start-server\"",
-        "start-client": "cd client && npm run dev",
-        "start-server": "cd server && npm run start:dev"
+        "dev": "concurrently -n \"FRONTEND,BACKEND\" -c \"bgBlue.bold,bgGreen.bold\" \"npm run frontend\" \"npm run backend\"",
+        "frontend": "cd client && npm run dev",
+        "backend": "cd server && npm run start:dev"
     },
     "devDependencies": {
         "concurrently": "^9.0.1"
