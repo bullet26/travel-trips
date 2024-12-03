@@ -2,8 +2,9 @@ import ky from 'ky'
 import Cookies from 'js-cookie'
 
 const api = ky.create({
-  prefixUrl: process.env.NEXT_BACKEND_URL,
+  prefixUrl: process.env.NEXT_PUBLIC_BACKEND_URL,
   credentials: 'include',
+  timeout: 600000,
   hooks: {
     beforeRequest: [
       async (request) => {
@@ -18,7 +19,9 @@ const api = ky.create({
       async (request, options, response) => {
         if (response.status === 401) {
           const refreshResponse: { accessToken: string } = await ky
-            .post(`${process.env.NEXT_BACKEND_URL}/auth/refresh-token`, { credentials: 'include' })
+            .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh-token`, {
+              credentials: 'include',
+            })
             .json()
 
           if (refreshResponse?.accessToken) {

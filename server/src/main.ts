@@ -7,6 +7,12 @@ import { CatchEverythingFilter } from './error-handler';
 const start = async () => {
   const PORT = process.env.PORT || 5000;
   const app = await NestFactory.create(AppModule);
+
+  app.enableCors({
+    allowedHeaders: ['content-type'],
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  });
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());
 

@@ -32,7 +32,7 @@ const LoginForm = () => {
   const onSubmit: SubmitHandler<ILoginUser> = async (data) => {
     try {
       const res: { accessToken: string } = await api
-        .post(`/auth/login`, {
+        .post(`auth/login`, {
           json: data,
         })
         .json()

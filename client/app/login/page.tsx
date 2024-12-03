@@ -7,8 +7,6 @@ export const metadata: Metadata = {
 }
 
 const Login = () => {
-  console.log(process.env.NEXT_BACKEND_URL, 'se')
-
   return (
     <>
       <LoginForm />

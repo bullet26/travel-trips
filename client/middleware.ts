@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server'
 
 const verifyToken = async (token: string) => {
   try {
-    const res = await fetch(`${process.env.NEXT_BACKEND_URL}/users/me`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users/me`, {
       method: 'GET',
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -17,10 +17,13 @@ const verifyToken = async (token: string) => {
 
 const refreshToken = async () => {
   try {
-    const refreshResponse = await fetch(`${process.env.NEXT_BACKEND_URL}/auth/refresh-token`, {
-      method: 'POST',
-      credentials: 'include',
-    })
+    const refreshResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh-token`,
+      {
+        method: 'POST',
+        credentials: 'include',
+      },
+    )
 
     if (refreshResponse.ok) {
       const { accessToken } = await refreshResponse.json()
