@@ -11,11 +11,13 @@
   },
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.0.2",
+    "@hookform/resolvers": "^3.9.1",
     "antd": "^5.22.3",
     "next": "15.0.3",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106",
-    "react-hook-form": "^7.53.2"
+    "react-hook-form": "^7.53.2",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@types/node": "^20",

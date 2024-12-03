@@ -26,6 +26,7 @@ export class AuthService {
     if (candidate) {
       throw new BadRequestException('User with this email already exist');
     }
+
     const hashPassword = await bcrypt.hash(userDTO.password, 5);
     const newUser = await this.userService.createUser({
       ...userDTO,
@@ -84,6 +85,11 @@ export class AuthService {
 
   async validateUser(userDto: LoginUserDto) {
     const user = await this.userService.getUserByEmail(userDto.email);
+    if (!user) {
+      throw new UnauthorizedException({
+        message: 'Incorrect email',
+      });
+    }
 
     if (user.provider !== 'local') {
       throw new BadRequestException({
@@ -95,11 +101,11 @@ export class AuthService {
       userDto.password,
       user.password,
     );
-    if (user && isPasswordEquals) {
+    if (isPasswordEquals) {
       return user;
     }
     throw new UnauthorizedException({
-      message: 'Incorrect email or password',
+      message: 'Incorrect password',
     });
   }
 

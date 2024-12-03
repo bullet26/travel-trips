@@ -7,11 +7,13 @@ import {
   Res,
   Req,
   Get,
+  Body,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { Public } from './decorators/public.decorator';
 import { GoogleOauthGuard } from './guards/google-oauth.guard';
+import { CreateUserDto } from 'src/users/dto';
 
 @Public()
 @Controller('auth')
@@ -40,10 +42,10 @@ export class AuthController {
 
   @Post('/registration')
   async registration(
-    @Request() req,
+    @Body() userDTO: CreateUserDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const tokens = await this.authService.registration(req.user);
+    const tokens = await this.authService.registration(userDTO);
     res.cookie('refreshToken', tokens.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

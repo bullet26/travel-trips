@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Roles } from 'src/auth/decorators/role.decorator';
 import { AddRoleDto, UpdateUserDto, CreateUserDto, LinkGoogleDto } from './dto';
@@ -33,5 +33,10 @@ export class UsersController {
   async linkGoogleAccount(@Body() linkDto: LinkGoogleDto) {
     await this.userService.linkGoogleToLocalAccount(linkDto);
     return { message: 'Google account linked successfully' };
+  }
+
+  @Get('me')
+  getProfile(@Req() req) {
+    return req.user;
   }
 }
