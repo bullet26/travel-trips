@@ -1,59 +1,21 @@
-'use client'
+import Link from 'next/link'
+import type { Metadata } from 'next'
+import LoginForm from './LoginForm'
 
-import { Button, Input, Select } from 'antd'
-import { useForm, Controller, SubmitHandler } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
-import * as yup from 'yup'
-
-interface IFormInput {
-  firstName: string
-  lastName: string
-  iceCreamType: { label: string; value: string }
+export const metadata: Metadata = {
+  title: 'Log in',
 }
 
-const schema = yup
-  .object({
-    firstName: yup.string().required(),
-    lastName: yup.string().required(),
-  })
-  .required()
-
 const Login = () => {
-  const {
-    register,
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      firstName: '',
-      lastName: '',
-    },
-    resolver: yupResolver(schema),
-  })
-
-  const onSubmit: SubmitHandler<IFormInput> = (data) => {
-    console.log(data)
-  }
+  console.log(process.env.NEXT_BACKEND_URL, 'se')
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Controller
-        {...register('firstName')}
-        control={control}
-        render={({ field }) => <Input {...field} />}
-      />
-      <p>{errors.firstName?.message}</p>
-
-      <Controller
-        {...register('lastName')}
-        control={control}
-        render={({ field }) => <Input {...field} />}
-      />
-      <p>{errors.lastName?.message}</p>
-
-      <Button htmlType="submit">Login</Button>
-    </form>
+    <>
+      <LoginForm />
+      <div>
+        New ? <Link href="/registration">Sign up for an account</Link>
+      </div>
+    </>
   )
 }
 export default Login

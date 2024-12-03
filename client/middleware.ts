@@ -9,7 +9,8 @@ const verifyToken = async (token: string) => {
       headers: { Authorization: `Bearer ${token}` },
     })
     return res.ok
-  } catch {
+  } catch (error) {
+    console.error('Ошибка проверки токена:', error)
     return false
   }
 }
@@ -43,7 +44,6 @@ const forAuth = (url: NextURL) => {
 export async function middleware(req: NextRequest) {
   const token = req.cookies.get('accessToken')?.value
   const url = req.nextUrl.clone()
-  console.log('req', req.url, url)
 
   if (!token) {
     if (!url.pathname.includes('login')) {

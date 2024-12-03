@@ -101,9 +101,11 @@ export class AuthService {
       userDto.password,
       user.password,
     );
+
     if (isPasswordEquals) {
       return user;
     }
+
     throw new UnauthorizedException({
       message: 'Incorrect password',
     });

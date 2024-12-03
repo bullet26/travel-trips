@@ -34,7 +34,6 @@ export class UsersService {
       where: {
         email: email,
       },
-      attributes: { exclude: ['password'] },
       include: { model: Role, attributes: ['role'] },
     });
 

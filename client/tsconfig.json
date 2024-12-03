@@ -23,6 +23,8 @@
       "@/*": ["app/*"],
       "styles/*": ["styles/*"],
       "theme/*": ["theme/*"],
+      "types/*": ["types/*"],
+      "api/*": ["api/*"],
       "components/*": ["components/*"]
     }
   },
