@@ -1,74 +1,73 @@
 import { NextURL } from 'next/dist/server/web/next-url'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { fetcher } from 'api'
 
 const verifyToken = async (token: string) => {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users/me`, {
-      method: 'GET',
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    return res.ok
+    const res = await fetcher({ url: `users/me`, incomeToken: token })
+    return !!res
   } catch (error) {
-    console.error('Ошибка проверки токена:', error)
+    console.error('verifyToken error', error)
     return false
   }
 }
 
-const refreshToken = async () => {
+const refreshToken = async (): Promise<string | null> => {
   try {
-    const refreshResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh-token`,
-      {
-        method: 'POST',
-        credentials: 'include',
-      },
-    )
-
-    if (refreshResponse.ok) {
-      const { accessToken } = await refreshResponse.json()
-      const res = NextResponse.next()
-      res.cookies.set('accessToken', accessToken)
-      return res
-    }
-  } catch {
+    const refreshResponse = await fetcher({ url: `auth/refresh-token`, method: 'POST' })
+    const accessToken = refreshResponse?.accessToken || null
+    return accessToken
+  } catch (error) {
+    console.error('refreshToken error', error)
     return null
   }
 }
 
-const forAuth = (url: NextURL) => {
-  if (url.pathname === '/login') {
-    url.pathname = '/home'
-    return NextResponse.redirect(url)
+const redirectForAuth = (url: NextURL) => {
+  if (url.pathname === '/login' || url.pathname.includes('registration')) {
+    return true
   }
-  return null
+  return false
 }
 
-export async function middleware(req: NextRequest) {
-  const token = req.cookies.get('accessToken')?.value
-  const url = req.nextUrl.clone()
+const redirectForUnauth = (url: NextURL) => {
+  if (!url.pathname.includes('login') && !url.pathname.includes('registration')) {
+    return true
+  }
 
-  if (!token) {
-    if (!url.pathname.includes('login')) {
-      url.pathname = '/login'
-      return NextResponse.redirect(url)
-    }
-  } else {
+  return false
+}
+
+export async function middleware(request: NextRequest) {
+  const token = request.cookies.get('accessToken')?.value
+  const url = request.nextUrl.clone()
+
+  if (!token && redirectForUnauth(url)) {
+    url.pathname = '/login'
+    return NextResponse.redirect(url)
+  }
+
+  if (!!token) {
     const isValid = await verifyToken(token)
 
     if (!isValid) {
-      const refreshResponse = await refreshToken()
+      const accessToken = await refreshToken()
 
-      if (!refreshResponse) {
+      if (!accessToken && redirectForUnauth(url)) {
         url.pathname = '/login'
         return NextResponse.redirect(url)
+      } else if (!!accessToken) {
+        const response = NextResponse.next()
+        response.cookies.set('accessToken', accessToken)
+        return response
       }
-
-      forAuth(url)
-      return refreshResponse
     }
 
-    forAuth(url)
+    if (isValid && redirectForAuth(url)) {
+      url.pathname = '/home'
+      return NextResponse.redirect(url)
+    }
   }
 
   return NextResponse.next()

@@ -1,41 +1,42 @@
-import ky from 'ky'
-import Cookies from 'js-cookie'
+// import { cookies } from 'next/headers'
 
-const api = ky.create({
-  prefixUrl: process.env.NEXT_PUBLIC_BACKEND_URL,
-  credentials: 'include',
-  timeout: 600000,
-  hooks: {
-    beforeRequest: [
-      async (request) => {
-        const token = Cookies.get('accessToken')
+interface HTTPError extends Error {
+  info: string
+  status: number
+}
 
-        if (token) {
-          request.headers.set('Authorization', `Bearer ${token}`)
-        }
-      },
-    ],
-    afterResponse: [
-      async (request, options, response) => {
-        if (response.status === 401) {
-          const refreshResponse: { accessToken: string } = await ky
-            .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh-token`, {
-              credentials: 'include',
-            })
-            .json()
+export const fetcher = async ({
+  url,
+  method,
+  body,
+  formData,
+  incomeToken,
+}: {
+  url: string
+  method?: 'POST' | 'GET' | 'DELETE'
+  body?: object
+  formData?: FormData
+  incomeToken?: string
+}) => {
+  const token = incomeToken
 
-          if (refreshResponse?.accessToken) {
-            const { accessToken } = refreshResponse
-            Cookies.set('accessToken', accessToken, { expires: 7 })
-            request.headers.set('Authorization', `Bearer ${accessToken}`)
-            return ky(request.url, options)
-          }
-        }
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/${url}`, {
+    method: method || 'GET',
+    ...(!!body && { body: JSON.stringify(body) }),
+    ...(!!formData && { body: formData }),
+    credentials: 'include',
+    headers: {
+      ...(!!token && { Authorization: `Bearer ${token}` }),
+      'Content-type': 'application/json',
+    },
+  })
 
-        return response
-      },
-    ],
-  },
-})
+  if (!res.ok) {
+    const error = new Error('An error occurred while fetching the data.') as HTTPError
+    error.info = await res.json()
+    error.status = res.status
+    throw error
+  }
 
-export default api
+  return res.json()
+}

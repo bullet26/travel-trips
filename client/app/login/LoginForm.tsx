@@ -1,12 +1,12 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { Button, Input } from 'antd'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { ILoginUser } from 'types'
 import * as yup from 'yup'
-import { NextResponse } from 'next/server'
-import api from 'api'
+import { fetcher } from 'api'
 
 const schema = yup
   .object({
@@ -29,21 +29,19 @@ const LoginForm = () => {
     resolver: yupResolver(schema),
   })
 
-  const onSubmit: SubmitHandler<ILoginUser> = async (data) => {
-    try {
-      const res: { accessToken: string } = await api
-        .post(`auth/login`, {
-          json: data,
-        })
-        .json()
+  const router = useRouter()
 
-      if (res) {
-        const { accessToken } = res
-        const resNext = NextResponse.next()
-        resNext.cookies.set('accessToken', accessToken)
-      }
-    } catch (error) {
-      console.log(error)
+  const onSubmit: SubmitHandler<ILoginUser> = async (data) => {
+    const response = await fetcher({
+      url: 'auth/login',
+      method: 'POST',
+      body: data,
+    })
+
+    if (response?.accessToken) {
+      console.log(response?.accessToken)
+      // TODO нужно сохранять токен, так как middleware не видит его и возвращает назад на логин
+      router.push(`/home`)
     }
   }
 
