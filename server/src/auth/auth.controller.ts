@@ -30,7 +30,10 @@ export class AuthController {
       secure: process.env.NODE_ENV === 'production',
     });
 
-    return { accessToken: tokens.accessToken };
+    return {
+      accessToken: tokens.accessToken,
+      accessTokenExpires: tokens.accessTokenExpires,
+    };
   }
 
   @UseGuards(LocalAuthGuard)
@@ -51,17 +54,32 @@ export class AuthController {
       secure: process.env.NODE_ENV === 'production',
     });
 
-    return { accessToken: tokens.accessToken };
+    return {
+      accessToken: tokens.accessToken,
+      accessTokenExpires: tokens.accessTokenExpires,
+    };
   }
 
   @Post('/refresh-token')
-  async refreshToken(@Req() req: ExpressRequest) {
+  async refreshToken(
+    @Req() req: ExpressRequest,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const refreshToken = req.cookies['refreshToken'];
 
-    return this.authService.refreshToken(refreshToken);
+    const tokens = await this.authService.refreshToken(refreshToken);
+
+    res.cookie('refreshToken', tokens.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+    });
+    return {
+      accessToken: tokens.accessToken,
+      accessTokenExpires: tokens.accessTokenExpires,
+    };
   }
 
-  @Get('google')
+  @Get('/google')
   @UseGuards(GoogleOauthGuard)
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   async auth() {}
@@ -70,7 +88,7 @@ export class AuthController {
   @UseGuards(GoogleOauthGuard)
   async googleAuthRedirect(@Req() req, @Res() res: Response) {
     if (!req.user) {
-      return res.redirect(`${process.env.FRONTEND_URL}/auth-failed`);
+      return res.redirect(`${process.env.FRONTEND_URL}/error`);
     }
 
     const tokens = await this.authService.googleSignIn(req.user);
@@ -81,7 +99,7 @@ export class AuthController {
     });
 
     return res.redirect(
-      `${process.env.FRONTEND_URL}/auth-success?accessToken=${tokens.accessToken}`,
+      `${process.env.FRONTEND_URL}/auth-success?accessToken=${tokens.accessToken}&accessTokenExpires=${tokens.accessTokenExpires}`,
     );
   }
 }

@@ -40,6 +40,17 @@ export class UsersService {
     return user;
   }
 
+  async getUserMeInfo(email: string) {
+    const user = await this.userModel.findOne({
+      where: {
+        email: email,
+      },
+      include: { model: Role, attributes: ['role'] },
+    });
+
+    return { email, role: user.role.role, name: user.name };
+  }
+
   async getUserByProviderId(providerId: string) {
     const user = await this.userModel.findOne({
       where: {

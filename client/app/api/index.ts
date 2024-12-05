@@ -1,4 +1,4 @@
-// import { cookies } from 'next/headers'
+import { getSession } from 'next-auth/react'
 
 interface HTTPError extends Error {
   info: string
@@ -10,16 +10,14 @@ export const fetcher = async ({
   method,
   body,
   formData,
-  incomeToken,
+  token,
 }: {
   url: string
   method?: 'POST' | 'GET' | 'DELETE'
   body?: object
   formData?: FormData
-  incomeToken?: string
+  token?: string
 }) => {
-  const token = incomeToken
-
   const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/${url}`, {
     method: method || 'GET',
     ...(!!body && { body: JSON.stringify(body) }),

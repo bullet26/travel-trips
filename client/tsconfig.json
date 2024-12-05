@@ -24,7 +24,7 @@
       "styles/*": ["styles/*"],
       "theme/*": ["theme/*"],
       "types/*": ["types/*"],
-      "api/*": ["api/*"],
+      "api/*": ["app/api/*"],
       "components/*": ["components/*"]
     }
   },

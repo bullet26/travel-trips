@@ -3,7 +3,7 @@ import localFont from 'next/font/local'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
 import { AntdTheme } from 'theme'
 import 'styles/globals.scss'
-import { SWRProvider } from 'components/providers/swr-provider'
+import { NextAuthProvider, SWRProvider } from 'components/providers'
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -32,7 +32,9 @@ const RootLayout = ({
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <AntdRegistry>
           <AntdTheme>
-            <SWRProvider>{children}</SWRProvider>
+            <NextAuthProvider>
+              <SWRProvider>{children}</SWRProvider>
+            </NextAuthProvider>
           </AntdTheme>
         </AntdRegistry>
       </body>

@@ -36,7 +36,7 @@ export class UsersController {
   }
 
   @Get('me')
-  getProfile(@Req() req) {
-    return req.user;
+  async getProfile(@Req() req) {
+    return this.userService.getUserMeInfo(req.user.email);
   }
 }
