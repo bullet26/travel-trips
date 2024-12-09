@@ -26,8 +26,6 @@ async function getRoleAndSetAuthCookies(
   })
 
   if (accessToken && accessTokenExpires) {
-    console.log(`users/me`, accessToken, accessTokenExpires)
-
     const user = await fetcher({
       url: `users/me`,
       token: accessToken,
@@ -57,8 +55,6 @@ export function authMiddleware(middleware: CustomMiddleware): CustomMiddleware {
     const tokenRefresh = request.cookies.get('refreshToken')?.value
     const { pathname, searchParams } = request.nextUrl
 
-    console.log(pathname)
-
     if (pathname.includes('auth-success')) {
       const tokens: Tokens = {
         accessToken: searchParams.get('accessToken') || '',
@@ -66,7 +62,6 @@ export function authMiddleware(middleware: CustomMiddleware): CustomMiddleware {
         refreshToken: searchParams.get('refreshToken') || '',
         refreshTokenExpires: Number(searchParams.get('refreshTokenExpires') || 0),
       }
-      console.log('auth-success', tokens)
 
       if (tokens.accessToken && tokens.refreshToken) {
         const updatedResponse = NextResponse.redirect(new URL('/', request.url))

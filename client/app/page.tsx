@@ -1,5 +1,16 @@
+'use client'
+import useSWR from 'swr'
+
 const Home = () => {
-  return <div>HoME</div>
+  const { data } = useSWR({ url: 'users' })
+
+  return (
+    <>
+      {data?.map((item) => (
+        <div key={item.id}>{item.name}</div>
+      ))}
+    </>
+  )
 }
 
 export default Home
