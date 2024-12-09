@@ -1,23 +1,19 @@
 'use client'
 import { SWRConfig } from 'swr'
-import { fetcher } from '@/api'
-import { useSession } from 'next-auth/react'
+import { fetcher } from 'api'
 
 export const SWRProvider = ({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) => {
-  const { data } = useSession()
-  const token = data?.accessToken || null
-
   return (
     <SWRConfig
       value={{
         loadingTimeout: 60000,
-        fetcher: (args) => fetcher({ ...args, token }),
+        fetcher,
         onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
-          if (retryCount >= 2 || error.status === 401) return
+          if (retryCount >= 2 || error.status === 401 || error.status === 400) return
           setTimeout(() => revalidate({ retryCount }), 5000)
         },
       }}>

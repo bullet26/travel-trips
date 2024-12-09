@@ -70,6 +70,11 @@ export class AuthService {
   }
 
   async refreshToken(refreshToken: string) {
+    if (!refreshToken) {
+      throw new BadRequestException({
+        message: 'Incorrect refreshToken',
+      });
+    }
     const payload = this.jwtService.verify(refreshToken, {
       secret: process.env.JWT_SECRET,
     });
@@ -86,7 +91,7 @@ export class AuthService {
   async validateUser(userDto: LoginUserDto) {
     const user = await this.userService.getUserByEmail(userDto.email);
     if (!user) {
-      throw new UnauthorizedException({
+      throw new BadRequestException({
         message: 'Incorrect email',
       });
     }
@@ -106,7 +111,7 @@ export class AuthService {
       return user;
     }
 
-    throw new UnauthorizedException({
+    throw new BadRequestException({
       message: 'Incorrect password',
     });
   }
@@ -114,13 +119,21 @@ export class AuthService {
   private async generateTokens(user: User) {
     const payload = { email: user.email, id: user.id, role: user.role };
 
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+    const ACCESS_TOKEN_EXPIRES = 15;
+    const REFRESH_TOKEN_EXPIRES = 7;
+
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: `${ACCESS_TOKEN_EXPIRES}m`,
+    });
+    const refreshToken = this.jwtService.sign(payload, {
+      expiresIn: `${REFRESH_TOKEN_EXPIRES}d`,
+    });
 
     return {
       accessToken,
       refreshToken,
-      accessTokenExpires: Date.now() + 15 * 60 * 1000,
+      accessTokenExpires: ACCESS_TOKEN_EXPIRES * 60,
+      refreshTokenExpires: REFRESH_TOKEN_EXPIRES * 24 * 60 * 60,
     };
   }
 }

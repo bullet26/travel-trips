@@ -1,12 +1,14 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { signIn } from 'next-auth/react'
 import { Button, Input } from 'antd'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { ILoginUser } from 'types'
 import * as yup from 'yup'
+import { useState } from 'react'
+import { ErrorMessage } from 'components/index'
+import { fetcher } from 'api'
 
 const schema = yup
   .object({
@@ -16,6 +18,8 @@ const schema = yup
   .required()
 
 const LoginForm = () => {
+  const [error, setError] = useState('')
+
   const {
     register,
     control,
@@ -32,38 +36,46 @@ const LoginForm = () => {
   const router = useRouter()
 
   const onSubmit: SubmitHandler<ILoginUser> = async (data) => {
-    const response = await signIn('credentials', {
-      ...data,
-      redirect: false,
+    const response = await fetcher({
+      url: `auth/login`,
+      method: 'POST',
+      body: data,
     })
 
-    if (response && !response.error) {
-      router.push('/')
-    } else {
-      console.log(response) // todo make error handler
+    if (!!response?.accessToken) {
+      router.push(
+        `/auth-success?accessToken=${response.accessToken}&accessTokenExpires=${response.accessTokenExpires}&refreshToken=${response.refreshToken}&refreshTokenExpires=${response.refreshTokenExpires}`,
+      )
+    } else if (!!response?.error) {
+      setError(response?.error)
     }
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div>Email</div>
-      <Controller
-        {...register('email')}
-        control={control}
-        render={({ field }) => <Input {...field} placeholder="youremail@email.com" />}
-      />
-      <div>{errors.email?.message}</div>
+    <>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div>Email</div>
+        <Controller
+          {...register('email')}
+          control={control}
+          render={({ field }) => <Input {...field} placeholder="youremail@email.com" />}
+        />
+        <div>{errors.email?.message}</div>
 
-      <div>Password</div>
-      <Controller
-        {...register('password')}
-        control={control}
-        render={({ field }) => <Input.Password {...field} placeholder="Enter a unique password" />}
-      />
-      <div>{errors.password?.message}</div>
+        <div>Password</div>
+        <Controller
+          {...register('password')}
+          control={control}
+          render={({ field }) => (
+            <Input.Password {...field} placeholder="Enter a unique password" />
+          )}
+        />
+        <div>{errors.password?.message}</div>
 
-      <Button htmlType="submit">Login</Button>
-    </form>
+        <Button htmlType="submit">Login</Button>
+      </form>
+      <ErrorMessage msg={error} />
+    </>
   )
 }
 

@@ -6,13 +6,14 @@ declare module 'next-auth' {
    */
   interface Session {
     accessToken: string
-    accessTokenExpires: Date
+    accessTokenExpires: number
+    role: string
     user: { role: string } & DefaultSession['user']
   }
 
   interface User {
     role: string
     accessToken: string
-    accessTokenExpires: Date
+    accessTokenExpires: number
   }
 }

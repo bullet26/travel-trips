@@ -1,4 +1,4 @@
-import { Response, Request as ExpressRequest } from 'express';
+import { Response } from 'express';
 import {
   Controller,
   Post,
@@ -14,6 +14,7 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 import { Public } from './decorators/public.decorator';
 import { GoogleOauthGuard } from './guards/google-oauth.guard';
 import { CreateUserDto } from 'src/users/dto';
+import { RefreshDTO } from './dto';
 
 @Public()
 @Controller('auth')
@@ -22,61 +23,24 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('/login')
-  async login(@Request() req, @Res({ passthrough: true }) res: Response) {
-    const tokens = await this.authService.login(req.user);
-
-    res.cookie('refreshToken', tokens.refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-    });
-
-    return {
-      accessToken: tokens.accessToken,
-      accessTokenExpires: tokens.accessTokenExpires,
-    };
+  async login(@Request() req) {
+    return this.authService.login(req.user);
   }
 
   @UseGuards(LocalAuthGuard)
   @Post('/logout')
-  logout(@Request() req, @Res() res: Response) {
-    res.clearCookie('refreshToken');
+  logout(@Request() req) {
     return req.logout();
   }
 
   @Post('/registration')
-  async registration(
-    @Body() userDTO: CreateUserDto,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    const tokens = await this.authService.registration(userDTO);
-    res.cookie('refreshToken', tokens.refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-    });
-
-    return {
-      accessToken: tokens.accessToken,
-      accessTokenExpires: tokens.accessTokenExpires,
-    };
+  async registration(@Body() userDTO: CreateUserDto) {
+    return this.authService.registration(userDTO);
   }
 
   @Post('/refresh-token')
-  async refreshToken(
-    @Req() req: ExpressRequest,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    const refreshToken = req.cookies['refreshToken'];
-
-    const tokens = await this.authService.refreshToken(refreshToken);
-
-    res.cookie('refreshToken', tokens.refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-    });
-    return {
-      accessToken: tokens.accessToken,
-      accessTokenExpires: tokens.accessTokenExpires,
-    };
+  async refreshToken(@Body() refreshDTO: RefreshDTO) {
+    return this.authService.refreshToken(refreshDTO.refreshToken);
   }
 
   @Get('/google')
@@ -90,16 +54,10 @@ export class AuthController {
     if (!req.user) {
       return res.redirect(`${process.env.FRONTEND_URL}/error`);
     }
-
     const tokens = await this.authService.googleSignIn(req.user);
 
-    res.cookie('refreshToken', tokens.refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-    });
-
     return res.redirect(
-      `${process.env.FRONTEND_URL}/auth-success?accessToken=${tokens.accessToken}&accessTokenExpires=${tokens.accessTokenExpires}`,
+      `${process.env.FRONTEND_URL}/auth-success?accessToken=${tokens.accessToken}&accessTokenExpires=${tokens.accessTokenExpires}&refreshToken=${tokens.refreshToken}&refreshTokenExpires=${tokens.refreshTokenExpires}`,
     );
   }
 }
