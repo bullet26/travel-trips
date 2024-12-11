@@ -2,7 +2,8 @@
   "routes": [{ "handle": "filesystem" }, { "src": "/.*", "dest": "index.html" }],
   "build": {
     "env": {
-      "NPM_FLAGS": "--legacy-peer-deps"
-    }
+      "CI": "false"
+    },
+    "command": "npm install --legacy-peer-deps && npm run build"
   }
 }
