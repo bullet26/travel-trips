@@ -53,11 +53,22 @@ export const fetcher = async ({
     })
 
     if (response.ok) {
-      const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await response.json()
+      const {
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken,
+        accessTokenExpires,
+        refreshTokenExpires,
+      } = await response.json()
 
       if (!!newAccessToken && !!newRefreshToken) {
-        setCookie('accessToken', newAccessToken)
-        setCookie('refreshToken', newRefreshToken)
+        setCookie('accessToken', newAccessToken, {
+          maxAge: accessTokenExpires - 10,
+          path: '/',
+        })
+        setCookie('refreshToken', newRefreshToken, {
+          maxAge: refreshTokenExpires - 10,
+          path: '/',
+        })
 
         return fetcher({ url, method, body, formData, token: newAccessToken })
       }

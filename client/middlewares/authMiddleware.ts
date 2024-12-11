@@ -34,7 +34,7 @@ async function getRoleAndSetAuthCookies(
     const role = user?.role || null
 
     response.cookies.set('role', role, {
-      maxAge: accessTokenExpires,
+      maxAge: refreshTokenExpires,
       path: '/',
     })
   }

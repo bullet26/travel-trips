@@ -13,7 +13,13 @@ export const SWRProvider = ({
         loadingTimeout: 60000,
         fetcher,
         onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
-          if (retryCount >= 2 || error.status === 401 || error.status === 400) return
+          if (
+            retryCount >= 2 ||
+            error.status === 401 ||
+            error.status === 400 ||
+            error.status === 403
+          )
+            return
           setTimeout(() => revalidate({ retryCount }), 5000)
         },
       }}>

@@ -9,6 +9,7 @@ import * as yup from 'yup'
 import { useState } from 'react'
 import { ErrorMessage } from 'components/index'
 import { fetcher } from 'api'
+import s from './Login.module.scss'
 
 const schema = yup
   .object({
@@ -53,24 +54,28 @@ const LoginForm = () => {
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div>Email</div>
-        <Controller
-          {...register('email')}
-          control={control}
-          render={({ field }) => <Input {...field} placeholder="youremail@email.com" />}
-        />
-        <div>{errors.email?.message}</div>
+      <form onSubmit={handleSubmit(onSubmit)} className={s.form}>
+        <div>
+          <div className={s.label}>Email</div>
+          <Controller
+            {...register('email')}
+            control={control}
+            render={({ field }) => <Input {...field} placeholder="youremail@email.com" />}
+          />
+          <div className={s.error}>{errors.email?.message}</div>
+        </div>
 
-        <div>Password</div>
-        <Controller
-          {...register('password')}
-          control={control}
-          render={({ field }) => (
-            <Input.Password {...field} placeholder="Enter a unique password" />
-          )}
-        />
-        <div>{errors.password?.message}</div>
+        <div>
+          <div className={s.label}>Password</div>
+          <Controller
+            {...register('password')}
+            control={control}
+            render={({ field }) => (
+              <Input.Password {...field} placeholder="Enter a unique password" />
+            )}
+          />
+          <div className={s.error}>{errors.password?.message}</div>
+        </div>
 
         <Button htmlType="submit">Login</Button>
       </form>

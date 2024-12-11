@@ -1,0 +1,48 @@
+@import '../../styles/variables.scss';
+
+.page {
+  height: 100vh;
+  display: flex;
+  justify-content: space-between;
+  background-color: #000;
+}
+
+.loginWrapper {
+  width: 65vw;
+  background-color: $dark;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  row-gap: 20px;
+  border-left: 1px solid #252525;
+}
+
+.title {
+  font-size: 24px;
+  color: $primary-color;
+}
+
+.text {
+  font-size: 16px;
+  color: $light;
+  width: 350px;
+}
+
+.form {
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 17px;
+}
+
+.label {
+  font-size: 14px;
+  margin-bottom: 7px;
+  color: $light;
+}
+
+.error {
+  color: $accent;
+  margin-top: 5px;
+}
