@@ -1,10 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getCookie, setCookie } from 'cookies-next/client'
-
-interface HTTPError extends Error {
-  info: string
-  status: number
-}
+import { HTTPError } from 'types'
 
 const handleError = (resJson: any): never => {
   const error = new Error(

@@ -1,2 +1,3 @@
 export { ErrorMessage } from './error/error-message'
-export { SWRProvider, NextAuthProvider } from './providers'
+export { SWRProvider } from './providers'
+export { Header } from './header'

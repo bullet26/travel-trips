@@ -51,13 +51,22 @@ export class AuthController {
   @Get('google/redirect')
   @UseGuards(GoogleOauthGuard)
   async googleAuthRedirect(@Req() req, @Res() res: Response) {
-    if (!req.user) {
-      return res.redirect(`${process.env.FRONTEND_URL}/error`);
-    }
-    const tokens = await this.authService.googleSignIn(req.user);
+    try {
+      if (!req.user) {
+        return res.redirect(
+          `${process.env.FRONTEND_URL}/login?error=User not authenticated`,
+        );
+      }
+      const tokens = await this.authService.googleSignIn(req.user);
 
-    return res.redirect(
-      `${process.env.FRONTEND_URL}/auth-success?accessToken=${tokens.accessToken}&accessTokenExpires=${tokens.accessTokenExpires}&refreshToken=${tokens.refreshToken}&refreshTokenExpires=${tokens.refreshTokenExpires}`,
-    );
+      return res.redirect(
+        `${process.env.FRONTEND_URL}/auth-success?accessToken=${tokens.accessToken}&accessTokenExpires=${tokens.accessTokenExpires}&refreshToken=${tokens.refreshToken}&refreshTokenExpires=${tokens.refreshTokenExpires}`,
+      );
+    } catch (error) {
+      const message = error.response?.message || 'Unknown error occurred';
+      return res.redirect(
+        `${process.env.FRONTEND_URL}/login?error=${encodeURIComponent(message)}`,
+      );
+    }
   }
 }

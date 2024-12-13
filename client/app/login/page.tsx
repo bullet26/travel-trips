@@ -13,7 +13,11 @@ export const metadata: Metadata = {
 const Login = async () => {
   return (
     <div className={s.page}>
-      <Image src={loginImg} alt="Picture of the city" />
+      <Image
+        src={loginImg}
+        style={{ maxHeight: '100vh', objectFit: 'contain' }}
+        alt="Picture of the city"
+      />
       <div className={s.loginWrapper}>
         <div className={s.title}>Log in to your account</div>
 
