@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button, Input } from 'antd'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { HTTPError, ILoginUser } from 'types'
 import * as yup from 'yup'
+import { HTTPError, ILoginUser } from 'types'
 import { ErrorMessage } from 'components'
 import { fetcher } from 'api'
 import s from './Login.module.scss'
@@ -58,7 +58,7 @@ const LoginForm = () => {
   }
 
   return (
-    <Suspense>
+    <>
       <form onSubmit={handleSubmit(onSubmit)} className={s.form}>
         <div>
           <div className={s.label}>Email</div>
@@ -85,7 +85,7 @@ const LoginForm = () => {
         <Button htmlType="submit">Login</Button>
       </form>
       <ErrorMessage msg={errorNest || error} />
-    </Suspense>
+    </>
   )
 }
 
