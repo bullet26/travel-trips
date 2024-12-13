@@ -1,6 +1,6 @@
-import { chain, authMiddleware } from 'middlewares'
+import { chain, authMiddleware, actualizeUserData } from 'middlewares'
 
-export default chain([authMiddleware])
+export default chain([authMiddleware, actualizeUserData])
 
 //Skip Next.js middleware for static and public files & api
 export const config = { matcher: '/((?!.*\\.).*)' }

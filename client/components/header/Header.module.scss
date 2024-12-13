@@ -1,8 +1,33 @@
 @import '../../styles/variables.scss';
 
 .wrapper {
+  display: flex;
+  align-items: center;
   top: 0;
   position: sticky;
-  height: 64px;
+  height: 65px;
   border-bottom: 1px solid $border;
+  margin-bottom: 25px;
+}
+
+.innerWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex: 1;
+  padding: 15px 0;
+}
+
+.userWrapper {
+  display: flex;
+  align-items: center;
+  column-gap: 20px;
+}
+
+.name {
+  color: $accent !important;
+}
+
+.searchInput {
+  width: 300px !important;
 }

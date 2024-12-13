@@ -2,12 +2,49 @@ import { NextResponse } from 'next/server'
 import type { NextFetchEvent, NextRequest } from 'next/server'
 import { fetcher } from 'api'
 import { CustomMiddleware } from './chain'
+import { IUser } from 'types'
 
 interface Tokens {
   accessToken: string
   refreshToken: string
   accessTokenExpires: number
   refreshTokenExpires: number
+}
+
+export async function getUserData({
+  response,
+  accessToken,
+  maxAge,
+}: {
+  response: NextResponse
+  accessToken: string
+  maxAge: number
+}) {
+  const user: IUser = await fetcher({
+    url: `users/me`,
+    token: accessToken,
+  })
+
+  const role = user?.role || null
+  const name = user?.name || user?.email || 'anonym'
+  const email = user?.email || 'anonym'
+
+  response.cookies.set('role', role, {
+    maxAge,
+    path: '/',
+  })
+
+  response.cookies.set('name', name, {
+    maxAge,
+    path: '/',
+  })
+
+  response.cookies.set('email', email, {
+    maxAge,
+    path: '/',
+  })
+
+  return response
 }
 
 async function getRoleAndSetAuthCookies(
@@ -25,17 +62,11 @@ async function getRoleAndSetAuthCookies(
     path: '/',
   })
 
-  if (accessToken && accessTokenExpires) {
-    const user = await fetcher({
-      url: `users/me`,
-      token: accessToken,
-    })
-
-    const role = user?.role || null
-
-    response.cookies.set('role', role, {
+  if (accessToken && refreshTokenExpires) {
+    await getUserData({
+      response,
+      accessToken,
       maxAge: refreshTokenExpires,
-      path: '/',
     })
   }
 
@@ -64,7 +95,7 @@ export function authMiddleware(middleware: CustomMiddleware): CustomMiddleware {
       }
 
       if (tokens.accessToken && tokens.refreshToken) {
-        const updatedResponse = NextResponse.redirect(new URL('/', request.url))
+        const updatedResponse = NextResponse.redirect(new URL('/dashboard', request.url))
         await getRoleAndSetAuthCookies(updatedResponse, tokens)
         return updatedResponse
       }
@@ -75,7 +106,7 @@ export function authMiddleware(middleware: CustomMiddleware): CustomMiddleware {
     }
 
     if (tokenAccess && tokenRefresh && redirectAuth(pathname)) {
-      return NextResponse.redirect(new URL('/', request.url))
+      return NextResponse.redirect(new URL('/dashboard', request.url))
     }
 
     if (!tokenAccess && tokenRefresh) {

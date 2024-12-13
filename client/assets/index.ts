@@ -1,1 +1,1 @@
-export { loginImg } from './images'
+export { loginImg, gothicCastle } from './images'
