@@ -19,4 +19,13 @@ export class CloudinaryService {
       toStream(file.buffer).pipe(upload);
     });
   }
+
+  async deleteImage(publicId: string) {
+    return new Promise((resolve, reject) => {
+      v2.uploader.destroy(publicId, (error, result) => {
+        if (error) return reject(error);
+        resolve(result);
+      });
+    });
+  }
 }

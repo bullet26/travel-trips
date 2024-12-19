@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { getCookie } from 'cookies-next/client'
 import Image from 'next/image'
 import { Button } from 'antd'
+import clsx from 'clsx'
 import { gothicCastle } from 'assets'
 import { RoleType } from 'types'
 import { Search, Profile } from './elements'
@@ -30,14 +31,18 @@ export const Header = () => {
       </Link>
       <div className={s.innerWrapper}>
         <Link key="Countries" href="/countries">
-          <Button type="text" className={s.menuItem}>
+          <Button
+            type="text"
+            className={clsx(s.menuItem, { [s.activeMenu]: pathname.includes('countries') })}>
             Countries
           </Button>
         </Link>
 
         {role === RoleType.ADMIN && (
-          <Link key="Admin panel" href="/admin-panel">
-            <Button type="text" className={s.menuItem}>
+          <Link key="Admin panel" href="/admin-panel/create/place">
+            <Button
+              type="text"
+              className={clsx(s.menuItem, { [s.activeMenu]: pathname.includes('admin-panel') })}>
               Admin panel
             </Button>
           </Link>
@@ -45,12 +50,16 @@ export const Header = () => {
         <Search />
         <div className={s.userWrapper}>
           <Link key="My trips" href="/trips">
-            <Button type="text" className={s.menuItem}>
+            <Button
+              type="text"
+              className={clsx(s.menuItem, { [s.activeMenu]: pathname.includes('trips') })}>
               My trips
             </Button>
           </Link>
           <Link key="My wishlists" href="/wishlists">
-            <Button type="text" className={s.menuItem}>
+            <Button
+              type="text"
+              className={clsx(s.menuItem, { [s.activeMenu]: pathname.includes('wishlists') })}>
               My wishlists
             </Button>
           </Link>

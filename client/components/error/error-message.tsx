@@ -4,7 +4,7 @@ import { FC, useEffect } from 'react'
 import { message } from 'antd'
 
 interface ErrorMessageProps {
-  msg: string
+  msg?: string
 }
 
 export const ErrorMessage: FC<ErrorMessageProps> = (props) => {

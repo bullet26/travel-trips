@@ -13,6 +13,7 @@ import { Country } from 'src/countries/models/country.model';
 
 interface ImageCreationAttrs {
   url: string;
+  cloudinaryPublicId: string;
   entityType: EntityType;
   entityId: number;
 }
@@ -29,6 +30,9 @@ export class Images extends Model<Images, ImageCreationAttrs> {
 
   @Column({ type: DataType.STRING, unique: true, allowNull: false })
   url: string;
+
+  @Column({ type: DataType.STRING, unique: true, allowNull: false })
+  cloudinaryPublicId: string;
 
   @Column({
     type: DataType.ENUM,

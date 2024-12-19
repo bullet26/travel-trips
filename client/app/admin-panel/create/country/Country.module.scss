@@ -1,0 +1,44 @@
+@import '../../../../styles/variables.scss';
+
+.title {
+  font-size: 24px;
+  color: $primary-color;
+}
+
+.form {
+  margin-top: 25px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 17px;
+}
+
+.geoWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .text {
+    color: $light;
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+}
+
+.geoWrapperInner {
+  display: flex;
+  justify-content: flex-start;
+
+  align-items: center;
+  column-gap: 25px;
+}
+
+.label {
+  font-size: 14px;
+  margin-bottom: 7px;
+  color: $light;
+}
+
+.error {
+  color: $accent;
+  margin-top: 5px;
+}

@@ -39,6 +39,7 @@ export class ImagesService {
 
     return this.imageModel.create({
       url: uploadResult.secure_url,
+      cloudinaryPublicId: uploadResult.public_id,
       entityType: entityType,
       entityId,
     });
@@ -64,7 +65,16 @@ export class ImagesService {
     const image = await this.imageModel.findByPk(id);
     ensureEntityExists({ entity: image, entityName: 'Image', value: id });
 
+    await this.cloudinary
+      .deleteImage(image.cloudinaryPublicId)
+      .catch((error) => {
+        throw new InternalServerErrorException(
+          `Image wasn't delete. Something went wrong`,
+        );
+      });
+
     await image.destroy();
+
     return { message: 'Image was successfully deleted' };
   }
 

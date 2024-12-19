@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
-import { SWRProvider, Header } from 'components'
+import { ReactQueryProvider, Header } from 'components'
 import { AntdTheme } from 'theme'
 import 'styles/globals.scss'
 
@@ -32,10 +32,10 @@ const RootLayout = ({
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <AntdRegistry>
           <AntdTheme>
-            <SWRProvider>
+            <ReactQueryProvider>
               <Header />
               <main>{children}</main>
-            </SWRProvider>
+            </ReactQueryProvider>
           </AntdTheme>
         </AntdRegistry>
       </body>

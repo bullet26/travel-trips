@@ -1,0 +1,1 @@
+export { useTanstackMutation } from './useTanstackMutation'

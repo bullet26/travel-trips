@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -24,6 +25,10 @@ export class ImagesController {
     @Body() createImageDto: Omit<CreateImageDto, 'file'>,
     @UploadedFile() file: Express.Multer.File,
   ) {
+    if (!file) {
+      throw new BadRequestException('File not uploaded');
+    }
+
     return this.imagesService.create({ ...createImageDto, file });
   }
 

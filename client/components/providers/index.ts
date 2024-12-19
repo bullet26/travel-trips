@@ -1,1 +1,1 @@
-export { SWRProvider } from './swr-provider'
+export { ReactQueryProvider } from './react-query'
