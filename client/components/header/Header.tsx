@@ -26,7 +26,7 @@ export const Header = () => {
 
   return showHeader && role ? (
     <header className={s.wrapper}>
-      <Link key="Dashboard" href="/dashboard">
+      <Link key="Dashboard" href="/">
         <Image src={gothicCastle} height={55} alt="Picture of the city" />
       </Link>
       <div className={s.innerWrapper}>

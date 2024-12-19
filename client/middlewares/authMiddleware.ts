@@ -95,7 +95,7 @@ export function authMiddleware(middleware: CustomMiddleware): CustomMiddleware {
       }
 
       if (tokens.accessToken && tokens.refreshToken) {
-        const updatedResponse = NextResponse.redirect(new URL('/dashboard', request.url))
+        const updatedResponse = NextResponse.redirect(new URL('/', request.url))
         await getRoleAndSetAuthCookies(updatedResponse, tokens)
         return updatedResponse
       }
@@ -106,7 +106,7 @@ export function authMiddleware(middleware: CustomMiddleware): CustomMiddleware {
     }
 
     if (tokenAccess && tokenRefresh && redirectAuth(pathname)) {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
+      return NextResponse.redirect(new URL('/', request.url))
     }
 
     if (!tokenAccess && tokenRefresh) {

@@ -8,7 +8,7 @@ export function roleGuardMiddleware(middleware: CustomMiddleware): CustomMiddlew
     const { pathname } = request.nextUrl
 
     if ((!role || role !== 'ADMIN') && pathname.includes('admin-panel')) {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
+      return NextResponse.redirect(new URL('/', request.url))
     }
 
     return middleware(request, event, response)
