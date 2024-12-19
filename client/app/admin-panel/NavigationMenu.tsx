@@ -23,10 +23,10 @@ const items: MenuItem[] = [
     label: 'Update info',
     icon: <EditOutlined />,
     children: [
-      { key: 'city-edit', label: <Link href="/admin-panel/update/cities">City</Link> },
-      { key: 'country-edit', label: <Link href="/admin-panel/update/countries">Country</Link> },
-      { key: 'place-edit', label: <Link href="/admin-panel/update/places">Place</Link> },
-      { key: 'tag-edit', label: <Link href="/admin-panel/update/tags">Tag</Link> },
+      { key: 'city-edit', label: <Link href="/admin-panel/update/city">City</Link> },
+      { key: 'country-edit', label: <Link href="/admin-panel/update/country">Country</Link> },
+      { key: 'place-edit', label: <Link href="/admin-panel/update/place">Place</Link> },
+      { key: 'tag-edit', label: <Link href="/admin-panel/update/tag">Tag</Link> },
     ],
   },
   {
