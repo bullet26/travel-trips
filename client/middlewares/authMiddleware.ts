@@ -77,7 +77,7 @@ function redirectUnauth(pathname: string) {
   return !pathname.includes('login') && !pathname.includes('registration')
 }
 function redirectAuth(pathname: string) {
-  return pathname.includes('login') || pathname.includes('registration') || pathname === '/'
+  return pathname.includes('login') || pathname.includes('registration')
 }
 
 export function authMiddleware(middleware: CustomMiddleware): CustomMiddleware {
