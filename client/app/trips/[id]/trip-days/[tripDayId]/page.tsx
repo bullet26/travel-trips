@@ -1,11 +1,16 @@
 import { Metadata } from 'next'
-import { IDParams } from 'types'
 
-export async function generateMetadata({ params: { tripDayId } }: IDParams): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ tripDayId: string }>
+}): Promise<Metadata> {
+  const tripDayId = (await params).tripDayId
+
   // const post = await getData(tripDayId);
 
   return {
-    title: 'TripDay id',
+    title: `TripDay ${tripDayId}`,
   }
 }
 

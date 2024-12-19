@@ -3,14 +3,14 @@ import { useEffect, useState } from 'react'
 import { Menu, MenuProps } from 'antd'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { EditOutlined } from '@ant-design/icons'
+import { EditOutlined, FileAddOutlined, PictureOutlined } from '@ant-design/icons'
 type MenuItem = Required<MenuProps>['items'][number]
 
 const items: MenuItem[] = [
   {
     key: 'create',
     label: 'Create',
-    icon: <EditOutlined />,
+    icon: <FileAddOutlined />,
     children: [
       { key: 'city', label: <Link href="/admin-panel/create/city">City</Link> },
       { key: 'country', label: <Link href="/admin-panel/create/country">Country</Link> },
@@ -19,31 +19,26 @@ const items: MenuItem[] = [
     ],
   },
   {
-    key: 'sub2',
-    label: 'Navigation Two',
-    // icon: <AppstoreOutlined />,
+    key: 'update',
+    label: 'Update info',
+    icon: <EditOutlined />,
     children: [
-      { key: '5', label: 'Option 5' },
-      { key: '6', label: 'Option 6' },
-      {
-        key: 'sub3',
-        label: 'Submenu',
-        children: [
-          { key: '7', label: 'Option 7' },
-          { key: '8', label: 'Option 8' },
-        ],
-      },
+      { key: 'city-edit', label: <Link href="/admin-panel/update/cities">City</Link> },
+      { key: 'country-edit', label: <Link href="/admin-panel/update/countries">Country</Link> },
+      { key: 'place-edit', label: <Link href="/admin-panel/update/places">Place</Link> },
+      { key: 'tag-edit', label: <Link href="/admin-panel/update/tags">Tag</Link> },
     ],
   },
   {
-    key: 'sub4',
-    label: 'Navigation Three',
-    // icon: <SettingOutlined />,
+    key: 'images',
+    label: 'Images',
+    icon: <PictureOutlined />,
     children: [
-      { key: '9', label: 'Option 9' },
-      { key: '10', label: 'Option 10' },
-      { key: '11', label: 'Option 11' },
-      { key: '12', label: 'Option 12' },
+      { key: 'upload', label: <Link href="/admin-panel/images-edit/upload">Upload</Link> },
+      {
+        key: 'all',
+        label: <Link href="/admin-panel/images-edit/all">All: update and delete</Link>,
+      },
     ],
   },
 ]
@@ -55,6 +50,7 @@ export const NavigationMenu = () => {
   useEffect(() => {
     const key = pathname.split('/').at(-1) || ''
     setCurrent(key)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const onClick: MenuProps['onClick'] = (e) => {

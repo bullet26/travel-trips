@@ -1,5 +1,4 @@
 export type IDParams = {
-  params: {
-    id: string
-  }
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
