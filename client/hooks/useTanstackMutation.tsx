@@ -9,7 +9,7 @@ type UseTanstackMutationProps<T> = {
 }
 
 type mutationFnProps = {
-  id?: number
+  id?: number | null
   body?: object
 }
 

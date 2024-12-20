@@ -4,7 +4,9 @@ import { HTTPError } from 'types'
 
 const handleError = (resJson: any): never => {
   const error = new Error(
-    resJson?.message?.message || 'An error occurred while fetching the data.',
+    resJson?.message?.message ||
+      resJson?.message?.join(', ') ||
+      'An error occurred while fetching the data.',
   ) as HTTPError
   error.info = resJson
   error.status = resJson?.statusCode || 500

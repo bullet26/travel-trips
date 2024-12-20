@@ -1,15 +1,18 @@
 'use client'
 import { useState } from 'react'
-import { Card } from 'antd'
+import { Card, Drawer } from 'antd'
 import { useTanstackQuery } from 'hooks/useTanstackQuery'
-import { CountryNest } from 'types'
-import s from './Countries.module.scss'
+import { CountryNest, ICreateCountry } from 'types'
 import { DeleteOutlined } from '@ant-design/icons'
 import { useTanstackMutation } from 'hooks'
-import { InfoMessage } from 'components'
+import { CountryForm, InfoMessage } from 'components'
+import s from '../Update.module.scss'
 
 const Countries = () => {
   const [infoMsg, setInfoMsg] = useState<string | null>(null)
+  const [openDrawer, setDrawerStatus] = useState(false)
+  const [itemId, setItemId] = useState<null | number>(null)
+  const [initialValues, setInitialValues] = useState<undefined | ICreateCountry>(undefined)
 
   const query = useTanstackQuery<CountryNest[]>({ url: 'countries', queryKey: ['countries'] })
 
@@ -24,8 +27,20 @@ const Countries = () => {
     },
   })
 
+  const onEdit = (id: number) => {
+    setDrawerStatus(true)
+    setItemId(id)
+    const values = query.data?.find((item) => item.id === id)
+    setInitialValues(values)
+  }
+
   const onDelete = (id: number) => {
     mutation.mutate({ id })
+  }
+
+  const onClose = () => {
+    setDrawerStatus(false)
+    setItemId(null)
   }
 
   return (
@@ -33,13 +48,16 @@ const Countries = () => {
       <div className={s.wrapper}>
         {query.data?.map((item) => (
           <Card key={item.id}>
-            <div className={s.card}>
+            <div className={s.card} onClick={() => onEdit(item.id)}>
               <p>{item.name}</p>
               <DeleteOutlined onClick={() => onDelete(item.id)} />
             </div>
           </Card>
         ))}
       </div>
+      <Drawer title="Update country" onClose={onClose} open={openDrawer} width={500} destroyOnClose>
+        <CountryForm mode="update" id={itemId} initialValues={initialValues} onSuccess={onClose} />
+      </Drawer>
       <InfoMessage msg={infoMsg} />
     </>
   )

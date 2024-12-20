@@ -5,10 +5,10 @@ type UseTanstackQueryProps<T> = {
   url: string
   queryKey: string[]
   options?: UseQueryOptions<T>
-  id?: string
+  id: number | null
 }
 
-export const useTanstackQuery = <T,>({
+export const useTanstackQueryByID = <T,>({
   url,
   queryKey,
   options,
@@ -21,5 +21,6 @@ export const useTanstackQuery = <T,>({
     queryKey: queryKey,
     queryFn: () => fetcher<T>({ url: fullUrl, method: 'GET' }),
     ...options,
+    enabled: !!id,
   })
 }

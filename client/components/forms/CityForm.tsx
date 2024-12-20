@@ -1,33 +1,40 @@
 'use client'
 
-import { useState } from 'react'
-import { Button, Input, InputNumber } from 'antd'
+import { FC, useState } from 'react'
+import { Button, Input, InputNumber, Select } from 'antd'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import * as yup from 'yup'
-import { ICreateCountry, CountryNest } from 'types'
+import { ICreateCity, CountryNest, CityNest } from 'types'
 import { ErrorMessage, InfoMessage } from 'components'
-import { useTanstackMutation } from 'hooks'
-import s from './Country.module.scss'
+import { useTanstackMutation, useTanstackQuery } from 'hooks'
+import { citySchema, transformForSelect } from './utils'
+import s from './Form.module.scss'
 
-const schema = yup
-  .object({
-    name: yup.string().min(4).required(),
-    latitude: yup.number().min(-90).max(90).required(),
-    longitude: yup.number().min(-180).max(180).required(),
-  })
-  .required()
+interface CityFormProps {
+  mode: 'crete' | 'update'
+  id?: number | null
+  initialValues?: ICreateCity
+  onSuccess?: () => void
+}
 
-export const CreateCountryForm = () => {
+export const CityForm: FC<CityFormProps> = (props) => {
+  const { mode, id, initialValues, onSuccess } = props
+
   const [infoMsg, setInfoMsg] = useState<string | null>(null)
 
-  const mutation = useTanstackMutation<CountryNest>({
-    url: 'countries',
-    method: 'POST',
-    queryKey: ['countries'],
+  const method = mode === 'crete' ? 'POST' : 'PATCH'
+  const btnText = mode === 'crete' ? 'Create' : 'Update'
+
+  const query = useTanstackQuery<CountryNest[]>({ url: 'countries', queryKey: ['countries'] })
+
+  const mutation = useTanstackMutation<CityNest>({
+    url: 'cities',
+    method,
+    queryKey: ['cities'],
     onSuccess: (data) => {
       if (data) {
-        setInfoMsg(`New country - ${data.name} was created`)
+        setInfoMsg(`New city - ${data.name} was created`)
+        if (onSuccess) onSuccess()
       }
     },
   })
@@ -38,27 +45,44 @@ export const CreateCountryForm = () => {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    defaultValues: {
+    defaultValues: initialValues || {
       name: '',
     },
-    resolver: yupResolver(schema),
+    resolver: yupResolver(citySchema),
   })
 
-  const onSubmit: SubmitHandler<ICreateCountry> = async (values) => {
-    mutation.mutate({ body: values })
+  const onSubmit: SubmitHandler<ICreateCity> = async (values) => {
+    mutation.mutate({ body: values, id })
   }
 
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className={s.form}>
         <div>
-          <div className={s.label}>Country name</div>
+          <div className={s.label}>City name</div>
           <Controller
             {...register('name')}
             control={control}
-            render={({ field }) => <Input {...field} placeholder="Ukraine" />}
+            render={({ field }) => <Input {...field} placeholder="Kyiv" />}
           />
           <div className={s.error}>{errors.name?.message}</div>
+        </div>
+        <div>
+          <div className={s.label}>Choose country</div>
+          <Controller
+            {...register('countryId')}
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                showSearch
+                placeholder="Choose country"
+                optionFilterProp="label"
+                options={transformForSelect(query?.data)}
+              />
+            )}
+          />
+          <div className={s.error}>{errors.countryId?.message}</div>
         </div>
         <div className={s.geoWrapper}>
           <div>
@@ -89,7 +113,7 @@ export const CreateCountryForm = () => {
           <Button shape="round">Choose on map</Button>
         </div>
         <Button htmlType="submit" disabled={mutation.isPending}>
-          Create
+          {btnText}
         </Button>
       </form>
       <ErrorMessage msg={mutation.error?.message} />

@@ -30,12 +30,19 @@ export class CountriesService {
 
   async findAll() {
     const countries = await this.countryModel.findAll({
-      include: {
-        model: Images,
-        where: { entityType: EntityType.COUNTRY },
-        attributes: ['url'],
-        required: false, // LEFT JOIN вместо INNER JOIN
-      },
+      include: [
+        {
+          model: Images,
+          where: { entityType: EntityType.COUNTRY },
+          attributes: ['url'],
+          required: false, // LEFT JOIN вместо INNER JOIN
+        },
+        {
+          model: City,
+          attributes: ['name', 'id'],
+          required: false, // LEFT JOIN вместо INNER JOIN
+        },
+      ],
     });
 
     return countries;
@@ -54,7 +61,7 @@ export class CountriesService {
         },
         {
           model: City,
-          attributes: ['name'],
+          attributes: ['name', 'id'],
           required: false, // LEFT JOIN вместо INNER JOIN
         },
       ],

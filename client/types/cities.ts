@@ -6,3 +6,10 @@ export interface ICreateCity {
 }
 
 export type IUpdateCity = Partial<ICreateCity>
+
+export interface CityNest extends ICreateCity {
+  id: number
+  createdAt: Date
+  updatedAt: Date
+  images: string[]
+}

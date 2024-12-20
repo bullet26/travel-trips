@@ -6,6 +6,4 @@ export class CreateImageDto {
   readonly entityType: EntityType;
 
   readonly entityId: number;
-
-  readonly cloudinaryPublicId?: string;
 }

@@ -14,4 +14,8 @@ export interface CountryNest {
   longitude: number
   createdAt: Date
   updatedAt: Date
+  cities: {
+    id: number
+    name: string
+  }[]
 }
