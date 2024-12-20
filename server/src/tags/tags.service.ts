@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateTagDto, UpdateTagDto } from './dto';
 import { Tag } from './models/tag.model';
@@ -10,6 +10,17 @@ export class TagsService {
   constructor(@InjectModel(Tag) private tagModel: typeof Tag) {}
 
   async create(createTagDto: CreateTagDto) {
+    const tagInDB = await this.tagModel.findOne({
+      where: {
+        name: createTagDto.name,
+      },
+    });
+
+    if (tagInDB) {
+      throw new BadRequestException(
+        `This tag (${tagInDB.name}) already created`,
+      );
+    }
     const tag = await this.tagModel.create(createTagDto);
     return tag;
   }
@@ -27,6 +38,7 @@ export class TagsService {
         model: Place,
         through: { attributes: [] }, // Убираем промежуточные атрибуты
         attributes: ['name', 'description'],
+        required: false, // LEFT JOIN вместо INNER JOIN
       },
     });
     ensureEntityExists({ entity: tag, entityName: 'Tag', value: id });

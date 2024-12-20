@@ -46,6 +46,7 @@ export class WishlistsService {
       include: {
         model: Place,
         attributes: ['name', 'description'],
+        required: false, // LEFT JOIN вместо INNER JOIN
       },
     });
     ensureEntityExists({ entity: wishlist, entityName: 'Wishlist', value: id });

@@ -51,6 +51,7 @@ export class TripsDayService {
       include: {
         model: Place,
         attributes: ['name', 'description'],
+        required: false, // LEFT JOIN вместо INNER JOIN
       },
     });
 
@@ -67,6 +68,7 @@ export class TripsDayService {
       include: {
         model: Place,
         attributes: ['name', 'description'],
+        required: false, // LEFT JOIN вместо INNER JOIN
       },
     });
     return tripDays;

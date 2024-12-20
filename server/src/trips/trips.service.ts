@@ -60,6 +60,7 @@ export class TripsService {
         model: Images,
         where: { entityType: EntityType.TRIP },
         attributes: ['url'],
+        required: false, // LEFT JOIN вместо INNER JOIN
       },
     });
     return trips;
@@ -74,14 +75,17 @@ export class TripsService {
           model: Images,
           where: { entityType: EntityType.TRIP },
           attributes: ['url'],
+          required: false, // LEFT JOIN вместо INNER JOIN
         },
         {
           model: UnassignedPlaces,
           attributes: ['id'],
+          required: false, // LEFT JOIN вместо INNER JOIN
         },
         {
           model: TripDay,
           attributes: ['id', 'date'],
+          required: false, // LEFT JOIN вместо INNER JOIN
         },
       ],
     });
@@ -100,6 +104,7 @@ export class TripsService {
         model: Images,
         where: { entityType: EntityType.TRIP },
         attributes: ['url'],
+        required: false, // LEFT JOIN вместо INNER JOIN
       },
     });
     return trips;

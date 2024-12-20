@@ -1,0 +1,16 @@
+.wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  column-gap: 25px;
+  row-gap: 15px;
+}
+
+.card {
+  display: flex;
+  justify-content: space-between;
+
+  p,
+  svg {
+    cursor: pointer;
+  }
+}

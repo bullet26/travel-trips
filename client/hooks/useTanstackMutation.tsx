@@ -1,22 +1,33 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { fetcher } from 'api'
 
-export const useTanstackMutation = ({
+type UseTanstackMutationProps<T> = {
+  url: string
+  queryKey?: string[]
+  method: 'POST' | 'GET' | 'PATCH' | 'DELETE'
+  onSuccess?: (data?: T) => void
+}
+
+type mutationFnProps = {
+  id?: number
+  body?: object
+}
+
+export const useTanstackMutation = <T,>({
   url,
   queryKey,
   method,
   onSuccess,
-}: {
-  url: string
-  queryKey?: string[]
-  method: 'POST' | 'GET' | 'PATCH' | 'DELETE'
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onSuccess?: (data?: any) => void
-}) => {
+}: UseTanstackMutationProps<T>) => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (body?: object) => fetcher({ url, method, body }),
+    mutationFn: ({ id, body }: mutationFnProps) => {
+      let fullUrl = url
+      if (id) fullUrl = `${url}/${id}`
+
+      return fetcher<T>({ url: fullUrl, method, body })
+    },
     onSuccess: (data) => {
       if (onSuccess) onSuccess(data)
 

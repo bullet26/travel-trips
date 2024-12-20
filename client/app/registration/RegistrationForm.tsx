@@ -5,7 +5,7 @@ import { Button, Input } from 'antd'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { ICreateUser, HTTPError } from 'types'
+import { ICreateUser, HTTPError, NestAuthTokens } from 'types'
 import { ErrorMessage } from 'components'
 import { fetcher } from 'api'
 import s from '@/login/Login.module.scss'
@@ -39,7 +39,7 @@ export const RegistrationForm = () => {
 
   const onSubmit: SubmitHandler<ICreateUser> = async (data) => {
     try {
-      const response = await fetcher({
+      const response = await fetcher<NestAuthTokens>({
         url: `auth/registration`,
         method: 'POST',
         body: data,

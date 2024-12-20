@@ -35,15 +35,18 @@ export class PlacesService {
           model: Tag,
           through: { attributes: [] }, // Убираем промежуточные атрибуты
           attributes: ['name'],
+          required: false, // LEFT JOIN вместо INNER JOIN
         },
         {
           model: Images,
           where: { entityType: EntityType.PLACE },
           attributes: ['url'],
+          required: false, // LEFT JOIN вместо INNER JOIN
         },
         {
           model: City,
           attributes: ['name'],
+          required: false, // LEFT JOIN вместо INNER JOIN
         },
       ],
     });

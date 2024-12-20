@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateCityDto, UpdateCityDto } from './dto';
 import { City } from './models/city.model';
@@ -13,6 +13,18 @@ export class CitiesService {
   constructor(@InjectModel(City) private cityModel: typeof City) {}
 
   async create(createCityDto: CreateCityDto) {
+    const cityInDB = await this.cityModel.findOne({
+      where: {
+        name: createCityDto.name,
+      },
+    });
+
+    if (cityInDB) {
+      throw new BadRequestException(
+        `This city (${cityInDB.name}) already created`,
+      );
+    }
+
     const city = await this.cityModel.create(createCityDto);
     return city;
   }
@@ -23,6 +35,7 @@ export class CitiesService {
         model: Images,
         where: { entityType: EntityType.CITY },
         attributes: ['url'],
+        required: false, // LEFT JOIN вместо INNER JOIN
       },
     });
     return cities;
@@ -37,14 +50,17 @@ export class CitiesService {
           model: Images,
           where: { entityType: EntityType.CITY },
           attributes: ['url'],
+          required: false, // LEFT JOIN вместо INNER JOIN
         },
         {
           model: Place,
           attributes: ['name'],
+          required: false, // LEFT JOIN вместо INNER JOIN
         },
         {
           model: Country,
           attributes: ['name'],
+          required: false, // LEFT JOIN вместо INNER JOIN
         },
       ],
     });

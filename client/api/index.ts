@@ -11,19 +11,21 @@ const handleError = (resJson: any): never => {
   throw error
 }
 
-export const fetcher = async ({
-  url,
-  method,
-  body,
-  formData,
-  token,
-}: {
+type FetcherProps = {
   url: string
   method?: 'POST' | 'GET' | 'PATCH' | 'DELETE'
   body?: object
   formData?: FormData
   token?: string
-}): Promise<any> => {
+}
+
+export const fetcher = async <T>({
+  url,
+  method,
+  body,
+  formData,
+  token,
+}: FetcherProps): Promise<T> => {
   const refreshToken = getCookie('refreshToken')
   const accessToken = token || getCookie('accessToken')
 

@@ -5,7 +5,7 @@ import { Button, Input, InputNumber } from 'antd'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { ICreateCountry } from 'types'
+import { ICreateCountry, CountryNest } from 'types'
 import { ErrorMessage, InfoMessage } from 'components'
 import { useTanstackMutation } from 'hooks'
 import s from './Country.module.scss'
@@ -21,13 +21,13 @@ const schema = yup
 export const CreateCountryForm = () => {
   const [infoMsg, setInfoMsg] = useState<string | null>(null)
 
-  const mutation = useTanstackMutation({
+  const mutation = useTanstackMutation<CountryNest>({
     url: 'countries',
     method: 'POST',
     queryKey: ['countries'],
     onSuccess: (data) => {
       if (data) {
-        setInfoMsg(`New country - ${(data as ICreateCountry).name} was created`)
+        setInfoMsg(`New country - ${data.name} was created`)
       }
     },
   })
@@ -45,7 +45,7 @@ export const CreateCountryForm = () => {
   })
 
   const onSubmit: SubmitHandler<ICreateCountry> = async (values) => {
-    mutation.mutate(values)
+    mutation.mutate({ body: values })
   }
 
   return (

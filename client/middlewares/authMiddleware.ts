@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextFetchEvent, NextRequest } from 'next/server'
 import { fetcher } from 'api'
 import { CustomMiddleware } from './chain'
-import { IUser } from 'types'
+import { IUser, NestAuthTokens } from 'types'
 
 interface Tokens {
   accessToken: string
@@ -20,7 +20,7 @@ export async function getUserData({
   accessToken: string
   maxAge: number
 }) {
-  const user: IUser = await fetcher({
+  const user = await fetcher<IUser>({
     url: `users/me`,
     token: accessToken,
   })
@@ -110,7 +110,7 @@ export function authMiddleware(middleware: CustomMiddleware): CustomMiddleware {
     }
 
     if (!tokenAccess && tokenRefresh) {
-      const response = await fetcher({
+      const response = await fetcher<NestAuthTokens>({
         url: `auth/refresh-token`,
         method: 'POST',
         body: { refreshToken: tokenRefresh },

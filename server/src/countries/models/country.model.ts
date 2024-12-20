@@ -19,7 +19,7 @@ export class Country extends Model<Country, CountryCreationAttrs> {
   })
   id: number;
 
-  @Column({ type: DataType.STRING, allowNull: false, unique: true })
+  @Column({ type: DataType.STRING, allowNull: false })
   name: string;
 
   @Column({ type: DataType.FLOAT, allowNull: false })

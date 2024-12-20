@@ -44,6 +44,7 @@ export class UnassignedPlacesService {
       include: {
         model: Place,
         attributes: ['id', 'name', 'description'],
+        required: false, // LEFT JOIN вместо INNER JOIN
       },
     });
 

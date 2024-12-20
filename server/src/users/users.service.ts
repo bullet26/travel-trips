@@ -24,7 +24,11 @@ export class UsersService {
   async getAllUsers() {
     const users = await this.userModel.findAll({
       attributes: { exclude: ['password'] },
-      include: { model: Role, attributes: ['role'] },
+      include: {
+        model: Role,
+        attributes: ['role'],
+        required: false, // LEFT JOIN вместо INNER JOIN
+      },
     });
     return users;
   }
@@ -34,7 +38,11 @@ export class UsersService {
       where: {
         email: email,
       },
-      include: { model: Role, attributes: ['role'] },
+      include: {
+        model: Role,
+        attributes: ['role'],
+        required: false, // LEFT JOIN вместо INNER JOIN
+      },
     });
 
     return user;
@@ -57,7 +65,11 @@ export class UsersService {
         providerId: providerId,
       },
       attributes: { exclude: ['password'] },
-      include: { model: Role, attributes: ['role'] },
+      include: {
+        model: Role,
+        attributes: ['role'],
+        required: false, // LEFT JOIN вместо INNER JOIN
+      },
     });
 
     return user;

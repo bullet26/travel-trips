@@ -23,3 +23,10 @@ export interface ILoginUser {
 export interface IUser extends ICreateUser {
   role: RoleType
 }
+
+export interface NestAuthTokens {
+  accessToken: string
+  accessTokenExpires: number
+  refreshToken: string
+  refreshTokenExpires: number
+}
