@@ -6,7 +6,11 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
+  UploadedFile,
+  ParseFilePipeBuilder,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { CountriesService } from './countries.service';
 import { CreateCountryDto, UpdateCountryDto } from './dto';
 import { Roles } from 'src/auth';
@@ -17,29 +21,45 @@ export class CountriesController {
 
   @Roles('ADMIN')
   @Post()
-  create(@Body() createCountryDto: CreateCountryDto) {
-    return this.countriesService.create(createCountryDto);
+  @UseInterceptors(FileInterceptor('file'))
+  async create(
+    @Body() createCountryDto: CreateCountryDto,
+    @UploadedFile(
+      new ParseFilePipeBuilder().build({
+        // TOdo
+        fileIsRequired: false,
+      }),
+    )
+    file?: Express.Multer.File,
+  ) {
+    return this.countriesService.create({
+      ...createCountryDto,
+      file,
+    });
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.countriesService.findAll();
   }
 
   @Get(':id')
-  findById(@Param('id') id: string) {
+  async findById(@Param('id') id: string) {
     return this.countriesService.findById(Number(id));
   }
 
   @Roles('ADMIN')
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCountryDto: UpdateCountryDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateCountryDto: UpdateCountryDto,
+  ) {
     return this.countriesService.update(Number(id), updateCountryDto);
   }
 
   @Roles('ADMIN')
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.countriesService.remove(Number(id));
   }
 }

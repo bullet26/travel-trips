@@ -11,6 +11,7 @@ type UseTanstackMutationProps<T> = {
 type mutationFnProps = {
   id?: number | null
   body?: object
+  formData?: FormData
 }
 
 export const useTanstackMutation = <T,>({
@@ -22,11 +23,11 @@ export const useTanstackMutation = <T,>({
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ id, body }: mutationFnProps) => {
+    mutationFn: ({ id, body, formData }: mutationFnProps) => {
       let fullUrl = url
       if (id) fullUrl = `${url}/${id}`
 
-      return fetcher<T>({ url: fullUrl, method, body })
+      return fetcher<T>({ url: fullUrl, method, body, formData })
     },
     onSuccess: (data) => {
       if (onSuccess) onSuccess(data)

@@ -1,4 +1,4 @@
-import { IsLatitude, IsLongitude, IsString } from 'class-validator';
+import { IsLatitude, IsLongitude, IsOptional, IsString } from 'class-validator';
 
 export class CreateCountryDto {
   @IsString()
@@ -9,4 +9,7 @@ export class CreateCountryDto {
 
   @IsLongitude()
   readonly longitude: number;
+
+  @IsOptional()
+  readonly file?: Express.Multer.File;
 }

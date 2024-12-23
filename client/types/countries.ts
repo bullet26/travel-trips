@@ -2,6 +2,7 @@ export interface ICreateCountry {
   name: string
   latitude: number
   longitude: number
+  file?: string | Blob
 }
 
 export type IUpdateCountry = Partial<ICreateCountry>

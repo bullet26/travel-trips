@@ -12,4 +12,6 @@ export class CreateCityDto {
 
   @IsLongitude()
   readonly longitude: number;
+
+  readonly file?: Express.Multer.File;
 }

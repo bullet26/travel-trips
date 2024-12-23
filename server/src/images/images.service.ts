@@ -8,7 +8,7 @@ import { CloudinaryService } from 'src/cloudinary';
 import { Images } from './models/image.model';
 import { EntityType } from './types/EntityType';
 import { validateEntityExists } from './utils/entityValidator.util';
-import { SetImgToEntityDto, CreateImageDto } from './dto';
+import { SetImgToEntityDto, CreateImageDto, UploadFileDto } from './dto';
 import { ensureEntityExists, ensureId } from 'src/utils';
 
 @Injectable()
@@ -17,6 +17,21 @@ export class ImagesService {
     @InjectModel(Images) private imageModel: typeof Images,
     private cloudinary: CloudinaryService,
   ) {}
+
+  async upload({ file }: UploadFileDto) {
+    const uploadResult = await this.cloudinary
+      .uploadImage(file)
+      .catch((error) => {
+        throw new InternalServerErrorException(
+          `Image upload failed: ${error.message}`,
+        );
+      });
+
+    return {
+      url: uploadResult.secure_url,
+      cloudinaryPublicId: uploadResult.public_id,
+    };
+  }
 
   async create(createImageDto: CreateImageDto) {
     const { entityType, entityId, file } = createImageDto;
@@ -29,17 +44,11 @@ export class ImagesService {
     }
     await validateEntityExists(entityType, entityId);
 
-    const uploadResult = await this.cloudinary
-      .uploadImage(file)
-      .catch((error) => {
-        throw new InternalServerErrorException(
-          `Image upload failed: ${error.message}`,
-        );
-      });
+    const { url, cloudinaryPublicId } = await this.upload({ file });
 
     return this.imageModel.create({
-      url: uploadResult.secure_url,
-      cloudinaryPublicId: uploadResult.public_id,
+      url,
+      cloudinaryPublicId,
       entityType: entityType,
       entityId,
     });

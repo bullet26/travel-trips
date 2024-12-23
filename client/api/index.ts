@@ -41,6 +41,7 @@ export const fetcher = async <T>({
       ...(!!accessToken && { Authorization: `Bearer ${accessToken}` }),
     },
   })
+
   const resJson = await res.json()
 
   if (resJson.statusCode === 401 && refreshToken) {

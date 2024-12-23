@@ -24,7 +24,9 @@ export class CountriesService {
       );
     }
 
-    const country = await this.countryModel.create(createCountryDto);
+    const { file, ...countryData } = createCountryDto;
+
+    const country = await this.countryModel.create(countryData);
     return country;
   }
 

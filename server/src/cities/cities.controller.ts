@@ -17,29 +17,29 @@ export class CitiesController {
 
   @Roles('ADMIN')
   @Post()
-  create(@Body() createCityDto: CreateCityDto) {
+  async create(@Body() createCityDto: CreateCityDto) {
     return this.citiesService.create(createCityDto);
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.citiesService.findAll();
   }
 
   @Get(':id')
-  findById(@Param('id') id: string) {
+  async findById(@Param('id') id: string) {
     return this.citiesService.findById(Number(id));
   }
 
   @Roles('ADMIN')
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCityDto: UpdateCityDto) {
+  async update(@Param('id') id: string, @Body() updateCityDto: UpdateCityDto) {
     return this.citiesService.update(Number(id), updateCityDto);
   }
 
   @Roles('ADMIN')
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.citiesService.remove(Number(id));
   }
 }

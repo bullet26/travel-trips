@@ -1,0 +1,45 @@
+@import '../../styles/variables.scss';
+
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+.label {
+  max-height: fit-content;
+}
+
+.dropZoneWrapper {
+  cursor: pointer;
+  width: 300px;
+  height: 300px;
+  border: 1px solid $border;
+  background-color: #141414;
+  color: $light;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    border-color: $primary-color;
+    color: $primary-color;
+  }
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+}
+
+.cancelBtn {
+  margin-top: 25px;
+  width: 100%;
+}
+
+.hide {
+  display: none;
+}

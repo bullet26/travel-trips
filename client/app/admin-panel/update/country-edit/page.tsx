@@ -55,7 +55,7 @@ const Countries = () => {
           </Card>
         ))}
       </div>
-      <Drawer title="Update country" onClose={onClose} open={openDrawer} width={500} destroyOnClose>
+      <Drawer title="Update country" onClose={onClose} open={openDrawer} width={800} destroyOnClose>
         <CountryForm mode="update" id={itemId} initialValues={initialValues} onSuccess={onClose} />
       </Drawer>
       <InfoMessage msg={infoMsg} />

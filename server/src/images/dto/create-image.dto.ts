@@ -7,3 +7,7 @@ export class CreateImageDto {
 
   readonly entityId: number;
 }
+
+export class UploadFileDto {
+  readonly file: Express.Multer.File;
+}

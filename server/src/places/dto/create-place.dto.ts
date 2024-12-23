@@ -15,4 +15,6 @@ export class CreatePlaceDto {
 
   @IsString()
   readonly address: string;
+
+  readonly file?: Express.Multer.File;
 }

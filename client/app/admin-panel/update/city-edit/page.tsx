@@ -107,7 +107,7 @@ const Cities = () => {
         ]}
       />
 
-      <Drawer title="Update city" onClose={onClose} open={openDrawer} width={500} destroyOnClose>
+      <Drawer title="Update city" onClose={onClose} open={openDrawer} width={800} destroyOnClose>
         <CityForm mode="update" id={itemId} initialValues={initialValues} onSuccess={onClose} />
       </Drawer>
       <InfoMessage msg={infoMsg} />

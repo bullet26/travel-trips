@@ -3,6 +3,7 @@ export interface ICreateCity {
   name: string
   latitude: number
   longitude: number
+  file?: string | Blob
 }
 
 export type IUpdateCity = Partial<ICreateCity>

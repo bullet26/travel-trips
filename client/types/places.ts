@@ -8,6 +8,7 @@ export interface ICreatePlace {
   latitude: number
   longitude: number
   address: string
+  file?: string | Blob
 }
 
 export type IUpdatePlace = Partial<ICreatePlace>
