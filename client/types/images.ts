@@ -15,3 +15,13 @@ export interface ISetImgToEntity {
   entityId: number
   entityType: EntityType
 }
+
+export interface ImageNest {
+  cloudinaryPublicId: string
+  createdAt: Date
+  entityId: number
+  entityType: EntityType
+  id: number
+  updatedAt: Date
+  url: string
+}

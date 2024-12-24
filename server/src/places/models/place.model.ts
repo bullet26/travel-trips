@@ -23,6 +23,7 @@ interface PlaceCreationAttrs {
   latitude: number;
   longitude: number;
   address: string;
+  cityId: number;
 }
 
 @Table({ tableName: 'place' })

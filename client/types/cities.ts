@@ -12,5 +12,5 @@ export interface CityNest extends ICreateCity {
   id: number
   createdAt: Date
   updatedAt: Date
-  images: string[]
+  images: { url: string; id: number }[]
 }

@@ -1,0 +1,13 @@
+@import '../../styles/variables.scss';
+
+.wrapper {
+  display: inline-block;
+  max-width: fit-content;
+}
+
+.imageItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: $light;
+}

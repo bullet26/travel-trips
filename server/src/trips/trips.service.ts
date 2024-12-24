@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateTripDto, UpdateTripDto } from './dto';
 import { Trip } from './models/trip.model';
-import { Images, EntityType } from 'src/images';
+import { Images, EntityType, ImagesService } from 'src/images';
 import { TripDay, TripsDayService } from 'src/trips-day';
 import {
   UnassignedPlaces,
@@ -17,6 +17,7 @@ export class TripsService {
     @InjectModel(Trip) private tripModel: typeof Trip,
     private tripsDayService: TripsDayService,
     private unassignedPlacesService: UnassignedPlacesService,
+    private imagesService: ImagesService,
   ) {}
 
   async create(createTripDto: CreateTripDto, transaction?: Transaction) {
@@ -28,7 +29,9 @@ export class TripsService {
       );
     }
 
-    const trip = await this.tripModel.create(createTripDto, { transaction });
+    const { file, ...tripData } = createTripDto;
+
+    const trip = await this.tripModel.create(tripData, { transaction });
 
     let currentDate = new Date(startDate);
     const createDayPromises = [];
@@ -50,6 +53,14 @@ export class TripsService {
     await Promise.all(createDayPromises);
 
     await this.unassignedPlacesService.create({ tripId: trip.id }, transaction);
+
+    if (!!file) {
+      await this.imagesService.create({
+        entityType: EntityType.TRIP,
+        entityId: trip.id,
+        file,
+      });
+    }
 
     return trip;
   }
@@ -116,7 +127,18 @@ export class TripsService {
     const trip = await this.tripModel.findByPk(id);
     ensureEntityExists({ entity: trip, entityName: 'Trip', value: id });
 
-    await trip.update(updateTripDto);
+    const { file, ...tripData } = updateTripDto;
+
+    await trip.update(tripData);
+
+    if (!!file) {
+      await this.imagesService.create({
+        entityType: EntityType.TRIP,
+        entityId: trip.id,
+        file,
+      });
+    }
+
     return trip;
   }
 

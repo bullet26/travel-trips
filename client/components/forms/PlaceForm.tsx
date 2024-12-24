@@ -1,23 +1,23 @@
 'use client'
 
 import { FC, useState } from 'react'
-import { Button, Input, InputNumber, Select } from 'antd'
+import { Button, Input, InputNumber, TreeSelect } from 'antd'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { ICreateCity, CountryNest, CityNest, EntityType } from 'types'
+import { ICreatePlace, PlaceNest, CountryNest, EntityType } from 'types'
 import { DropZone, ErrorMessage, ImageIEdited, InfoMessage } from 'components'
 import { useTanstackMutation, useTanstackQuery } from 'hooks'
-import { citySchema, transformForSelect } from './utils'
+import { placeSchema, transformForTreeSelect } from './utils'
 import s from './Form.module.scss'
 
-interface CityFormProps {
+interface PlaceFormProps {
   mode: 'crete' | 'update'
   id?: number | null
-  initialValues?: CityNest
+  initialValues?: PlaceNest
   onSuccess?: () => void
 }
 
-export const CityForm: FC<CityFormProps> = (props) => {
+export const PlaceForm: FC<PlaceFormProps> = (props) => {
   const { mode, id, initialValues, onSuccess } = props
 
   const [infoMsg, setInfoMsg] = useState<string | null>(null)
@@ -28,13 +28,13 @@ export const CityForm: FC<CityFormProps> = (props) => {
 
   const query = useTanstackQuery<CountryNest[]>({ url: 'countries', queryKey: ['countries'] })
 
-  const mutation = useTanstackMutation<CityNest>({
-    url: 'cities',
+  const mutation = useTanstackMutation<PlaceNest>({
+    url: 'places',
     method,
-    queryKey: ['cities'],
+    queryKey: ['places'],
     onSuccess: (data) => {
       if (data) {
-        setInfoMsg(`New city - ${data.name} was created`)
+        setInfoMsg(`New place - ${data.name} was created`)
         if (onSuccess) onSuccess()
       }
     },
@@ -49,21 +49,21 @@ export const CityForm: FC<CityFormProps> = (props) => {
     defaultValues: initialValues || {
       name: '',
     },
-    resolver: yupResolver(citySchema),
+    resolver: yupResolver(placeSchema),
   })
 
-  const onSubmit: SubmitHandler<ICreateCity> = async (values) => {
-    const formData = new FormData()
-
-    Object.entries(values).forEach(([key, value]) => {
-      formData.set(key, value)
-    })
-
+  const onSubmit: SubmitHandler<ICreatePlace> = async (values) => {
     if (file) {
-      formData.append('file', file)
-    }
+      const formData = new FormData()
 
-    mutation.mutate({ formData, id })
+      Object.entries(values).forEach(([key, value]) => {
+        formData.set(key, value)
+      })
+      formData.append('file', file)
+      mutation.mutate({ formData, id })
+    } else {
+      mutation.mutate({ body: values, id })
+    }
   }
 
   return (
@@ -73,7 +73,7 @@ export const CityForm: FC<CityFormProps> = (props) => {
           {...item}
           size="small"
           style={{ marginLeft: '10px' }}
-          entityType={EntityType.CITY}
+          entityType={EntityType.PLACE}
           onSuccess={onSuccess}
         />
       ))}
@@ -82,30 +82,56 @@ export const CityForm: FC<CityFormProps> = (props) => {
           <DropZone onChange={setFile} />
           <div className={s.inputsWrapper}>
             <div>
-              <div className={s.label}>City name</div>
+              <div className={s.label}>Place name</div>
               <Controller
                 {...register('name')}
                 control={control}
-                render={({ field }) => <Input {...field} placeholder="Kyiv" />}
+                render={({ field }) => <Input {...field} placeholder="Saint Sophia Cathedral" />}
               />
               <div className={s.error}>{errors.name?.message}</div>
             </div>
             <div>
-              <div className={s.label}>Choose country</div>
+              <div className={s.label}>Description</div>
               <Controller
-                {...register('countryId')}
+                {...register('description')}
                 control={control}
                 render={({ field }) => (
-                  <Select
+                  <Input.TextArea
+                    autoSize
+                    style={{ resize: 'none' }}
                     {...field}
-                    showSearch
-                    placeholder="Choose country"
-                    optionFilterProp="label"
-                    options={transformForSelect(query?.data)}
+                    placeholder="Saint Sophia Cathedral in Kyiv, Ukraine, is an architectural monument ..."
                   />
                 )}
               />
-              <div className={s.error}>{errors.countryId?.message}</div>
+              <div className={s.error}>{errors.description?.message}</div>
+            </div>
+            <div>
+              <div className={s.label}>Choose city</div>
+              <Controller
+                {...register('cityId')}
+                control={control}
+                render={({ field }) => (
+                  <TreeSelect
+                    {...field}
+                    style={{ width: '100%' }}
+                    showSearch
+                    allowClear
+                    placeholder="Choose city"
+                    treeData={transformForTreeSelect(query?.data)}
+                  />
+                )}
+              />
+              <div className={s.error}>{errors.cityId?.message}</div>
+            </div>
+            <div>
+              <div className={s.label}>Place address</div>
+              <Controller
+                {...register('address')}
+                control={control}
+                render={({ field }) => <Input {...field} placeholder="Volodymyrska St, 24" />}
+              />
+              <div className={s.error}>{errors.address?.message}</div>
             </div>
             <div className={s.geoWrapper}>
               <div>

@@ -16,5 +16,6 @@ import { Country } from 'src/countries/models/country.model';
   ],
   controllers: [ImagesController],
   providers: [ImagesService],
+  exports: [ImagesService],
 })
 export class ImagesModule {}

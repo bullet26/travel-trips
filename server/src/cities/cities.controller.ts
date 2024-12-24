@@ -6,7 +6,11 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
+  UploadedFile,
+  ParseFilePipe,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { CitiesService } from './cities.service';
 import { CreateCityDto, UpdateCityDto } from './dto';
 import { Roles } from 'src/auth';
@@ -17,8 +21,17 @@ export class CitiesController {
 
   @Roles('ADMIN')
   @Post()
-  async create(@Body() createCityDto: CreateCityDto) {
-    return this.citiesService.create(createCityDto);
+  @UseInterceptors(FileInterceptor('file'))
+  async create(
+    @Body() createCityDto: CreateCityDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        fileIsRequired: false,
+      }),
+    )
+    file?: Express.Multer.File,
+  ) {
+    return this.citiesService.create({ ...createCityDto, file });
   }
 
   @Get()
@@ -33,8 +46,18 @@ export class CitiesController {
 
   @Roles('ADMIN')
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateCityDto: UpdateCityDto) {
-    return this.citiesService.update(Number(id), updateCityDto);
+  @UseInterceptors(FileInterceptor('file'))
+  async update(
+    @Param('id') id: string,
+    @Body() updateCityDto: UpdateCityDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        fileIsRequired: false,
+      }),
+    )
+    file?: Express.Multer.File,
+  ) {
+    return this.citiesService.update(Number(id), { ...updateCityDto, file });
   }
 
   @Roles('ADMIN')

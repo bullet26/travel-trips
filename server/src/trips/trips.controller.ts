@@ -6,7 +6,11 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
+  UploadedFile,
+  ParseFilePipe,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { TripsService } from './trips.service';
 import { CreateTripDto, UpdateTripDto } from './dto';
 import { Roles } from 'src/auth';
@@ -16,8 +20,17 @@ export class TripsController {
   constructor(private readonly tripsService: TripsService) {}
 
   @Post()
-  create(@Body() createTripDto: CreateTripDto) {
-    return this.tripsService.create(createTripDto);
+  @UseInterceptors(FileInterceptor('file'))
+  create(
+    @Body() createTripDto: CreateTripDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        fileIsRequired: false,
+      }),
+    )
+    file?: Express.Multer.File,
+  ) {
+    return this.tripsService.create({ ...createTripDto, file });
   }
 
   @Roles('ADMIN')
@@ -37,8 +50,18 @@ export class TripsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTripDto: UpdateTripDto) {
-    return this.tripsService.update(Number(id), updateTripDto);
+  @UseInterceptors(FileInterceptor('file'))
+  update(
+    @Param('id') id: string,
+    @Body() updateTripDto: UpdateTripDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        fileIsRequired: false,
+      }),
+    )
+    file?: Express.Multer.File,
+  ) {
+    return this.tripsService.update(Number(id), { ...updateTripDto, file });
   }
 
   @Delete(':id')

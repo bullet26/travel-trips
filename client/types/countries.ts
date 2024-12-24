@@ -10,7 +10,7 @@ export type IUpdateCountry = Partial<ICreateCountry>
 export interface CountryNest {
   name: string
   id: number
-  images: { url: string }[]
+  images: { url: string; id: number }[]
   latitude: number
   longitude: number
   createdAt: Date

@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { Card, Drawer } from 'antd'
 import { useTanstackQuery } from 'hooks/useTanstackQuery'
-import { CountryNest, ICreateCountry } from 'types'
+import { CountryNest } from 'types'
 import { DeleteOutlined } from '@ant-design/icons'
 import { useTanstackMutation } from 'hooks'
 import { CountryForm, InfoMessage } from 'components'
@@ -12,7 +12,7 @@ const Countries = () => {
   const [infoMsg, setInfoMsg] = useState<string | null>(null)
   const [openDrawer, setDrawerStatus] = useState(false)
   const [itemId, setItemId] = useState<null | number>(null)
-  const [initialValues, setInitialValues] = useState<undefined | ICreateCountry>(undefined)
+  const [initialValues, setInitialValues] = useState<undefined | CountryNest>(undefined)
 
   const query = useTanstackQuery<CountryNest[]>({ url: 'countries', queryKey: ['countries'] })
 
@@ -48,8 +48,8 @@ const Countries = () => {
       <div className={s.wrapper}>
         {query.data?.map((item) => (
           <Card key={item.id}>
-            <div className={s.card} onClick={() => onEdit(item.id)}>
-              <p>{item.name}</p>
+            <div className={s.card}>
+              <p onClick={() => onEdit(item.id)}>{item.name}</p>
               <DeleteOutlined onClick={() => onDelete(item.id)} />
             </div>
           </Card>

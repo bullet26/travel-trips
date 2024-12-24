@@ -1,6 +1,8 @@
-import { IsString, IsNumber, IsDate } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsString, IsNumber, IsDate, IsOptional } from 'class-validator';
 
 export class CreateTripDto {
+  @Type(() => Number)
   @IsNumber()
   readonly userId: number;
 
@@ -15,4 +17,7 @@ export class CreateTripDto {
 
   @IsString()
   readonly comment?: string;
+
+  @IsOptional()
+  readonly file?: Express.Multer.File;
 }

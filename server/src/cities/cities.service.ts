@@ -7,10 +7,14 @@ import { EntityType } from 'src/images/types/EntityType';
 import { Place } from 'src/places/models/place.model';
 import { Country } from 'src/countries/models/country.model';
 import { ensureEntityExists, ensureId } from 'src/utils';
+import { ImagesService } from 'src/images';
 
 @Injectable()
 export class CitiesService {
-  constructor(@InjectModel(City) private cityModel: typeof City) {}
+  constructor(
+    @InjectModel(City) private cityModel: typeof City,
+    private imagesService: ImagesService,
+  ) {}
 
   async create(createCityDto: CreateCityDto) {
     const cityInDB = await this.cityModel.findOne({
@@ -25,7 +29,18 @@ export class CitiesService {
       );
     }
 
-    const city = await this.cityModel.create(createCityDto);
+    const { file, ...cityData } = createCityDto;
+
+    const city = await this.cityModel.create(cityData);
+
+    if (!!file) {
+      await this.imagesService.create({
+        entityType: EntityType.CITY,
+        entityId: city.id,
+        file,
+      });
+    }
+
     return city;
   }
 
@@ -34,7 +49,7 @@ export class CitiesService {
       include: {
         model: Images,
         where: { entityType: EntityType.CITY },
-        attributes: ['url'],
+        attributes: ['url', 'id'],
         required: false, // LEFT JOIN вместо INNER JOIN
       },
     });
@@ -49,7 +64,7 @@ export class CitiesService {
         {
           model: Images,
           where: { entityType: EntityType.CITY },
-          attributes: ['url'],
+          attributes: ['url', 'id'],
           required: false, // LEFT JOIN вместо INNER JOIN
         },
         {
@@ -76,7 +91,18 @@ export class CitiesService {
     const city = await this.cityModel.findByPk(id);
     ensureEntityExists({ entity: city, entityName: 'City', value: id });
 
-    await city.update(updateCityDto);
+    const { file, ...cityData } = updateCityDto;
+
+    await city.update(cityData);
+
+    if (!!file) {
+      await this.imagesService.create({
+        entityType: EntityType.CITY,
+        entityId: city.id,
+        file,
+      });
+    }
+
     return city;
   }
 

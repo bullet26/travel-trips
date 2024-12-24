@@ -4,8 +4,8 @@ import { FC, useState } from 'react'
 import { Button, Input, InputNumber } from 'antd'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { ICreateCountry, CountryNest } from 'types'
-import { DropZone, ErrorMessage, InfoMessage } from 'components'
+import { ICreateCountry, CountryNest, EntityType } from 'types'
+import { DropZone, ErrorMessage, ImageIEdited, InfoMessage } from 'components'
 import { useTanstackMutation } from 'hooks'
 import { countrySchema } from './utils'
 import s from './Form.module.scss'
@@ -13,7 +13,7 @@ import s from './Form.module.scss'
 interface CountryFormProps {
   mode: 'crete' | 'update'
   id?: number | null
-  initialValues?: ICreateCountry
+  initialValues?: CountryNest
   onSuccess?: () => void
 }
 
@@ -51,28 +51,30 @@ export const CountryForm: FC<CountryFormProps> = (props) => {
   })
 
   const onSubmit: SubmitHandler<ICreateCountry> = async (values) => {
-    const formData = new FormData() // TOdo
+    const formData = new FormData()
 
     Object.entries(values).forEach(([key, value]) => {
       formData.set(key, value)
     })
+
+    if (file) {
+      formData.append('file', file)
+    }
+
     mutation.mutate({ formData, id })
-
-    // if (file) {
-    //   const formData = new FormData()
-
-    //   Object.entries(values).forEach(([key, value]) => {
-    //     formData.set(key, value)
-    //   })
-    //   formData.append('file', file)
-    //   mutation.mutate({ formData, id })
-    // } else {
-    //   mutation.mutate({ body: values, id })
-    // }
   }
 
   return (
     <>
+      {initialValues?.images.map((item) => (
+        <ImageIEdited
+          {...item}
+          size="small"
+          style={{ marginLeft: '7px' }}
+          entityType={EntityType.COUNTRY}
+          onSuccess={onSuccess}
+        />
+      ))}
       <form onSubmit={handleSubmit(onSubmit)} className={s.form}>
         <div className={s.dropzoneWrapper}>
           <DropZone onChange={setFile} />

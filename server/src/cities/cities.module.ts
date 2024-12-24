@@ -6,10 +6,14 @@ import { Country } from 'src/countries/models/country.model';
 import { CitiesService } from './cities.service';
 import { CitiesController } from './cities.controller';
 import { City } from './models/city.model';
+import { ImagesModule } from 'src/images/images.module';
 
 @Module({
   controllers: [CitiesController],
   providers: [CitiesService],
-  imports: [SequelizeModule.forFeature([City, Place, Images, Country])],
+  imports: [
+    SequelizeModule.forFeature([City, Place, Images, Country]),
+    ImagesModule,
+  ],
 })
 export class CitiesModule {}

@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { CreatePlaceDto, UpdatePlaceDto, AddTagDto } from './dto';
 import { Place } from './models/place.model';
 import { Tag, TagsService } from 'src/tags';
-import { Images, EntityType } from 'src/images';
+import { Images, EntityType, ImagesService } from 'src/images';
 import { Transaction } from 'sequelize';
 import { City } from 'src/cities/models/city.model';
 import { ensureEntityExists, ensureId } from 'src/utils';
@@ -13,15 +13,50 @@ export class PlacesService {
   constructor(
     @InjectModel(Place) private placeModel: typeof Place,
     private tagService: TagsService,
+    private imagesService: ImagesService,
   ) {}
 
   async create(createPlaceDto: CreatePlaceDto) {
-    const place = await this.placeModel.create(createPlaceDto);
+    const { file, ...placeData } = createPlaceDto;
+
+    const place = await this.placeModel.create(placeData);
+
+    if (!!file) {
+      await this.imagesService.create({
+        entityType: EntityType.PLACE,
+        entityId: place.id,
+        file,
+      });
+    }
     return place;
   }
 
   async findAll() {
-    const places = await this.placeModel.findAll();
+    const places = await this.placeModel.findAll({
+      include: [
+        {
+          model: Images,
+          where: { entityType: EntityType.PLACE },
+          attributes: ['url', 'id'],
+          required: false, // LEFT JOIN вместо INNER JOIN
+        },
+      ],
+    });
+    return places;
+  }
+
+  async findAllByCity(cityId: number) {
+    ensureId(cityId);
+
+    const places = await this.placeModel.findAll({
+      where: { cityId },
+      include: {
+        model: Images,
+        where: { entityType: EntityType.PLACE },
+        attributes: ['url', 'id'],
+        required: false, // LEFT JOIN вместо INNER JOIN
+      },
+    });
     return places;
   }
 
@@ -40,7 +75,7 @@ export class PlacesService {
         {
           model: Images,
           where: { entityType: EntityType.PLACE },
-          attributes: ['url'],
+          attributes: ['url', 'id'],
           required: false, // LEFT JOIN вместо INNER JOIN
         },
         {
@@ -70,7 +105,18 @@ export class PlacesService {
     const place = await this.placeModel.findByPk(id);
     ensureEntityExists({ entity: place, entityName: 'Place', value: id });
 
-    await place.update(updatePlaceDto);
+    const { file, ...placeData } = updatePlaceDto;
+
+    await place.update(placeData);
+
+    if (!!file) {
+      await this.imagesService.create({
+        entityType: EntityType.PLACE,
+        entityId: place.id,
+        file,
+      });
+    }
+
     return place;
   }
 

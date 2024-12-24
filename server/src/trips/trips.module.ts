@@ -9,6 +9,7 @@ import { TripDay } from 'src/trips-day/models/trips-day.model';
 import { UnassignedPlaces } from 'src/unassigned-places/models/unassigned-places.model';
 import { UnassignedPlacesModule } from 'src/unassigned-places/unassigned-places.module';
 import { TripsDayModule } from 'src/trips-day/trips-day.module';
+import { ImagesModule } from 'src/images/images.module';
 
 @Module({
   controllers: [TripsController],
@@ -17,6 +18,7 @@ import { TripsDayModule } from 'src/trips-day/trips-day.module';
     SequelizeModule.forFeature([User, Images, Trip, TripDay, UnassignedPlaces]),
     UnassignedPlacesModule,
     TripsDayModule,
+    ImagesModule,
   ],
   exports: [TripsService],
 })

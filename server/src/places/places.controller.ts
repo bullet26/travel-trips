@@ -6,7 +6,11 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
+  UploadedFile,
+  ParseFilePipe,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { PlacesService } from './places.service';
 import { CreatePlaceDto, UpdatePlaceDto, AddTagDto } from './dto';
 import { Roles } from 'src/auth';
@@ -17,8 +21,17 @@ export class PlacesController {
 
   @Roles('ADMIN')
   @Post()
-  create(@Body() createPlaceDto: CreatePlaceDto) {
-    return this.placesService.create(createPlaceDto);
+  @UseInterceptors(FileInterceptor('file'))
+  create(
+    @Body() createPlaceDto: CreatePlaceDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        fileIsRequired: false,
+      }),
+    )
+    file?: Express.Multer.File,
+  ) {
+    return this.placesService.create({ ...createPlaceDto, file });
   }
 
   @Get()
@@ -29,6 +42,11 @@ export class PlacesController {
   @Get(':id')
   findById(@Param('id') id: string) {
     return this.placesService.findById(Number(id));
+  }
+
+  @Get('/city/:cityId')
+  findAllByCity(@Param('userId') cityId: string) {
+    return this.placesService.findAllByCity(Number(cityId));
   }
 
   @Patch('/tag/add/:id')
@@ -43,8 +61,18 @@ export class PlacesController {
 
   @Roles('ADMIN')
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePlaceDto: UpdatePlaceDto) {
-    return this.placesService.update(Number(id), updatePlaceDto);
+  @UseInterceptors(FileInterceptor('file'))
+  update(
+    @Param('id') id: string,
+    @Body() updatePlaceDto: UpdatePlaceDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        fileIsRequired: false,
+      }),
+    )
+    file?: Express.Multer.File,
+  ) {
+    return this.placesService.update(Number(id), { ...updatePlaceDto, file });
   }
 
   @Roles('ADMIN')

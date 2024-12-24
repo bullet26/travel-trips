@@ -9,6 +9,7 @@ import { Wishlist } from 'src/wishlists/models/wishlist.model';
 import { UnassignedPlaces } from 'src/unassigned-places/models/unassigned-places.model';
 import { TripDay } from 'src/trips-day/models/trips-day.model';
 import { City } from 'src/cities/models/city.model';
+import { ImagesModule } from 'src/images/images.module';
 
 @Module({
   controllers: [PlacesController],
@@ -25,6 +26,7 @@ import { City } from 'src/cities/models/city.model';
       City,
     ]),
     TagsModule,
+    ImagesModule,
   ],
   exports: [PlacesService],
 })

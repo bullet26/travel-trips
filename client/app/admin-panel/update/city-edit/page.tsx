@@ -94,8 +94,8 @@ const Cities = () => {
                     ?.find(({ id }) => id === countryId)
                     ?.cities?.map((item) => (
                       <Card key={item.id}>
-                        <div className={s.card} onClick={() => onEdit(item.id)}>
-                          <p>{item.name}</p>
+                        <div className={s.card}>
+                          <p onClick={() => onEdit(item.id)}>{item.name}</p>
                           <DeleteOutlined onClick={() => onDelete(item.id)} />
                         </div>
                       </Card>

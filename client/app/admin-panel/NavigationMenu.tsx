@@ -61,7 +61,6 @@ export const NavigationMenu = () => {
       icon: <PictureOutlined />,
       onTitleClick,
       children: [
-        { key: 'upload', label: <Link href="/admin-panel/images-edit/upload">Upload</Link> },
         {
           key: 'all',
           label: <Link href="/admin-panel/images-edit/all">All: update and delete</Link>,

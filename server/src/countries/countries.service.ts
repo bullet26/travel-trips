@@ -6,10 +6,14 @@ import { Images } from 'src/images/models/image.model';
 import { EntityType } from 'src/images/types/EntityType';
 import { City } from 'src/cities/models/city.model';
 import { ensureEntityExists, ensureId } from 'src/utils';
+import { ImagesService } from 'src/images';
 
 @Injectable()
 export class CountriesService {
-  constructor(@InjectModel(Country) private countryModel: typeof Country) {}
+  constructor(
+    @InjectModel(Country) private countryModel: typeof Country,
+    private imagesService: ImagesService,
+  ) {}
 
   async create(createCountryDto: CreateCountryDto) {
     const countryInDB = await this.countryModel.findOne({
@@ -27,6 +31,15 @@ export class CountriesService {
     const { file, ...countryData } = createCountryDto;
 
     const country = await this.countryModel.create(countryData);
+
+    if (!!file) {
+      await this.imagesService.create({
+        entityType: EntityType.COUNTRY,
+        entityId: country.id,
+        file,
+      });
+    }
+
     return country;
   }
 
@@ -36,7 +49,7 @@ export class CountriesService {
         {
           model: Images,
           where: { entityType: EntityType.COUNTRY },
-          attributes: ['url'],
+          attributes: ['url', 'id'],
           required: false, // LEFT JOIN вместо INNER JOIN
         },
         {
@@ -58,7 +71,7 @@ export class CountriesService {
         {
           model: Images,
           where: { entityType: EntityType.CITY },
-          attributes: ['url'],
+          attributes: ['url', 'id'],
           required: false, // LEFT JOIN вместо INNER JOIN
         },
         {
@@ -80,7 +93,18 @@ export class CountriesService {
     const country = await this.countryModel.findByPk(id);
     ensureEntityExists({ entity: country, entityName: 'Country', value: id });
 
-    await country.update(updateCountryDto);
+    const { file, ...countryData } = updateCountryDto;
+
+    await country.update(countryData);
+
+    if (!!file) {
+      await this.imagesService.create({
+        entityType: EntityType.COUNTRY,
+        entityId: id,
+        file,
+      });
+    }
+
     return country;
   }
 
