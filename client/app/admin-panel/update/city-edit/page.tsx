@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { Button, Card, Divider, Drawer, Tabs } from 'antd'
 import { useTanstackQuery } from 'hooks/useTanstackQuery'
-import { CityNest, CountryNest, ICreateCity } from 'types'
+import { CityNest, CountryNest } from 'types'
 import { DeleteOutlined } from '@ant-design/icons'
 import clsx from 'clsx'
 import { useTanstackMutation } from 'hooks'
@@ -14,7 +14,7 @@ const Cities = () => {
   const [openDrawer, setDrawerStatus] = useState(false)
   const [itemId, setItemId] = useState<null | number>(null)
   const [countryId, setICountryId] = useState<null | number>(null)
-  const [initialValues, setInitialValues] = useState<undefined | ICreateCity>(undefined)
+  const [initialValues, setInitialValues] = useState<undefined | CityNest>(undefined)
 
   const query = useTanstackQuery<CityNest[]>({ url: 'cities', queryKey: ['cities'] })
 
