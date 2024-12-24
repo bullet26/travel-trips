@@ -68,6 +68,7 @@ export const CountryForm: FC<CountryFormProps> = (props) => {
     <>
       {initialValues?.images.map((item) => (
         <ImageIEdited
+          key={item.id}
           {...item}
           size="small"
           style={{ marginLeft: '7px' }}

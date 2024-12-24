@@ -14,7 +14,7 @@ const EditAndDeleteImg = () => {
   return (
     <div className={s.wrapper}>
       {queryImages.data?.map((item) => (
-        <ImageIEdited size="big" {...item} />
+        <ImageIEdited key={item.id} size="big" {...item} />
       ))}
     </div>
   )

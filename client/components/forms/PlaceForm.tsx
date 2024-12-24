@@ -70,6 +70,7 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
     <>
       {initialValues?.images.map((item) => (
         <ImageIEdited
+          key={item.id}
           {...item}
           size="small"
           style={{ marginLeft: '10px' }}

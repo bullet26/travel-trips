@@ -2,6 +2,7 @@
 
 import { Button } from 'antd'
 import { FC, useState, useRef, DragEvent, ChangeEvent } from 'react'
+import Image from 'next/image'
 import s from './DropZone.module.scss'
 
 interface DropZoneProps {
@@ -65,7 +66,7 @@ export const DropZone: FC<DropZoneProps> = (props) => {
           ref={dropzoneRef}
           onDragOver={(e) => handleDragOver(e)}
           onDrop={(e) => handleDrop(e)}>
-          {fileURL ? <img src={fileURL} alt="book cover" /> : text}
+          {fileURL ? <Image src={fileURL} alt="book cover" width={297} height={297} /> : text}
         </div>
       </label>
       <input
