@@ -9,3 +9,8 @@ export interface TagNest extends ICreateTag {
   createdAt: Date
   updatedAt: Date
 }
+
+export interface TagAttributesNest {
+  name: string
+  id: number
+}

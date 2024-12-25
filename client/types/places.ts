@@ -1,4 +1,4 @@
-import { ImageAttributesNest } from 'types'
+import { ImageAttributesNest, TagAttributesNest } from 'types'
 
 export interface IAddTag {
   tagId: number
@@ -22,6 +22,7 @@ export interface PlaceNest extends ICreatePlace {
   createdAt: Date
   updatedAt: Date
   images: ImageAttributesNest[]
+  tags: TagAttributesNest[]
   tripDayId: number | null
   unassignedPlacesId: number | null
   wishlistId: number | null

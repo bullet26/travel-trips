@@ -1,22 +1,23 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button, Card, Divider, Drawer, Tabs } from 'antd'
 import { useTanstackQuery } from 'hooks/useTanstackQuery'
 import { CountryNest, ICreatePlace, ImageAttributesNest, PlaceNest } from 'types'
 import { DeleteOutlined } from '@ant-design/icons'
 import clsx from 'clsx'
-import { useTanstackMutation } from 'hooks'
-import { InfoMessage, PlaceForm } from 'components'
+import { useContextActions, useTanstackMutation } from 'hooks'
+import { PlaceForm } from 'components'
 import s from '../Update.module.scss'
 
 const Places = () => {
-  const [infoMsg, setInfoMsg] = useState<string | null>(null)
   const [openDrawer, setDrawerStatus] = useState(false)
   const [itemId, setItemId] = useState<null | number>(null)
   const [countryId, setICountryId] = useState<null | number>(null)
   const [cityId, setICityId] = useState<null | number>(null)
   const [initialValues, setInitialValues] = useState<undefined | ICreatePlace>(undefined)
   const [images, setImages] = useState<undefined | ImageAttributesNest[]>(undefined)
+
+  const { setInfoMsg, setErrorMsg } = useContextActions()
 
   const query = useTanstackQuery<PlaceNest[]>({ url: 'places', queryKey: ['places'] })
 
@@ -36,14 +37,26 @@ const Places = () => {
     },
   })
 
+  useEffect(() => {
+    if (mutation.error?.message) setErrorMsg(mutation.error?.message)
+  }, [mutation.error?.message])
+
   const onEdit = (id: number) => {
     setDrawerStatus(true)
     setItemId(id)
     const values = query.data?.find((item) => item.id === id)
 
     if (values) {
-      const { name, description, latitude, longitude, address, cityId, images } = values
-      setInitialValues({ name, description, latitude, longitude, address, cityId })
+      const { name, description, latitude, longitude, address, cityId, images, tags } = values
+      setInitialValues({
+        name,
+        description,
+        latitude,
+        longitude,
+        address,
+        cityId,
+        tagIds: tags?.map(({ id }) => id),
+      })
       setImages(images)
     }
   }
@@ -69,8 +82,8 @@ const Places = () => {
               <div className={s.wrapper}>
                 {query.data?.map((item) => (
                   <Card key={item.id}>
-                    <div className={s.card} onClick={() => onEdit(item.id)}>
-                      <p>{item.name}</p>
+                    <div className={s.card}>
+                      <p onClick={() => onEdit(item.id)}>{item.name}</p>
                       <DeleteOutlined onClick={() => onDelete(item.id)} />
                     </div>
                   </Card>
@@ -138,7 +151,6 @@ const Places = () => {
           images={images}
         />
       </Drawer>
-      <InfoMessage msg={infoMsg} />
     </>
   )
 }

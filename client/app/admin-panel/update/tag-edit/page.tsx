@@ -1,18 +1,19 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Drawer, Tag } from 'antd'
 import { useTanstackQuery } from 'hooks/useTanstackQuery'
 import { TagNest, ICreateTag } from 'types'
 import { DeleteOutlined } from '@ant-design/icons'
-import { useTanstackMutation } from 'hooks'
-import { TagForm, InfoMessage } from 'components'
+import { useContextActions, useTanstackMutation } from 'hooks'
+import { TagForm } from 'components'
 import s from '../Update.module.scss'
 
 const Tags = () => {
-  const [infoMsg, setInfoMsg] = useState<string | null>(null)
   const [openDrawer, setDrawerStatus] = useState(false)
   const [itemId, setItemId] = useState<null | number>(null)
   const [initialValues, setInitialValues] = useState<undefined | ICreateTag>(undefined)
+
+  const { setInfoMsg, setErrorMsg } = useContextActions()
 
   const query = useTanstackQuery<TagNest[]>({ url: 'tags', queryKey: ['tags'] })
 
@@ -26,6 +27,10 @@ const Tags = () => {
       }
     },
   })
+
+  useEffect(() => {
+    if (mutation.error?.message) setErrorMsg(mutation.error?.message)
+  }, [mutation.error?.message])
 
   const onEdit = (id: number) => {
     setDrawerStatus(true)
@@ -58,7 +63,6 @@ const Tags = () => {
       <Drawer title="Update tag" onClose={onClose} open={openDrawer} width={800} destroyOnClose>
         <TagForm mode="update" id={itemId} initialValues={initialValues} onSuccess={onClose} />
       </Drawer>
-      <InfoMessage msg={infoMsg} />
     </>
   )
 }

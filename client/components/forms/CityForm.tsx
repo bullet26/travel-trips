@@ -5,8 +5,8 @@ import { Button, Input, InputNumber, Select } from 'antd'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { ICreateCity, CountryNest, CityNest, EntityType, ImageAttributesNest } from 'types'
-import { DropZone, ErrorMessage, ImageIEdited, InfoMessage } from 'components'
-import { useTanstackMutation, useTanstackQuery } from 'hooks'
+import { DropZone, ImageIEdited } from 'components'
+import { useContextActions, useTanstackMutation, useTanstackQuery } from 'hooks'
 import { citySchema, transformForSelect } from './utils'
 import s from './Form.module.scss'
 
@@ -21,8 +21,9 @@ interface CityFormProps {
 export const CityForm: FC<CityFormProps> = (props) => {
   const { mode, id, initialValues, onSuccess, images = [] } = props
 
-  const [infoMsg, setInfoMsg] = useState<string | null>(null)
   const [file, setFile] = useState<string | Blob | null>(null)
+
+  const { setInfoMsg, setErrorMsg } = useContextActions()
 
   const method = mode === 'crete' ? 'POST' : 'PATCH'
   const btnText = mode === 'crete' ? 'Create' : 'Update'
@@ -40,6 +41,10 @@ export const CityForm: FC<CityFormProps> = (props) => {
       }
     },
   })
+
+  useEffect(() => {
+    if (mutation.error?.message) setErrorMsg(mutation.error?.message)
+  }, [mutation.error?.message])
 
   const {
     register,
@@ -152,8 +157,6 @@ export const CityForm: FC<CityFormProps> = (props) => {
           {btnText}
         </Button>
       </form>
-      <ErrorMessage msg={mutation.error?.message} />
-      <InfoMessage msg={infoMsg} />
     </>
   )
 }

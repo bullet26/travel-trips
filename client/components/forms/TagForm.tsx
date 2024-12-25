@@ -1,12 +1,11 @@
 'use client'
 
-import { FC, useEffect, useState } from 'react'
+import { FC, useEffect } from 'react'
 import { Button, Input } from 'antd'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { ICreateTag, TagNest } from 'types'
-import { ErrorMessage, InfoMessage } from 'components'
-import { useTanstackMutation } from 'hooks'
+import { useContextActions, useTanstackMutation } from 'hooks'
 import { tagSchema } from './utils'
 import s from './Form.module.scss'
 
@@ -20,7 +19,7 @@ interface TagFormProps {
 export const TagForm: FC<TagFormProps> = (props) => {
   const { mode, id, initialValues, onSuccess } = props
 
-  const [infoMsg, setInfoMsg] = useState<string | null>(null)
+  const { setInfoMsg, setErrorMsg } = useContextActions()
 
   const method = mode === 'crete' ? 'POST' : 'PATCH'
   const btnText = mode === 'crete' ? 'Create' : 'Update'
@@ -36,6 +35,10 @@ export const TagForm: FC<TagFormProps> = (props) => {
       }
     },
   })
+
+  useEffect(() => {
+    if (mutation.error?.message) setErrorMsg(mutation.error?.message)
+  }, [mutation.error?.message])
 
   const {
     register,
@@ -79,8 +82,6 @@ export const TagForm: FC<TagFormProps> = (props) => {
           {btnText}
         </Button>
       </form>
-      <ErrorMessage msg={mutation.error?.message} />
-      <InfoMessage msg={infoMsg} />
     </>
   )
 }

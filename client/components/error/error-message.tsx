@@ -2,24 +2,21 @@
 
 import { FC, useEffect } from 'react'
 import { message } from 'antd'
+import { useContextValues } from 'hooks'
 
-interface ErrorMessageProps {
-  msg?: string
-}
-
-export const ErrorMessage: FC<ErrorMessageProps> = (props) => {
-  const { msg } = props
+export const ErrorMessage: FC = () => {
+  const { errorMsg } = useContextValues()
 
   const [messageApi, contextHolder] = message.useMessage()
 
   useEffect(() => {
-    if (msg) {
+    if (errorMsg) {
       messageApi.open({
         type: 'error',
-        content: msg,
+        content: errorMsg,
       })
     }
-  }, [msg, messageApi])
+  }, [errorMsg, messageApi])
 
   return <>{contextHolder}</>
 }

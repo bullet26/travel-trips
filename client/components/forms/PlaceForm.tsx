@@ -5,8 +5,8 @@ import { Button, Input, InputNumber, Select, TreeSelect } from 'antd'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { ICreatePlace, PlaceNest, CountryNest, EntityType, ImageAttributesNest } from 'types'
-import { DropZone, ErrorMessage, ImageIEdited, InfoMessage } from 'components'
-import { useTanstackMutation, useTanstackQuery } from 'hooks'
+import { DropZone, ImageIEdited } from 'components'
+import { useContextActions, useTanstackMutation, useTanstackQuery } from 'hooks'
 import { placeSchema, transformForSelect, transformForTreeSelect } from './utils'
 import s from './Form.module.scss'
 
@@ -21,8 +21,9 @@ interface PlaceFormProps {
 export const PlaceForm: FC<PlaceFormProps> = (props) => {
   const { mode, id, initialValues, onSuccess, images = [] } = props
 
-  const [infoMsg, setInfoMsg] = useState<string | null>(null)
   const [file, setFile] = useState<string | Blob | null>(null)
+
+  const { setInfoMsg, setErrorMsg } = useContextActions()
 
   const method = mode === 'crete' ? 'POST' : 'PATCH'
   const btnText = mode === 'crete' ? 'Create' : 'Update'
@@ -42,6 +43,10 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
       }
     },
   })
+
+  useEffect(() => {
+    if (mutation.error?.message) setErrorMsg(mutation.error?.message)
+  }, [mutation.error?.message])
 
   const {
     register,
@@ -65,17 +70,21 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
   }, [isSubmitSuccessful, reset])
 
   const onSubmit: SubmitHandler<ICreatePlace> = async (values) => {
-    if (file) {
-      const formData = new FormData()
+    const formData = new FormData()
 
-      Object.entries(values).forEach(([key, value]) => {
+    Object.entries(values).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        value.forEach((v) => formData.append(`${key}[]`, v))
+      } else {
         formData.set(key, value)
-      })
+      }
+    })
+
+    if (file) {
       formData.append('file', file)
-      mutation.mutate({ formData, id })
-    } else {
-      mutation.mutate({ body: values, id })
     }
+
+    mutation.mutate({ formData, id })
   }
 
   return (
@@ -205,8 +214,6 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
           {btnText}
         </Button>
       </form>
-      <ErrorMessage msg={mutation.error?.message} />
-      <InfoMessage msg={infoMsg} />
     </>
   )
 }

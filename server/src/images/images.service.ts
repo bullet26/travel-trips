@@ -39,7 +39,7 @@ export class ImagesService {
 
     ensureId(entityId);
 
-    await validateEntityExists(entityType, entityId);
+    await validateEntityExists(entityType, entityId, transaction);
 
     const { url, cloudinaryPublicId } = await this.upload({ file });
 

@@ -7,6 +7,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { transformArrayInFormData } from 'src/utils';
 
 export class CreatePlaceDto {
   @Type(() => Number)
@@ -34,10 +35,10 @@ export class CreatePlaceDto {
   readonly file?: Express.Multer.File;
 
   @IsOptional()
-  @Transform(({ value }) =>
-    typeof value === 'string' ? value.split(',').map((v) => Number(v)) : value,
-  )
+  @Transform(({ value }) => transformArrayInFormData(value))
   @IsArray()
   @IsNumber({}, { each: true })
-  readonly tagIds?: number[];
+  readonly tagIds?: string[] | string;
 }
+// данные в formData всегла строки, а id должны быть number[], поэтому сначала преобразов данные через Transform, а потом провкряем
+// на фроонте должен формироваться string[], но кейс string тоже обрабатывается

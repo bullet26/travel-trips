@@ -15,7 +15,11 @@ import { Tag, TagsService } from 'src/tags';
 import { Images, EntityType, ImagesService } from 'src/images';
 import { Transaction } from 'sequelize';
 import { City } from 'src/cities/models/city.model';
-import { ensureEntityExists, ensureId } from 'src/utils';
+import {
+  ensureEntityExists,
+  ensureId,
+  transformArrayInFormData,
+} from 'src/utils';
 
 @Injectable()
 export class PlacesService {
@@ -26,7 +30,7 @@ export class PlacesService {
   ) {}
 
   async create(createPlaceDto: CreatePlaceDto) {
-    const { file, tagIds, ...placeData } = createPlaceDto;
+    const { file, tagIds: tagValues, ...placeData } = createPlaceDto;
 
     const transaction: Transaction =
       await this.placeModel.sequelize.transaction();
@@ -34,7 +38,9 @@ export class PlacesService {
     try {
       const place = await this.placeModel.create(placeData, { transaction });
 
-      if (tagIds?.length) {
+      if (tagValues) {
+        const tagIds = transformArrayInFormData(tagValues);
+
         tagIds.forEach((item) => ensureId(item));
 
         const validTags = await this.tagService.findGroupByIds(tagIds);
@@ -71,6 +77,12 @@ export class PlacesService {
     const places = await this.placeModel.findAll({
       include: [
         {
+          model: Tag,
+          through: { attributes: [] }, // Убираем промежуточные атрибуты
+          attributes: ['name', 'id'],
+          required: false, // LEFT JOIN вместо INNER JOIN
+        },
+        {
           model: Images,
           where: { entityType: EntityType.PLACE },
           attributes: ['url', 'id'],
@@ -86,12 +98,20 @@ export class PlacesService {
 
     const places = await this.placeModel.findAll({
       where: { cityId },
-      include: {
-        model: Images,
-        where: { entityType: EntityType.PLACE },
-        attributes: ['url', 'id'],
-        required: false, // LEFT JOIN вместо INNER JOIN
-      },
+      include: [
+        {
+          model: Tag,
+          through: { attributes: [] }, // Убираем промежуточные атрибуты
+          attributes: ['name', 'id'],
+          required: false, // LEFT JOIN вместо INNER JOIN
+        },
+        {
+          model: Images,
+          where: { entityType: EntityType.PLACE },
+          attributes: ['url', 'id'],
+          required: false, // LEFT JOIN вместо INNER JOIN
+        },
+      ],
     });
     return places;
   }
@@ -135,24 +155,6 @@ export class PlacesService {
     return places;
   }
 
-  async update(id: number, updatePlaceDto: UpdatePlaceDto) {
-    const place = await this.findById(id);
-
-    const { file, ...placeData } = updatePlaceDto;
-
-    await place.update(placeData);
-
-    if (!!file) {
-      await this.imagesService.create({
-        entityType: EntityType.PLACE,
-        entityId: place.id,
-        file,
-      });
-    }
-
-    return place;
-  }
-
   async remove(id: number) {
     const place = await this.findById(id);
 
@@ -160,35 +162,35 @@ export class PlacesService {
     return { message: 'Place was successfully deleted' };
   }
 
-  async updateTags(id: number, UpdateTagsDto: UpdateTagsDto) {
-    const { tagIds } = UpdateTagsDto;
-
+  async update(id: number, updatePlaceDto: UpdatePlaceDto) {
     const transaction: Transaction =
       await this.placeModel.sequelize.transaction();
 
     try {
-      tagIds.forEach((item) => ensureId(item));
+      const { file, tagIds = [], ...placeData } = updatePlaceDto;
 
-      const place = await this.findById(id, transaction);
+      let place = await this.findById(id, transaction);
 
-      const currentTagIds = place.tags.map((tag) => tag.id);
+      await place.update(placeData);
 
-      const tagsToAdd = tagIds.filter(
-        (tagId) => !currentTagIds.includes(tagId),
-      );
-      const tagsToRemove = currentTagIds.filter(
-        (tagId) => !tagIds.includes(tagId),
-      );
-
-      if (tagsToAdd.length) {
-        await place.$add('tags', tagsToAdd, { transaction });
+      if (!!file) {
+        await this.imagesService.create(
+          {
+            entityType: EntityType.PLACE,
+            entityId: place.id,
+            file,
+          },
+          transaction,
+        );
       }
 
-      if (tagsToRemove.length) {
-        await place.$remove('tags', tagsToRemove, { transaction });
+      if (tagIds) {
+        place = await this.updateTags(
+          id,
+          { tagIds: transformArrayInFormData(tagIds) },
+          transaction,
+        );
       }
-
-      place.tags = await place.$get('tags', { transaction });
 
       await transaction.commit();
 
@@ -199,6 +201,37 @@ export class PlacesService {
         error.message || 'Failed to update tags: Internal server error',
       );
     }
+  }
+
+  async updateTags(
+    id: number,
+    updateTagsDto: UpdateTagsDto,
+    transaction?: Transaction,
+  ) {
+    const { tagIds } = updateTagsDto;
+
+    tagIds.forEach((item) => ensureId(item));
+
+    const place = await this.findById(id, transaction);
+
+    const currentTagIds = place.tags.map((tag) => tag.id);
+
+    const tagsToAdd = tagIds.filter((tagId) => !currentTagIds.includes(tagId));
+    const tagsToRemove = currentTagIds.filter(
+      (tagId) => !tagIds.includes(tagId),
+    );
+
+    if (tagsToAdd.length) {
+      await place.$add('tags', tagsToAdd, { transaction });
+    }
+
+    if (tagsToRemove.length) {
+      await place.$remove('tags', tagsToRemove, { transaction });
+    }
+
+    place.tags = await place.$get('tags', { transaction });
+
+    return place;
   }
 
   async addTag(id: number, AddPlaceDto: AddTagDto) {

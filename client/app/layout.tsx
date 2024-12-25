@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
-import { ReactQueryProvider, Header } from 'components'
+import { ReactQueryProvider, Header, ContextProvider, InfoMessage, ErrorMessage } from 'components'
 import { AntdTheme } from 'theme'
 import 'styles/globals.scss'
 
@@ -33,8 +33,12 @@ const RootLayout = ({
         <AntdRegistry>
           <AntdTheme>
             <ReactQueryProvider>
-              <Header />
-              <main>{children}</main>
+              <ContextProvider>
+                <Header />
+                <main>{children}</main>
+                <InfoMessage />
+                <ErrorMessage />
+              </ContextProvider>
             </ReactQueryProvider>
           </AntdTheme>
         </AntdRegistry>

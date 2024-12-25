@@ -5,8 +5,8 @@ import { Button, Input, InputNumber } from 'antd'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { ICreateCountry, CountryNest, EntityType, ImageAttributesNest } from 'types'
-import { DropZone, ErrorMessage, ImageIEdited, InfoMessage } from 'components'
-import { useTanstackMutation } from 'hooks'
+import { DropZone, ImageIEdited } from 'components'
+import { useContextActions, useTanstackMutation } from 'hooks'
 import { countrySchema } from './utils'
 import s from './Form.module.scss'
 
@@ -21,8 +21,9 @@ interface CountryFormProps {
 export const CountryForm: FC<CountryFormProps> = (props) => {
   const { mode, id, initialValues, onSuccess, images = [] } = props
 
-  const [infoMsg, setInfoMsg] = useState<string | null>(null)
   const [file, setFile] = useState<string | Blob | null>(null)
+
+  const { setInfoMsg, setErrorMsg } = useContextActions()
 
   const method = mode === 'crete' ? 'POST' : 'PATCH'
   const btnText = mode === 'crete' ? 'Create' : 'Update'
@@ -38,6 +39,10 @@ export const CountryForm: FC<CountryFormProps> = (props) => {
       }
     },
   })
+
+  useEffect(() => {
+    if (mutation.error?.message) setErrorMsg(mutation.error?.message)
+  }, [mutation.error?.message])
 
   const {
     register,
@@ -133,8 +138,6 @@ export const CountryForm: FC<CountryFormProps> = (props) => {
           {btnText}
         </Button>
       </form>
-      <ErrorMessage msg={mutation.error?.message} />
-      <InfoMessage msg={infoMsg} />
     </>
   )
 }

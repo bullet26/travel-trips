@@ -1,19 +1,20 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Card, Drawer } from 'antd'
 import { useTanstackQuery } from 'hooks/useTanstackQuery'
 import { CountryNest, ICreateCountry, ImageAttributesNest } from 'types'
 import { DeleteOutlined } from '@ant-design/icons'
-import { useTanstackMutation } from 'hooks'
-import { CountryForm, InfoMessage } from 'components'
+import { useContextActions, useTanstackMutation } from 'hooks'
+import { CountryForm } from 'components'
 import s from '../Update.module.scss'
 
 const Countries = () => {
-  const [infoMsg, setInfoMsg] = useState<string | null>(null)
   const [openDrawer, setDrawerStatus] = useState(false)
   const [itemId, setItemId] = useState<null | number>(null)
   const [initialValues, setInitialValues] = useState<undefined | ICreateCountry>(undefined)
   const [images, setImages] = useState<undefined | ImageAttributesNest[]>(undefined)
+
+  const { setInfoMsg, setErrorMsg } = useContextActions()
 
   const query = useTanstackQuery<CountryNest[]>({ url: 'countries', queryKey: ['countries'] })
 
@@ -27,6 +28,10 @@ const Countries = () => {
       }
     },
   })
+
+  useEffect(() => {
+    if (mutation.error?.message) setErrorMsg(mutation.error?.message)
+  }, [mutation.error?.message])
 
   const onEdit = (id: number) => {
     setDrawerStatus(true)
@@ -70,7 +75,6 @@ const Countries = () => {
           onSuccess={onClose}
         />
       </Drawer>
-      <InfoMessage msg={infoMsg} />
     </>
   )
 }

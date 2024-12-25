@@ -16,7 +16,7 @@ export {
   type IMovePlaceToUnassignedPlaces,
   type IMovePlaceToTripDay,
 } from './trips-day'
-export { type ICreateTag, type IUpdateTag, type TagNest } from './tags'
+export { type ICreateTag, type IUpdateTag, type TagNest, type TagAttributesNest } from './tags'
 export { type ICreateRole, RoleType } from './roles'
 export { type IAddTag, type ICreatePlace, type IUpdatePlace, type PlaceNest } from './places'
 export {

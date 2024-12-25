@@ -1,21 +1,22 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button, Card, Divider, Drawer, Tabs } from 'antd'
 import { useTanstackQuery } from 'hooks/useTanstackQuery'
 import { CityNest, CountryNest, ICreateCity, ImageAttributesNest } from 'types'
 import { DeleteOutlined } from '@ant-design/icons'
 import clsx from 'clsx'
-import { useTanstackMutation } from 'hooks'
-import { CityForm, InfoMessage } from 'components'
+import { useContextActions, useTanstackMutation } from 'hooks'
+import { CityForm } from 'components'
 import s from '../Update.module.scss'
 
 const Cities = () => {
-  const [infoMsg, setInfoMsg] = useState<string | null>(null)
   const [openDrawer, setDrawerStatus] = useState(false)
   const [itemId, setItemId] = useState<null | number>(null)
   const [countryId, setICountryId] = useState<null | number>(null)
   const [initialValues, setInitialValues] = useState<undefined | ICreateCity>(undefined)
   const [images, setImages] = useState<undefined | ImageAttributesNest[]>(undefined)
+
+  const { setInfoMsg, setErrorMsg } = useContextActions()
 
   const query = useTanstackQuery<CityNest[]>({ url: 'cities', queryKey: ['cities'] })
 
@@ -34,6 +35,10 @@ const Cities = () => {
       }
     },
   })
+
+  useEffect(() => {
+    if (mutation.error?.message) setErrorMsg(mutation.error?.message)
+  }, [mutation.error?.message])
 
   const onEdit = (id: number) => {
     setDrawerStatus(true)
@@ -68,8 +73,8 @@ const Cities = () => {
               <div className={s.wrapper}>
                 {query.data?.map((item) => (
                   <Card key={item.id}>
-                    <div className={s.card} onClick={() => onEdit(item.id)}>
-                      <p>{item.name}</p>
+                    <div className={s.card}>
+                      <p onClick={() => onEdit(item.id)}>{item.name}</p>
                       <DeleteOutlined onClick={() => onDelete(item.id)} />
                     </div>
                   </Card>
@@ -122,7 +127,6 @@ const Cities = () => {
           onSuccess={onClose}
         />
       </Drawer>
-      <InfoMessage msg={infoMsg} />
     </>
   )
 }
