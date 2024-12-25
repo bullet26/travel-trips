@@ -122,10 +122,7 @@ export class TripsService {
   }
 
   async update(id: number, updateTripDto: UpdateTripDto) {
-    ensureId(id);
-
-    const trip = await this.tripModel.findByPk(id);
-    ensureEntityExists({ entity: trip, entityName: 'Trip', value: id });
+    const trip = await this.findById(id);
 
     const { file, ...tripData } = updateTripDto;
 
@@ -143,10 +140,7 @@ export class TripsService {
   }
 
   async remove(id: number) {
-    ensureId(id);
-
-    const trip = await this.tripModel.findByPk(id);
-    ensureEntityExists({ entity: trip, entityName: 'Trip', value: id });
+    const trip = await this.findById(id);
 
     await trip.destroy();
 

@@ -1,10 +1,10 @@
 'use client'
 
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { Button, Input, InputNumber } from 'antd'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { ICreateCountry, CountryNest, EntityType } from 'types'
+import { ICreateCountry, CountryNest, EntityType, ImageAttributesNest } from 'types'
 import { DropZone, ErrorMessage, ImageIEdited, InfoMessage } from 'components'
 import { useTanstackMutation } from 'hooks'
 import { countrySchema } from './utils'
@@ -13,12 +13,13 @@ import s from './Form.module.scss'
 interface CountryFormProps {
   mode: 'crete' | 'update'
   id?: number | null
-  initialValues?: CountryNest
+  initialValues?: ICreateCountry
+  images?: ImageAttributesNest[]
   onSuccess?: () => void
 }
 
 export const CountryForm: FC<CountryFormProps> = (props) => {
-  const { mode, id, initialValues, onSuccess } = props
+  const { mode, id, initialValues, onSuccess, images = [] } = props
 
   const [infoMsg, setInfoMsg] = useState<string | null>(null)
   const [file, setFile] = useState<string | Blob | null>(null)
@@ -42,13 +43,22 @@ export const CountryForm: FC<CountryFormProps> = (props) => {
     register,
     control,
     handleSubmit,
-    formState: { errors },
+    reset,
+    formState: { isSubmitSuccessful, errors },
   } = useForm({
     defaultValues: initialValues || {
       name: '',
     },
     resolver: yupResolver(countrySchema),
   })
+
+  useEffect(() => {
+    // It's recommended to reset in useEffect as execution order matters
+    if (isSubmitSuccessful) {
+      reset()
+      setFile(null)
+    }
+  }, [isSubmitSuccessful, reset])
 
   const onSubmit: SubmitHandler<ICreateCountry> = async (values) => {
     const formData = new FormData()
@@ -66,7 +76,7 @@ export const CountryForm: FC<CountryFormProps> = (props) => {
 
   return (
     <>
-      {initialValues?.images.map((item) => (
+      {images.map((item) => (
         <ImageIEdited
           key={item.id}
           {...item}

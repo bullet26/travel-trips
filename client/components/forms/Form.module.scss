@@ -14,11 +14,15 @@
   column-gap: 35px;
 }
 
-.inputsWrapper {
-  flex: 1;
+.inputsWrapper,
+.dropZoneTagWrapper {
   display: flex;
   flex-direction: column;
   row-gap: 25px;
+}
+
+.inputsWrapper {
+  flex: 1;
 }
 
 .geoWrapper {

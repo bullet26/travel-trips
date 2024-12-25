@@ -10,9 +10,9 @@ export const transformForTreeSelect = (data: CountryNest[] = []) => {
     if (cities.length) {
       const children = cities.map(({ id, name }) => ({ value: id, title: name }))
 
-      return { value: id, title: name, children }
+      return { value: `country-${id}`, title: name, children, selectable: false }
     }
-    return { value: id, title: name }
+    return { value: `country-${id}`, title: name, selectable: false }
   })
 }
 
@@ -41,5 +41,12 @@ export const placeSchema = yup
     address: yup.string().min(10).required(),
     latitude: yup.number().min(-90).max(90).required(),
     longitude: yup.number().min(-180).max(180).required(),
+    tagIds: yup.array().of(yup.number().integer().positive().required()).optional(),
+  })
+  .required()
+
+export const tagSchema = yup
+  .object({
+    name: yup.string().min(4).required(),
   })
   .required()

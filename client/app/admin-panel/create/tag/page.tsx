@@ -1,5 +1,13 @@
+import { TagForm } from 'components'
+import s from '../Create.module.scss'
+
 const CreateTag = () => {
-  return <div>1111</div>
+  return (
+    <div>
+      <div className={s.title}>Create new tag</div>
+      <TagForm mode="crete" />
+    </div>
+  )
 }
 
 export default CreateTag

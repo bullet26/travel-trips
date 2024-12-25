@@ -1,0 +1,86 @@
+'use client'
+
+import { FC, useEffect, useState } from 'react'
+import { Button, Input } from 'antd'
+import { useForm, Controller, SubmitHandler } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { ICreateTag, TagNest } from 'types'
+import { ErrorMessage, InfoMessage } from 'components'
+import { useTanstackMutation } from 'hooks'
+import { tagSchema } from './utils'
+import s from './Form.module.scss'
+
+interface TagFormProps {
+  mode: 'crete' | 'update'
+  id?: number | null
+  initialValues?: ICreateTag
+  onSuccess?: () => void
+}
+
+export const TagForm: FC<TagFormProps> = (props) => {
+  const { mode, id, initialValues, onSuccess } = props
+
+  const [infoMsg, setInfoMsg] = useState<string | null>(null)
+
+  const method = mode === 'crete' ? 'POST' : 'PATCH'
+  const btnText = mode === 'crete' ? 'Create' : 'Update'
+
+  const mutation = useTanstackMutation<TagNest>({
+    url: 'tags',
+    method,
+    queryKey: ['tags'],
+    onSuccess: (data) => {
+      if (data) {
+        setInfoMsg(`New Tag - ${data.name} was created`)
+        if (onSuccess) onSuccess()
+      }
+    },
+  })
+
+  const {
+    register,
+    control,
+    handleSubmit,
+    reset,
+    formState: { isSubmitSuccessful, errors },
+  } = useForm({
+    defaultValues: initialValues || {
+      name: '',
+    },
+    resolver: yupResolver(tagSchema),
+  })
+
+  useEffect(() => {
+    // It's recommended to reset in useEffect as execution order matters
+    if (isSubmitSuccessful) {
+      reset()
+    }
+  }, [isSubmitSuccessful, reset])
+
+  const onSubmit: SubmitHandler<ICreateTag> = async (values) => {
+    mutation.mutate({ body: values, id })
+  }
+
+  return (
+    <>
+      <form onSubmit={handleSubmit(onSubmit)} className={s.form}>
+        <div className={s.inputsWrapper}>
+          <div>
+            <div className={s.label}>Tag name</div>
+            <Controller
+              {...register('name')}
+              control={control}
+              render={({ field }) => <Input {...field} placeholder="baroque" />}
+            />
+            <div className={s.error}>{errors.name?.message}</div>
+          </div>
+        </div>
+        <Button htmlType="submit" disabled={mutation.isPending}>
+          {btnText}
+        </Button>
+      </form>
+      <ErrorMessage msg={mutation.error?.message} />
+      <InfoMessage msg={infoMsg} />
+    </>
+  )
+}

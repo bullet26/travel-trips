@@ -39,7 +39,7 @@ export class Place extends Model<Place, PlaceCreationAttrs> {
   @Column({ type: DataType.STRING, allowNull: false })
   name: string;
 
-  @Column({ type: DataType.STRING, allowNull: false })
+  @Column({ type: DataType.TEXT, allowNull: false })
   description: string;
 
   @Column({ type: DataType.FLOAT, allowNull: false })

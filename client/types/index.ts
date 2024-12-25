@@ -16,10 +16,16 @@ export {
   type IMovePlaceToUnassignedPlaces,
   type IMovePlaceToTripDay,
 } from './trips-day'
-export { type ICreateTag, type IUpdateTag } from './tags'
+export { type ICreateTag, type IUpdateTag, type TagNest } from './tags'
 export { type ICreateRole, RoleType } from './roles'
 export { type IAddTag, type ICreatePlace, type IUpdatePlace, type PlaceNest } from './places'
-export { EntityType, type ICreateImage, type ISetImgToEntity, type ImageNest } from './images'
+export {
+  EntityType,
+  type ICreateImage,
+  type ISetImgToEntity,
+  type ImageNest,
+  type ImageAttributesNest,
+} from './images'
 export { type ICreateCountry, type IUpdateCountry, type CountryNest } from './countries'
 export { type ICreateCity, type IUpdateCity, type CityNest } from './cities'
 export { type HTTPError } from './error'

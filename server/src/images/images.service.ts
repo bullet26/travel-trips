@@ -10,6 +10,7 @@ import { EntityType } from './types/EntityType';
 import { validateEntityExists } from './utils/entityValidator.util';
 import { SetImgToEntityDto, CreateImageDto, UploadFileDto } from './dto';
 import { ensureEntityExists, ensureId } from 'src/utils';
+import { Transaction } from 'sequelize';
 
 @Injectable()
 export class ImagesService {
@@ -33,25 +34,24 @@ export class ImagesService {
     };
   }
 
-  async create(createImageDto: CreateImageDto) {
+  async create(createImageDto: CreateImageDto, transaction?: Transaction) {
     const { entityType, entityId, file } = createImageDto;
 
     ensureId(entityId);
-    if (!entityType) {
-      throw new BadRequestException(
-        `Set entityType (one of: ${Object.values(EntityType).join(', ')}) for link`,
-      );
-    }
+
     await validateEntityExists(entityType, entityId);
 
     const { url, cloudinaryPublicId } = await this.upload({ file });
 
-    return this.imageModel.create({
-      url,
-      cloudinaryPublicId,
-      entityType: entityType,
-      entityId,
-    });
+    return this.imageModel.create(
+      {
+        url,
+        cloudinaryPublicId,
+        entityType: entityType,
+        entityId,
+      },
+      { transaction },
+    );
   }
 
   async findAll() {

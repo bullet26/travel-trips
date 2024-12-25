@@ -3,3 +3,9 @@ export interface ICreateTag {
 }
 
 export type IUpdateTag = Partial<ICreateTag>
+
+export interface TagNest extends ICreateTag {
+  id: number
+  createdAt: Date
+  updatedAt: Date
+}

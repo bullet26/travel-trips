@@ -39,10 +39,11 @@ export class WishlistsService {
     return wishlists;
   }
 
-  async findById(id: number) {
+  async findById(id: number, transaction?: Transaction) {
     ensureId(id);
 
     const wishlist = await this.wishlistModel.findByPk(id, {
+      transaction,
       include: {
         model: Place,
         attributes: ['name', 'description'],
@@ -55,20 +56,14 @@ export class WishlistsService {
   }
 
   async update(id: number, updateWishlistDto: UpdateWishlistDto) {
-    ensureId(id);
-
-    const wishlist = await this.wishlistModel.findByPk(id);
-    ensureEntityExists({ entity: wishlist, entityName: 'Wishlist', value: id });
+    const wishlist = await this.findById(id);
 
     await wishlist.update(updateWishlistDto);
     return wishlist;
   }
 
   async remove(id: number) {
-    ensureId(id);
-
-    const wishlist = await this.wishlistModel.findByPk(id);
-    ensureEntityExists({ entity: wishlist, entityName: 'Wishlist', value: id });
+    const wishlist = await this.findById(id);
 
     await wishlist.destroy();
     return { message: 'Wishlist was successfully deleted' };
@@ -77,16 +72,9 @@ export class WishlistsService {
   async addPlace(id: number, AddPlaceDto: AddPlaceDto) {
     const { placeId } = AddPlaceDto;
 
-    ensureId(id);
-    ensureId(placeId);
-
-    const wishlist = await this.wishlistModel.findByPk(id, {
-      include: [Place],
-    });
-    ensureEntityExists({ entity: wishlist, entityName: 'Wishlist', value: id });
+    const wishlist = await this.findById(id);
 
     const place = await this.placesService.findById(placeId);
-    ensureEntityExists({ entity: place, entityName: 'Place', value: placeId });
 
     await wishlist.$add('places', place.id);
     return wishlist;
@@ -95,16 +83,9 @@ export class WishlistsService {
   async removePlace(id: number, AddPlaceDto: AddPlaceDto) {
     const { placeId } = AddPlaceDto;
 
-    ensureId(id);
-    ensureId(placeId);
-
-    const wishlist = await this.wishlistModel.findByPk(id, {
-      include: [Place],
-    });
-    ensureEntityExists({ entity: wishlist, entityName: 'Wishlist', value: id });
+    const wishlist = await this.findById(id);
 
     const place = await this.placesService.findById(placeId);
-    ensureEntityExists({ entity: place, entityName: 'Place', value: placeId });
 
     await wishlist.$remove('places', place.id);
     return wishlist;
@@ -120,15 +101,7 @@ export class WishlistsService {
       await this.wishlistModel.sequelize.transaction();
 
     try {
-      const wishlist = await this.wishlistModel.findByPk(id, {
-        include: [Place],
-        transaction,
-      });
-      ensureEntityExists({
-        entity: wishlist,
-        entityName: 'Wishlist',
-        value: id,
-      });
+      const wishlist = await this.findById(id, transaction);
 
       const trip = await this.tripsService.create(
         {

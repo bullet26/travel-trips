@@ -1,10 +1,10 @@
 'use client'
 
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { Button, Input, InputNumber, Select } from 'antd'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { ICreateCity, CountryNest, CityNest, EntityType } from 'types'
+import { ICreateCity, CountryNest, CityNest, EntityType, ImageAttributesNest } from 'types'
 import { DropZone, ErrorMessage, ImageIEdited, InfoMessage } from 'components'
 import { useTanstackMutation, useTanstackQuery } from 'hooks'
 import { citySchema, transformForSelect } from './utils'
@@ -13,12 +13,13 @@ import s from './Form.module.scss'
 interface CityFormProps {
   mode: 'crete' | 'update'
   id?: number | null
-  initialValues?: CityNest
+  initialValues?: ICreateCity
+  images?: ImageAttributesNest[]
   onSuccess?: () => void
 }
 
 export const CityForm: FC<CityFormProps> = (props) => {
-  const { mode, id, initialValues, onSuccess } = props
+  const { mode, id, initialValues, onSuccess, images = [] } = props
 
   const [infoMsg, setInfoMsg] = useState<string | null>(null)
   const [file, setFile] = useState<string | Blob | null>(null)
@@ -44,13 +45,22 @@ export const CityForm: FC<CityFormProps> = (props) => {
     register,
     control,
     handleSubmit,
-    formState: { errors },
+    reset,
+    formState: { isSubmitSuccessful, errors },
   } = useForm({
     defaultValues: initialValues || {
       name: '',
     },
     resolver: yupResolver(citySchema),
   })
+
+  useEffect(() => {
+    // It's recommended to reset in useEffect as execution order matters
+    if (isSubmitSuccessful) {
+      reset()
+      setFile(null)
+    }
+  }, [isSubmitSuccessful, reset])
 
   const onSubmit: SubmitHandler<ICreateCity> = async (values) => {
     const formData = new FormData()
@@ -68,7 +78,7 @@ export const CityForm: FC<CityFormProps> = (props) => {
 
   return (
     <>
-      {initialValues?.images.map((item) => (
+      {images.map((item) => (
         <ImageIEdited
           key={item.id}
           {...item}

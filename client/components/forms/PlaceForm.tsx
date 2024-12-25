@@ -1,24 +1,25 @@
 'use client'
 
-import { FC, useState } from 'react'
-import { Button, Input, InputNumber, TreeSelect } from 'antd'
+import { FC, useEffect, useState } from 'react'
+import { Button, Input, InputNumber, Select, TreeSelect } from 'antd'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { ICreatePlace, PlaceNest, CountryNest, EntityType } from 'types'
+import { ICreatePlace, PlaceNest, CountryNest, EntityType, ImageAttributesNest } from 'types'
 import { DropZone, ErrorMessage, ImageIEdited, InfoMessage } from 'components'
 import { useTanstackMutation, useTanstackQuery } from 'hooks'
-import { placeSchema, transformForTreeSelect } from './utils'
+import { placeSchema, transformForSelect, transformForTreeSelect } from './utils'
 import s from './Form.module.scss'
 
 interface PlaceFormProps {
   mode: 'crete' | 'update'
   id?: number | null
-  initialValues?: PlaceNest
+  initialValues?: ICreatePlace
+  images?: ImageAttributesNest[]
   onSuccess?: () => void
 }
 
 export const PlaceForm: FC<PlaceFormProps> = (props) => {
-  const { mode, id, initialValues, onSuccess } = props
+  const { mode, id, initialValues, onSuccess, images = [] } = props
 
   const [infoMsg, setInfoMsg] = useState<string | null>(null)
   const [file, setFile] = useState<string | Blob | null>(null)
@@ -27,6 +28,8 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
   const btnText = mode === 'crete' ? 'Create' : 'Update'
 
   const query = useTanstackQuery<CountryNest[]>({ url: 'countries', queryKey: ['countries'] })
+
+  const queryTag = useTanstackQuery<CountryNest[]>({ url: 'tags', queryKey: ['tags'] })
 
   const mutation = useTanstackMutation<PlaceNest>({
     url: 'places',
@@ -44,13 +47,22 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
     register,
     control,
     handleSubmit,
-    formState: { errors },
+    reset,
+    formState: { isSubmitSuccessful, errors },
   } = useForm({
     defaultValues: initialValues || {
       name: '',
     },
     resolver: yupResolver(placeSchema),
   })
+
+  useEffect(() => {
+    // It's recommended to reset in useEffect as execution order matters
+    if (isSubmitSuccessful) {
+      reset()
+      setFile(null)
+    }
+  }, [isSubmitSuccessful, reset])
 
   const onSubmit: SubmitHandler<ICreatePlace> = async (values) => {
     if (file) {
@@ -68,7 +80,7 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
 
   return (
     <>
-      {initialValues?.images.map((item) => (
+      {images.map((item) => (
         <ImageIEdited
           key={item.id}
           {...item}
@@ -80,7 +92,27 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
       ))}
       <form onSubmit={handleSubmit(onSubmit)} className={s.form}>
         <div className={s.dropzoneWrapper}>
-          <DropZone onChange={setFile} />
+          <div className={s.dropZoneTagWrapper}>
+            <DropZone onChange={setFile} />
+            <div>
+              <div className={s.label}>Choose tags</div>
+              <Controller
+                {...register('tagIds')}
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    mode="multiple"
+                    allowClear
+                    style={{ width: '100%' }}
+                    placeholder="Select tags"
+                    options={transformForSelect(queryTag.data)}
+                  />
+                )}
+              />
+              <div className={s.error}>{errors.tagIds?.message}</div>
+            </div>
+          </div>
           <div className={s.inputsWrapper}>
             <div>
               <div className={s.label}>Place name</div>
@@ -116,7 +148,6 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
                   <TreeSelect
                     {...field}
                     style={{ width: '100%' }}
-                    showSearch
                     allowClear
                     placeholder="Choose city"
                     treeData={transformForTreeSelect(query?.data)}
@@ -130,7 +161,13 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
               <Controller
                 {...register('address')}
                 control={control}
-                render={({ field }) => <Input {...field} placeholder="Volodymyrska St, 24" />}
+                render={({ field }) => (
+                  <Input
+                    autoComplete="one-time-code"
+                    {...field}
+                    placeholder="Volodymyrska St, 24"
+                  />
+                )}
               />
               <div className={s.error}>{errors.address?.message}</div>
             </div>

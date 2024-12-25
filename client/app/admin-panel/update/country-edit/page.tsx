@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { Card, Drawer } from 'antd'
 import { useTanstackQuery } from 'hooks/useTanstackQuery'
-import { CountryNest } from 'types'
+import { CountryNest, ICreateCountry, ImageAttributesNest } from 'types'
 import { DeleteOutlined } from '@ant-design/icons'
 import { useTanstackMutation } from 'hooks'
 import { CountryForm, InfoMessage } from 'components'
@@ -12,7 +12,8 @@ const Countries = () => {
   const [infoMsg, setInfoMsg] = useState<string | null>(null)
   const [openDrawer, setDrawerStatus] = useState(false)
   const [itemId, setItemId] = useState<null | number>(null)
-  const [initialValues, setInitialValues] = useState<undefined | CountryNest>(undefined)
+  const [initialValues, setInitialValues] = useState<undefined | ICreateCountry>(undefined)
+  const [images, setImages] = useState<undefined | ImageAttributesNest[]>(undefined)
 
   const query = useTanstackQuery<CountryNest[]>({ url: 'countries', queryKey: ['countries'] })
 
@@ -31,7 +32,12 @@ const Countries = () => {
     setDrawerStatus(true)
     setItemId(id)
     const values = query.data?.find((item) => item.id === id)
-    setInitialValues(values)
+
+    if (values) {
+      const { name, latitude, longitude, images } = values
+      setInitialValues({ name, latitude, longitude })
+      setImages(images)
+    }
   }
 
   const onDelete = (id: number) => {
@@ -56,7 +62,13 @@ const Countries = () => {
         ))}
       </div>
       <Drawer title="Update country" onClose={onClose} open={openDrawer} width={800} destroyOnClose>
-        <CountryForm mode="update" id={itemId} initialValues={initialValues} onSuccess={onClose} />
+        <CountryForm
+          mode="update"
+          id={itemId}
+          initialValues={initialValues}
+          images={images}
+          onSuccess={onClose}
+        />
       </Drawer>
       <InfoMessage msg={infoMsg} />
     </>

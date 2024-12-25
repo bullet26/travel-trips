@@ -1,3 +1,5 @@
+import { ImageAttributesNest } from 'types'
+
 export interface ICreateCity {
   countryId: number
   name: string
@@ -12,5 +14,5 @@ export interface CityNest extends ICreateCity {
   id: number
   createdAt: Date
   updatedAt: Date
-  images: { url: string; id: number }[]
+  images: ImageAttributesNest[]
 }

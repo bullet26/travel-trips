@@ -1,6 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { CreatePlaceDto, UpdatePlaceDto, AddTagDto } from './dto';
+import {
+  CreatePlaceDto,
+  UpdatePlaceDto,
+  AddTagDto,
+  UpdateTagsDto,
+} from './dto';
 import { Place } from './models/place.model';
 import { Tag, TagsService } from 'src/tags';
 import { Images, EntityType, ImagesService } from 'src/images';
@@ -17,18 +26,45 @@ export class PlacesService {
   ) {}
 
   async create(createPlaceDto: CreatePlaceDto) {
-    const { file, ...placeData } = createPlaceDto;
+    const { file, tagIds, ...placeData } = createPlaceDto;
 
-    const place = await this.placeModel.create(placeData);
+    const transaction: Transaction =
+      await this.placeModel.sequelize.transaction();
 
-    if (!!file) {
-      await this.imagesService.create({
-        entityType: EntityType.PLACE,
-        entityId: place.id,
-        file,
-      });
+    try {
+      const place = await this.placeModel.create(placeData, { transaction });
+
+      if (tagIds?.length) {
+        tagIds.forEach((item) => ensureId(item));
+
+        const validTags = await this.tagService.findGroupByIds(tagIds);
+        if (validTags.length !== tagIds.length) {
+          throw new BadRequestException('Some tag id do not exist.');
+        }
+
+        await place.$add('tags', tagIds, { transaction });
+      }
+
+      if (!!file) {
+        await this.imagesService.create(
+          {
+            entityType: EntityType.PLACE,
+            entityId: place.id,
+            file,
+          },
+          transaction,
+        );
+      }
+
+      await transaction.commit();
+
+      return place;
+    } catch (error) {
+      await transaction.rollback();
+      throw new InternalServerErrorException(
+        error.message || 'Failed to create: Internal server error',
+      );
     }
-    return place;
   }
 
   async findAll() {
@@ -69,7 +105,7 @@ export class PlacesService {
         {
           model: Tag,
           through: { attributes: [] }, // Убираем промежуточные атрибуты
-          attributes: ['name'],
+          attributes: ['name', 'id'],
           required: false, // LEFT JOIN вместо INNER JOIN
         },
         {
@@ -80,7 +116,7 @@ export class PlacesService {
         },
         {
           model: City,
-          attributes: ['name'],
+          attributes: ['name', 'id'],
           required: false, // LEFT JOIN вместо INNER JOIN
         },
       ],
@@ -100,10 +136,7 @@ export class PlacesService {
   }
 
   async update(id: number, updatePlaceDto: UpdatePlaceDto) {
-    ensureId(id);
-
-    const place = await this.placeModel.findByPk(id);
-    ensureEntityExists({ entity: place, entityName: 'Place', value: id });
+    const place = await this.findById(id);
 
     const { file, ...placeData } = updatePlaceDto;
 
@@ -121,26 +154,59 @@ export class PlacesService {
   }
 
   async remove(id: number) {
-    ensureId(id);
-
-    const place = await this.placeModel.findByPk(id);
-    ensureEntityExists({ entity: place, entityName: 'Place', value: id });
+    const place = await this.findById(id);
 
     await place.destroy();
     return { message: 'Place was successfully deleted' };
   }
 
+  async updateTags(id: number, UpdateTagsDto: UpdateTagsDto) {
+    const { tagIds } = UpdateTagsDto;
+
+    const transaction: Transaction =
+      await this.placeModel.sequelize.transaction();
+
+    try {
+      tagIds.forEach((item) => ensureId(item));
+
+      const place = await this.findById(id, transaction);
+
+      const currentTagIds = place.tags.map((tag) => tag.id);
+
+      const tagsToAdd = tagIds.filter(
+        (tagId) => !currentTagIds.includes(tagId),
+      );
+      const tagsToRemove = currentTagIds.filter(
+        (tagId) => !tagIds.includes(tagId),
+      );
+
+      if (tagsToAdd.length) {
+        await place.$add('tags', tagsToAdd, { transaction });
+      }
+
+      if (tagsToRemove.length) {
+        await place.$remove('tags', tagsToRemove, { transaction });
+      }
+
+      place.tags = await place.$get('tags', { transaction });
+
+      await transaction.commit();
+
+      return place;
+    } catch (error) {
+      await transaction.rollback();
+      throw new InternalServerErrorException(
+        error.message || 'Failed to update tags: Internal server error',
+      );
+    }
+  }
+
   async addTag(id: number, AddPlaceDto: AddTagDto) {
     const { tagId } = AddPlaceDto;
 
-    ensureId(id);
-    ensureId(tagId);
-
-    const place = await this.placeModel.findByPk(id);
-    ensureEntityExists({ entity: place, entityName: 'Place', value: id });
+    const place = await this.findById(id);
 
     const tag = await this.tagService.findById(tagId);
-    ensureEntityExists({ entity: tag, entityName: 'Tag', value: tagId });
 
     await place.$add('tags', tag.id);
     return place;
@@ -149,14 +215,9 @@ export class PlacesService {
   async removeTag(id: number, AddPlaceDto: AddTagDto) {
     const { tagId } = AddPlaceDto;
 
-    ensureId(id);
-    ensureId(tagId);
-
-    const place = await this.placeModel.findByPk(id);
-    ensureEntityExists({ entity: place, entityName: 'Place', value: id });
+    const place = await this.findById(id);
 
     const tag = await this.tagService.findById(tagId);
-    ensureEntityExists({ entity: tag, entityName: 'Tag', value: tagId });
 
     await place.$remove('tags', tag.id);
     return place;

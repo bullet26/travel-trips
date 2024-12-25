@@ -75,22 +75,14 @@ export class TripsDayService {
   }
 
   async update(id: number, updateTripsDayDto: UpdateTripsDayDto) {
-    ensureId(id);
-
-    const tripDay = await this.tripDayModel.findByPk(id);
-
-    ensureEntityExists({ entity: tripDay, entityName: 'Trip_Day', value: id });
+    const tripDay = await this.findById(id);
 
     await tripDay.update(updateTripsDayDto);
     return tripDay;
   }
 
   async remove(id: number) {
-    ensureId(id);
-
-    const tripDay = await this.tripDayModel.findByPk(id);
-
-    ensureEntityExists({ entity: tripDay, entityName: 'Trip_Day', value: id });
+    const tripDay = await this.findById(id);
 
     await tripDay.destroy();
     return { message: 'Trip_Day was successfully deleted' };
@@ -111,14 +103,9 @@ export class TripsDayService {
   ) {
     const { placeId } = AddPlaceDto;
 
-    ensureId(id);
-    ensureId(placeId);
-
-    const tripDay = await this.tripDayModel.findByPk(id, { transaction });
-    ensureEntityExists({ entity: tripDay, entityName: 'Trip_Day', value: id });
+    const tripDay = await this.findById(id);
 
     const place = await this.placesService.findById(placeId, transaction);
-    ensureEntityExists({ entity: place, entityName: 'Place', value: placeId });
 
     const unassignedPlaces = tripDay.trip.unassignedPlaces.places;
     const isPlaceAlreadyAddedToTrip = unassignedPlaces.some(
@@ -138,14 +125,9 @@ export class TripsDayService {
   async removePlace(id: number, AddPlaceDto: AddPlaceDto) {
     const { placeId } = AddPlaceDto;
 
-    ensureId(id);
-    ensureId(placeId);
-
-    const tripDay = await this.tripDayModel.findByPk(id);
-    ensureEntityExists({ entity: tripDay, entityName: 'Trip_Day', value: id });
+    const tripDay = await this.findById(id);
 
     const place = await this.placesService.findById(placeId);
-    ensureEntityExists({ entity: place, entityName: 'Place', value: placeId });
 
     await tripDay.$remove('places', place.id);
     return tripDay;
@@ -157,37 +139,18 @@ export class TripsDayService {
   ) {
     const { placeId, unassignedPlacesId } = movePlaceToUnassignedPlacesDto;
 
-    ensureId(id);
-    ensureId(placeId);
-    ensureId(unassignedPlacesId);
-
     const transaction: Transaction =
       await this.tripDayModel.sequelize.transaction();
 
     try {
-      const tripDay = await this.tripDayModel.findByPk(id, { transaction });
-      ensureEntityExists({
-        entity: tripDay,
-        entityName: 'Trip_Day',
-        value: id,
-      });
+      const tripDay = await this.findById(id, transaction);
 
       const place = await this.placesService.findById(placeId, transaction);
-      ensureEntityExists({
-        entity: place,
-        entityName: 'Place',
-        value: placeId,
-      });
 
-      const unassignedPlaces = await this.unassignedPlacesService.findById(
+      await this.unassignedPlacesService.findById(
         unassignedPlacesId,
         transaction,
       );
-      ensureEntityExists({
-        entity: unassignedPlaces,
-        entityName: 'Unassigned_Places',
-        value: unassignedPlacesId,
-      });
 
       await tripDay.$remove('places', place.id, { transaction });
       await this.unassignedPlacesService.addPlace(

@@ -86,10 +86,7 @@ export class CitiesService {
   }
 
   async update(id: number, updateCityDto: UpdateCityDto) {
-    ensureId(id);
-
-    const city = await this.cityModel.findByPk(id);
-    ensureEntityExists({ entity: city, entityName: 'City', value: id });
+    const city = await this.findById(id);
 
     const { file, ...cityData } = updateCityDto;
 
@@ -107,10 +104,7 @@ export class CitiesService {
   }
 
   async remove(id: number) {
-    ensureId(id);
-
-    const city = await this.cityModel.findByPk(id);
-    ensureEntityExists({ entity: city, entityName: 'City', value: id });
+    const city = await this.findById(id);
 
     await city.destroy();
     return { message: 'City was successfully deleted' };

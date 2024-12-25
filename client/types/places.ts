@@ -1,3 +1,5 @@
+import { ImageAttributesNest } from 'types'
+
 export interface IAddTag {
   tagId: number
 }
@@ -10,6 +12,7 @@ export interface ICreatePlace {
   address: string
   cityId: number
   file?: string | Blob
+  tagIds?: number[]
 }
 
 export type IUpdatePlace = Partial<ICreatePlace>
@@ -18,7 +21,7 @@ export interface PlaceNest extends ICreatePlace {
   id: number
   createdAt: Date
   updatedAt: Date
-  images: { url: string; id: number }[]
+  images: ImageAttributesNest[]
   tripDayId: number | null
   unassignedPlacesId: number | null
   wishlistId: number | null

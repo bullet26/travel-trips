@@ -30,6 +30,11 @@ export class TagsService {
     return tags;
   }
 
+  async findGroupByIds(ids: number[]) {
+    const tags = await this.tagModel.findAll({ where: { id: ids } });
+    return tags;
+  }
+
   async findById(id: number) {
     ensureId(id);
 
@@ -47,20 +52,14 @@ export class TagsService {
   }
 
   async update(id: number, updateTagDto: UpdateTagDto) {
-    ensureId(id);
-
-    const tag = await this.tagModel.findByPk(id);
-    ensureEntityExists({ entity: tag, entityName: 'Tag', value: id });
+    const tag = await this.findById(id);
 
     await tag.update(updateTagDto);
     return tag;
   }
 
   async remove(id: number) {
-    ensureId(id);
-
-    const tag = await this.tagModel.findByPk(id);
-    ensureEntityExists({ entity: tag, entityName: 'Tag', value: id });
+    const tag = await this.findById(id);
 
     await tag.destroy();
     return { message: 'Tag was successfully deleted' };

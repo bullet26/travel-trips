@@ -88,10 +88,7 @@ export class CountriesService {
   }
 
   async update(id: number, updateCountryDto: UpdateCountryDto) {
-    ensureId(id);
-
-    const country = await this.countryModel.findByPk(id);
-    ensureEntityExists({ entity: country, entityName: 'Country', value: id });
+    const country = await this.findById(id);
 
     const { file, ...countryData } = updateCountryDto;
 
@@ -109,10 +106,7 @@ export class CountriesService {
   }
 
   async remove(id: number) {
-    ensureId(id);
-
-    const country = await this.countryModel.findByPk(id);
-    ensureEntityExists({ entity: country, entityName: 'Country', value: id });
+    const country = await this.findById(id);
 
     await country.destroy();
     return { message: 'Country was successfully deleted' };

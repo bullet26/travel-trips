@@ -25,3 +25,8 @@ export interface ImageNest {
   updatedAt: Date
   url: string
 }
+
+export interface ImageAttributesNest {
+  url: string
+  id: number
+}

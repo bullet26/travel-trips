@@ -12,7 +12,12 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PlacesService } from './places.service';
-import { CreatePlaceDto, UpdatePlaceDto, AddTagDto } from './dto';
+import {
+  CreatePlaceDto,
+  UpdatePlaceDto,
+  AddTagDto,
+  UpdateTagsDto,
+} from './dto';
 import { Roles } from 'src/auth';
 
 @Controller('places')
@@ -47,6 +52,11 @@ export class PlacesController {
   @Get('/city/:cityId')
   findAllByCity(@Param('userId') cityId: string) {
     return this.placesService.findAllByCity(Number(cityId));
+  }
+
+  @Patch('/tag/update/:id')
+  updateTags(@Param('id') id: string, @Body() updateTagsDto: UpdateTagsDto) {
+    return this.placesService.updateTags(Number(id), updateTagsDto);
   }
 
   @Patch('/tag/add/:id')

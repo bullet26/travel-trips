@@ -1,3 +1,5 @@
+import { ImageAttributesNest } from 'types'
+
 export interface ICreateTrip {
   userId: number
   title: string
@@ -7,3 +9,7 @@ export interface ICreateTrip {
 }
 
 export type IUpdateTrip = Partial<ICreateTrip>
+
+export interface TripsNest extends ICreateTrip {
+  images: ImageAttributesNest[]
+}

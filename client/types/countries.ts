@@ -1,3 +1,5 @@
+import { ImageAttributesNest } from 'types'
+
 export interface ICreateCountry {
   name: string
   latitude: number
@@ -10,7 +12,7 @@ export type IUpdateCountry = Partial<ICreateCountry>
 export interface CountryNest {
   name: string
   id: number
-  images: { url: string; id: number }[]
+  images: ImageAttributesNest[]
   latitude: number
   longitude: number
   createdAt: Date

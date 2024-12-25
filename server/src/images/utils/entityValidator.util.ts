@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import { Trip } from 'src/trips/models/trip.model';
 import { Place } from 'src/places';
 import { City } from 'src/cities/models/city.model';
@@ -9,7 +10,11 @@ export async function validateEntityExists(
   entityType: EntityType,
   entityId: number,
 ) {
-  if (entityType === EntityType.TRIP) {
+  if (!entityType) {
+    throw new BadRequestException(
+      `Set entityType (one of: ${Object.values(EntityType).join(', ')}) for link`,
+    );
+  } else if (entityType === EntityType.TRIP) {
     const trip = await Trip.findByPk(entityId);
     ensureEntityExists({ entity: trip, entityName: 'Trip', value: entityId });
   } else if (entityType === EntityType.PLACE) {

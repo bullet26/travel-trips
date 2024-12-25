@@ -1,5 +1,6 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
+  IsArray,
   IsLatitude,
   IsLongitude,
   IsNumber,
@@ -31,4 +32,12 @@ export class CreatePlaceDto {
 
   @IsOptional()
   readonly file?: Express.Multer.File;
+
+  @IsOptional()
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.split(',').map((v) => Number(v)) : value,
+  )
+  @IsArray()
+  @IsNumber({}, { each: true })
+  readonly tagIds?: number[];
 }

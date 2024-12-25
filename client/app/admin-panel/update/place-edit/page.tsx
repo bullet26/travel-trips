@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { Button, Card, Divider, Drawer, Tabs } from 'antd'
 import { useTanstackQuery } from 'hooks/useTanstackQuery'
-import { CountryNest, PlaceNest } from 'types'
+import { CountryNest, ICreatePlace, ImageAttributesNest, PlaceNest } from 'types'
 import { DeleteOutlined } from '@ant-design/icons'
 import clsx from 'clsx'
 import { useTanstackMutation } from 'hooks'
@@ -15,7 +15,8 @@ const Places = () => {
   const [itemId, setItemId] = useState<null | number>(null)
   const [countryId, setICountryId] = useState<null | number>(null)
   const [cityId, setICityId] = useState<null | number>(null)
-  const [initialValues, setInitialValues] = useState<undefined | PlaceNest>(undefined)
+  const [initialValues, setInitialValues] = useState<undefined | ICreatePlace>(undefined)
+  const [images, setImages] = useState<undefined | ImageAttributesNest[]>(undefined)
 
   const query = useTanstackQuery<PlaceNest[]>({ url: 'places', queryKey: ['places'] })
 
@@ -39,7 +40,12 @@ const Places = () => {
     setDrawerStatus(true)
     setItemId(id)
     const values = query.data?.find((item) => item.id === id)
-    setInitialValues(values)
+
+    if (values) {
+      const { name, description, latitude, longitude, address, cityId, images } = values
+      setInitialValues({ name, description, latitude, longitude, address, cityId })
+      setImages(images)
+    }
   }
 
   const onDelete = (id: number) => {
@@ -124,7 +130,13 @@ const Places = () => {
       />
 
       <Drawer title="Update city" onClose={onClose} open={openDrawer} width={800} destroyOnClose>
-        <PlaceForm mode="update" id={itemId} initialValues={initialValues} onSuccess={onClose} />
+        <PlaceForm
+          mode="update"
+          id={itemId}
+          initialValues={initialValues}
+          onSuccess={onClose}
+          images={images}
+        />
       </Drawer>
       <InfoMessage msg={infoMsg} />
     </>
