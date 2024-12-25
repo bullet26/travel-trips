@@ -1,13 +1,12 @@
 'use client'
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button, Input } from 'antd'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { ICreateUser, HTTPError, NestAuthTokens } from 'types'
-import { ErrorMessage } from 'components'
 import { fetcher } from 'api'
+import { useContextActions } from 'hooks'
 import s from '@/login/Login.module.scss'
 
 const schema = yup
@@ -19,7 +18,7 @@ const schema = yup
   .required()
 
 export const RegistrationForm = () => {
-  const [error, setError] = useState('')
+  const { setErrorMsg } = useContextActions()
 
   const {
     register,
@@ -51,7 +50,7 @@ export const RegistrationForm = () => {
         )
       }
     } catch (error) {
-      setError((error as HTTPError).message)
+      setErrorMsg((error as HTTPError).message)
     }
   }
 
@@ -92,7 +91,6 @@ export const RegistrationForm = () => {
 
         <Button htmlType="submit">Continue</Button>
       </form>
-      <ErrorMessage msg={error} />
     </>
   )
 }

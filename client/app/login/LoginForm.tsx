@@ -1,14 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button, Input } from 'antd'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { HTTPError, ILoginUser, NestAuthTokens } from 'types'
-import { ErrorMessage } from 'components'
 import { fetcher } from 'api'
+import { useContextActions } from 'hooks'
 import s from './Login.module.scss'
 
 const schema = yup
@@ -22,7 +22,7 @@ const LoginForm = () => {
   const searchParams = useSearchParams()
   const errorNest = searchParams.get('error')
 
-  const [error, setError] = useState('')
+  const { setErrorMsg } = useContextActions()
 
   const {
     register,
@@ -53,9 +53,13 @@ const LoginForm = () => {
         )
       }
     } catch (error) {
-      setError((error as HTTPError).message)
+      setErrorMsg((error as HTTPError).message)
     }
   }
+
+  useEffect(() => {
+    if (errorNest) setErrorMsg(errorNest)
+  }, [errorNest])
 
   return (
     <>
@@ -84,7 +88,6 @@ const LoginForm = () => {
 
         <Button htmlType="submit">Login</Button>
       </form>
-      <ErrorMessage msg={errorNest || error} />
     </>
   )
 }
