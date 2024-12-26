@@ -7,7 +7,9 @@
   position: sticky;
   height: 65px;
   border-bottom: 1px solid $border;
+  background-color: $dark;
   margin-bottom: 25px;
+  z-index: 1000;
 }
 
 .innerWrapper {

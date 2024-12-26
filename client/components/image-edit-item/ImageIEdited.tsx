@@ -1,9 +1,9 @@
 import { CSSProperties, FC } from 'react'
 import Image from 'next/image'
 import { DeleteOutlined } from '@ant-design/icons'
-import { useTanstackMutation } from 'hooks'
-import s from './ImageIEdited.module.scss'
+import { useContextActions, useTanstackMutation } from 'hooks'
 import { EntityType } from 'types'
+import s from './ImageIEdited.module.scss'
 
 interface ImageIEditedProps {
   size: 'small' | 'big'
@@ -19,6 +19,8 @@ interface ImageIEditedProps {
 export const ImageIEdited: FC<ImageIEditedProps> = (props) => {
   const { entityType, entityId, id, url, size, style, onSuccess, additionalQueryKey } = props
 
+  const { setInfoMsg } = useContextActions()
+
   const queryKey = ['images']
   if (additionalQueryKey) {
     queryKey.push(additionalQueryKey)
@@ -28,8 +30,9 @@ export const ImageIEdited: FC<ImageIEditedProps> = (props) => {
     url: 'images',
     method: 'DELETE',
     queryKey,
-    onSuccess: () => {
+    onSuccess: (data) => {
       if (onSuccess) onSuccess()
+      if (data) setInfoMsg(data.message)
     },
   })
 
@@ -47,6 +50,7 @@ export const ImageIEdited: FC<ImageIEditedProps> = (props) => {
         src={url}
         width={width}
         height={height}
+        className={s.image}
         alt={`Picture of the ${entityType}`}
       />
       <div className={s.imageItem} style={{ width: width }}>

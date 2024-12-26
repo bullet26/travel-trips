@@ -26,7 +26,7 @@ export class TagsService {
   }
 
   async findAll() {
-    const tags = await this.tagModel.findAll();
+    const tags = await this.tagModel.findAll({ order: [['name', 'ASC']] });
     return tags;
   }
 

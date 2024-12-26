@@ -26,4 +26,5 @@ export interface PlaceNest extends ICreatePlace {
   tripDayId: number | null
   unassignedPlacesId: number | null
   wishlistId: number | null
+  city?: { id: number; name: string }
 }

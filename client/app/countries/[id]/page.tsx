@@ -1,17 +1,44 @@
 import { Metadata } from 'next'
-import { IDParams } from 'types'
+import { fetcherServer } from 'api'
+import { CountryNest, IDParams } from 'types'
+import { Card, ImageCarousel } from 'components'
+import s from '../Countries.module.scss'
 
-export async function generateMetadata({ params }: IDParams): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<IDParams>
+}): Promise<Metadata> {
   const id = (await params).id
-  // const post = await getData(id);
+
+  const country = await fetcherServer<CountryNest>({ url: `countries/${id}` })
 
   return {
-    title: `Country ${id}`,
+    title: country.name,
   }
 }
 
-const Country = () => {
-  return <div>1111</div>
+const Country = async ({ params }: { params: Promise<IDParams> }) => {
+  const id = (await params).id
+
+  const country = await fetcherServer<CountryNest>({ url: `countries/${id}` })
+
+  return (
+    <div className={s.itemWrapper}>
+      <div className={s.title}>{country.name}</div>
+      <ImageCarousel images={country.images} />
+      <div className={s.wrapper}>
+        {country.cities?.map((item) => (
+          <Card
+            key={item.id}
+            imgUrl={item.images?.at(0)?.url}
+            title={item.name}
+            routeHref={`/cities/${item.id}`}
+          />
+        ))}
+      </div>
+    </div>
+  )
 }
 
 export default Country

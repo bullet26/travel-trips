@@ -73,6 +73,7 @@ export class TripsService {
         attributes: ['url'],
         required: false, // LEFT JOIN вместо INNER JOIN
       },
+      order: [['startDate', 'DESC']],
     });
     return trips;
   }
@@ -117,6 +118,7 @@ export class TripsService {
         attributes: ['url'],
         required: false, // LEFT JOIN вместо INNER JOIN
       },
+      order: [['startDate', 'DESC']],
     });
     return trips;
   }

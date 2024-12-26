@@ -52,6 +52,7 @@ export class CitiesService {
         attributes: ['url', 'id'],
         required: false, // LEFT JOIN вместо INNER JOIN
       },
+      order: [['name', 'ASC']],
     });
     return cities;
   }
@@ -69,12 +70,20 @@ export class CitiesService {
         },
         {
           model: Place,
-          attributes: ['name'],
+          attributes: ['name', 'id'],
           required: false, // LEFT JOIN вместо INNER JOIN
+          include: [
+            {
+              model: Images,
+              where: { entityType: EntityType.PLACE },
+              attributes: ['url', 'id'],
+              required: false, // LEFT JOIN вместо INNER JOIN
+            },
+          ],
         },
         {
           model: Country,
-          attributes: ['name'],
+          attributes: ['name', 'id'],
           required: false, // LEFT JOIN вместо INNER JOIN
         },
       ],

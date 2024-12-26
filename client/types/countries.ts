@@ -20,5 +20,6 @@ export interface CountryNest {
   cities: {
     id: number
     name: string
+    images?: ImageAttributesNest[]
   }[]
 }

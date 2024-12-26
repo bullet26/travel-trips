@@ -58,6 +58,7 @@ export class CountriesService {
           required: false, // LEFT JOIN вместо INNER JOIN
         },
       ],
+      order: [['name', 'ASC']],
     });
 
     return countries;
@@ -70,7 +71,7 @@ export class CountriesService {
       include: [
         {
           model: Images,
-          where: { entityType: EntityType.CITY },
+          where: { entityType: EntityType.COUNTRY },
           attributes: ['url', 'id'],
           required: false, // LEFT JOIN вместо INNER JOIN
         },
@@ -78,6 +79,14 @@ export class CountriesService {
           model: City,
           attributes: ['name', 'id'],
           required: false, // LEFT JOIN вместо INNER JOIN
+          include: [
+            {
+              model: Images,
+              where: { entityType: EntityType.CITY },
+              attributes: ['url', 'id'],
+              required: false, // LEFT JOIN вместо INNER JOIN
+            },
+          ],
         },
       ],
     });

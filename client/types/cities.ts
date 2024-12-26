@@ -15,4 +15,10 @@ export interface CityNest extends ICreateCity {
   createdAt: Date
   updatedAt: Date
   images: ImageAttributesNest[]
+  country?: { id: number; name: string }
+  places?: {
+    id: number
+    name: string
+    images?: ImageAttributesNest[]
+  }[]
 }

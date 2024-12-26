@@ -28,14 +28,19 @@ export class WishlistsService {
   }
 
   async findAll() {
-    const wishlists = await this.wishlistModel.findAll();
+    const wishlists = await this.wishlistModel.findAll({
+      order: [['name', 'ASC']],
+    });
     return wishlists;
   }
 
   async findAllByUser(userId: number) {
     ensureId(userId);
 
-    const wishlists = await this.wishlistModel.findAll({ where: { userId } });
+    const wishlists = await this.wishlistModel.findAll({
+      where: { userId },
+      order: [['name', 'ASC']],
+    });
     return wishlists;
   }
 

@@ -88,7 +88,13 @@ export class PlacesService {
           attributes: ['url', 'id'],
           required: false, // LEFT JOIN вместо INNER JOIN
         },
+        {
+          model: City,
+          attributes: ['name', 'id'],
+          required: false, // LEFT JOIN вместо INNER JOIN
+        },
       ],
+      order: [['name', 'ASC']],
     });
     return places;
   }
@@ -112,6 +118,7 @@ export class PlacesService {
           required: false, // LEFT JOIN вместо INNER JOIN
         },
       ],
+      order: [['name', 'ASC']],
     });
     return places;
   }
@@ -150,6 +157,7 @@ export class PlacesService {
   async findAllByWishlistId(wishlistId: number, transaction?: Transaction) {
     const places = await this.placeModel.findAll({
       where: { wishlistId },
+      order: [['name', 'ASC']],
       transaction,
     });
     return places;
