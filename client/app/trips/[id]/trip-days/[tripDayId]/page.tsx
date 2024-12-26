@@ -8,10 +8,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const tripDayId = (await params).tripDayId
 
-  const tag = await fetcherServer<any>({ url: `tags/${tripDayId}` })
+  // const tag = await fetcherServer<any>({ url: `tags/${tripDayId}` })
 
   return {
-    title: tag.name,
+    title: tripDayId,
   }
 }
 

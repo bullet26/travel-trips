@@ -9,10 +9,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const id = (await params).id
 
-  const tag = await fetcherServer<any>({ url: `tags/${id}` })
+  // const tag = await fetcherServer<any>({ url: `tags/${id}` })
 
   return {
-    title: tag.name,
+    title: id,
   }
 }
 
