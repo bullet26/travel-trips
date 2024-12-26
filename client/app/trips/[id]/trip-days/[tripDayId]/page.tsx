@@ -1,3 +1,4 @@
+import { fetcherServer } from 'api'
 import { Metadata } from 'next'
 
 export async function generateMetadata({
@@ -7,10 +8,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const tripDayId = (await params).tripDayId
 
-  // const post = await getData(tripDayId);
+  const tag = await fetcherServer<any>({ url: `tags/${tripDayId}` })
 
   return {
-    title: `TripDay ${tripDayId}`,
+    title: tag.name,
   }
 }
 

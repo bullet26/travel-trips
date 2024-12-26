@@ -1,12 +1,18 @@
+import { fetcherServer } from 'api'
 import { Metadata } from 'next'
 import { IDParams } from 'types'
 
-export async function generateMetadata({ params }: IDParams): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<IDParams>
+}): Promise<Metadata> {
   const id = (await params).id
-  // const post = await getData(id);
+
+  const tag = await fetcherServer<any>({ url: `tags/${id}` })
 
   return {
-    title: `Wishlist ${id}`,
+    title: tag.name,
   }
 }
 
