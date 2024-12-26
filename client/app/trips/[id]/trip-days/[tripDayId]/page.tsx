@@ -1,4 +1,4 @@
-import { fetcherServer } from 'api'
+// import { fetcherServer } from 'api'
 import { Metadata } from 'next'
 
 export async function generateMetadata({
