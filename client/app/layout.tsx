@@ -1,3 +1,4 @@
+import '@ant-design/v5-patch-for-react-19'
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
