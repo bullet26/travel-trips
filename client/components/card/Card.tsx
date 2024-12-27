@@ -31,7 +31,9 @@ export const Card = (props: CardProps) => {
   return (
     <Link href={routeHref}>
       <AntdCard hoverable className={s.card} cover={BookCover}>
+        {/* <Tooltip title={title}> */}
         <Meta title={title} />
+        {/* </Tooltip> */}
       </AntdCard>
     </Link>
   )

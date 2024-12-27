@@ -4,6 +4,7 @@ import { CreateTagDto, UpdateTagDto } from './dto';
 import { Tag } from './models/tag.model';
 import { Place } from 'src/places';
 import { ensureEntityExists, ensureId } from 'src/utils';
+import { EntityType, Images } from 'src/images';
 
 @Injectable()
 export class TagsService {
@@ -42,8 +43,16 @@ export class TagsService {
       include: {
         model: Place,
         through: { attributes: [] }, // Убираем промежуточные атрибуты
-        attributes: ['name', 'description'],
+        attributes: ['name', 'id'],
         required: false, // LEFT JOIN вместо INNER JOIN
+        include: [
+          {
+            model: Images,
+            where: { entityType: EntityType.PLACE },
+            attributes: ['url', 'id'],
+            required: false, // LEFT JOIN вместо INNER JOIN
+          },
+        ],
       },
     });
     ensureEntityExists({ entity: tag, entityName: 'Tag', value: id });
