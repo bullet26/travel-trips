@@ -5,7 +5,7 @@ import { FTSInputs } from './FTSInputs'
 import s from '../Form.module.scss'
 
 interface FTSModuleProps<T extends FieldValues> {
-  control: Control<T, any>
+  control: Control<T>
   errors: FieldErrors<T>
 }
 
