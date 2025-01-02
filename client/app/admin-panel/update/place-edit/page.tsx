@@ -47,7 +47,18 @@ const Places = () => {
     const values = query.data?.find((item) => item.id === id)
 
     if (values) {
-      const { name, description, latitude, longitude, address, cityId, images, tags } = values
+      const {
+        name,
+        description,
+        latitude,
+        longitude,
+        address,
+        cityId,
+        images,
+        tags,
+        synonyms,
+        translations,
+      } = values
       setInitialValues({
         name,
         description,
@@ -56,6 +67,8 @@ const Places = () => {
         address,
         cityId,
         tagIds: tags?.map(({ id }) => id),
+        synonyms,
+        translations,
       })
       setImages(images)
     }

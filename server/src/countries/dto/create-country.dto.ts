@@ -1,5 +1,12 @@
 import { Type } from 'class-transformer';
-import { IsLatitude, IsLongitude, IsOptional, IsString } from 'class-validator';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsLatitude,
+  IsLongitude,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateCountryDto {
   @IsString()
@@ -15,4 +22,12 @@ export class CreateCountryDto {
 
   @IsOptional()
   readonly file?: Express.Multer.File;
+
+  @IsArray()
+  @ArrayNotEmpty()
+  translations: string[];
+
+  @IsOptional()
+  @IsArray()
+  synonyms: string[];
 }

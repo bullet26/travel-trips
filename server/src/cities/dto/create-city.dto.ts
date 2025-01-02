@@ -1,5 +1,7 @@
 import { Type } from 'class-transformer';
 import {
+  ArrayNotEmpty,
+  IsArray,
   IsLatitude,
   IsLongitude,
   IsNumber,
@@ -25,4 +27,12 @@ export class CreateCityDto {
 
   @IsOptional()
   readonly file?: Express.Multer.File;
+
+  @IsArray()
+  @ArrayNotEmpty()
+  translations: string[];
+
+  @IsOptional()
+  @IsArray()
+  synonyms: string[];
 }

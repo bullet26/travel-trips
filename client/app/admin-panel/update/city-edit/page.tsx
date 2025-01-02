@@ -46,8 +46,8 @@ const Cities = () => {
     const values = query.data?.find((item) => item.id === id)
 
     if (values) {
-      const { countryId, name, latitude, longitude, images } = values
-      setInitialValues({ countryId, name, latitude, longitude })
+      const { countryId, name, latitude, longitude, images, synonyms, translations } = values
+      setInitialValues({ countryId, name, latitude, longitude, translations, synonyms })
       setImages(images)
     }
   }

@@ -8,6 +8,7 @@ import { ICreateCountry, CountryNest, EntityType, ImageAttributesNest } from 'ty
 import { DropZone, ImageIEdited } from 'components'
 import { useContextActions, useTanstackMutation } from 'hooks'
 import { countrySchema } from './utils'
+import { FTSModule } from './fts'
 import s from './Form.module.scss'
 
 interface CountryFormProps {
@@ -45,7 +46,6 @@ export const CountryForm: FC<CountryFormProps> = (props) => {
   }, [mutation.error?.message])
 
   const {
-    register,
     control,
     handleSubmit,
     reset,
@@ -53,6 +53,7 @@ export const CountryForm: FC<CountryFormProps> = (props) => {
   } = useForm({
     defaultValues: initialValues || {
       name: '',
+      translations: [''],
     },
     resolver: yupResolver(countrySchema),
   })
@@ -69,7 +70,11 @@ export const CountryForm: FC<CountryFormProps> = (props) => {
     const formData = new FormData()
 
     Object.entries(values).forEach(([key, value]) => {
-      formData.set(key, value)
+      if (Array.isArray(value)) {
+        value.forEach((v) => formData.append(`${key}[]`, v))
+      } else {
+        formData.set(key, value)
+      }
     })
 
     if (file) {
@@ -98,7 +103,7 @@ export const CountryForm: FC<CountryFormProps> = (props) => {
             <div>
               <div className={s.label}>Country name</div>
               <Controller
-                {...register('name')}
+                name="name"
                 control={control}
                 render={({ field }) => <Input {...field} placeholder="Ukraine" />}
               />
@@ -110,7 +115,7 @@ export const CountryForm: FC<CountryFormProps> = (props) => {
                 <div>
                   <div className={s.label}>Latitude</div>
                   <Controller
-                    {...register('latitude')}
+                    name="latitude"
                     control={control}
                     render={({ field }) => (
                       <InputNumber {...field} controls={false} placeholder="50.450001" />
@@ -121,7 +126,7 @@ export const CountryForm: FC<CountryFormProps> = (props) => {
                 <div>
                   <div className={s.label}>Longitude</div>
                   <Controller
-                    {...register('longitude')}
+                    name="longitude"
                     control={control}
                     render={({ field }) => (
                       <InputNumber {...field} controls={false} placeholder="30.523333" />
@@ -132,6 +137,7 @@ export const CountryForm: FC<CountryFormProps> = (props) => {
               </div>
               <Button shape="round">Choose on map</Button>
             </div>
+            <FTSModule<ICreateCountry> control={control} errors={errors} />
           </div>
         </div>
         <Button htmlType="submit" disabled={mutation.isPending}>

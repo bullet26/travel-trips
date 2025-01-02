@@ -8,6 +8,7 @@ import { ICreatePlace, PlaceNest, CountryNest, EntityType, ImageAttributesNest }
 import { DropZone, ImageIEdited } from 'components'
 import { useContextActions, useTanstackMutation, useTanstackQuery } from 'hooks'
 import { placeSchema, transformForSelect, transformForTreeSelect } from './utils'
+import { FTSModule } from './fts'
 import s from './Form.module.scss'
 
 interface PlaceFormProps {
@@ -49,7 +50,6 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
   }, [mutation.error?.message])
 
   const {
-    register,
     control,
     handleSubmit,
     reset,
@@ -57,6 +57,7 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
   } = useForm({
     defaultValues: initialValues || {
       name: '',
+      translations: [''],
     },
     resolver: yupResolver(placeSchema),
   })
@@ -106,7 +107,7 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
             <div>
               <div className={s.label}>Choose tags</div>
               <Controller
-                {...register('tagIds')}
+                name="tagIds"
                 control={control}
                 render={({ field }) => (
                   <Select
@@ -126,7 +127,7 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
             <div>
               <div className={s.label}>Place name</div>
               <Controller
-                {...register('name')}
+                name="name"
                 control={control}
                 render={({ field }) => <Input {...field} placeholder="Saint Sophia Cathedral" />}
               />
@@ -135,7 +136,7 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
             <div>
               <div className={s.label}>Description</div>
               <Controller
-                {...register('description')}
+                name="description"
                 control={control}
                 render={({ field }) => (
                   <Input.TextArea
@@ -151,7 +152,7 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
             <div>
               <div className={s.label}>Choose city</div>
               <Controller
-                {...register('cityId')}
+                name="cityId"
                 control={control}
                 render={({ field }) => (
                   <TreeSelect
@@ -168,7 +169,7 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
             <div>
               <div className={s.label}>Place address</div>
               <Controller
-                {...register('address')}
+                name="address"
                 control={control}
                 render={({ field }) => (
                   <Input
@@ -186,7 +187,7 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
                 <div>
                   <div className={s.label}>Latitude</div>
                   <Controller
-                    {...register('latitude')}
+                    name="latitude"
                     control={control}
                     render={({ field }) => (
                       <InputNumber {...field} controls={false} placeholder="50.450001" />
@@ -197,7 +198,7 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
                 <div>
                   <div className={s.label}>Longitude</div>
                   <Controller
-                    {...register('longitude')}
+                    name="longitude"
                     control={control}
                     render={({ field }) => (
                       <InputNumber {...field} controls={false} placeholder="30.523333" />
@@ -208,6 +209,7 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
               </div>
               <Button shape="round">Choose on map</Button>
             </div>
+            <FTSModule<ICreatePlace> control={control} errors={errors} />
           </div>
         </div>
         <Button htmlType="submit" disabled={mutation.isPending}>

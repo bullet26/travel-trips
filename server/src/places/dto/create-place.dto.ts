@@ -1,5 +1,6 @@
 import { Transform, Type } from 'class-transformer';
 import {
+  ArrayNotEmpty,
   IsArray,
   IsLatitude,
   IsLongitude,
@@ -39,6 +40,14 @@ export class CreatePlaceDto {
   @IsArray()
   @IsNumber({}, { each: true })
   readonly tagIds?: string[] | string;
+
+  @IsArray()
+  @ArrayNotEmpty()
+  translations: string[];
+
+  @IsOptional()
+  @IsArray()
+  synonyms: string[];
 }
-// данные в formData всегла строки, а id должны быть number[], поэтому сначала преобразов данные через Transform, а потом провкряем
+//tagIds- данные в formData всегла строки, а id должны быть number[], поэтому сначала преобразов данные через Transform, а потом провкряем
 // на фроонте должен формироваться string[], но кейс string тоже обрабатывается

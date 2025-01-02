@@ -5,16 +5,15 @@ export interface ICreateCountry {
   latitude: number
   longitude: number
   file?: string | Blob
+  translations: string[]
+  synonyms?: string[]
 }
 
 export type IUpdateCountry = Partial<ICreateCountry>
 
-export interface CountryNest {
-  name: string
+export interface CountryNest extends ICreateCountry {
   id: number
   images: ImageAttributesNest[]
-  latitude: number
-  longitude: number
   createdAt: Date
   updatedAt: Date
   cities: {

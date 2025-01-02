@@ -21,6 +21,13 @@
   row-gap: 25px;
 }
 
+.inputREmoveWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: 10px;
+}
+
 .inputsWrapper {
   flex: 1;
 }

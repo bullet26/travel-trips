@@ -21,6 +21,8 @@ export const countrySchema = yup
     name: yup.string().min(4).required(),
     latitude: yup.number().min(-90).max(90).required(),
     longitude: yup.number().min(-180).max(180).required(),
+    translations: yup.array().of(yup.string().min(4).required()).min(1).required(),
+    synonyms: yup.array().of(yup.string().min(4).required()).optional(),
   })
   .required()
 
@@ -30,6 +32,8 @@ export const citySchema = yup
     name: yup.string().min(4).required(),
     latitude: yup.number().min(-90).max(90).required(),
     longitude: yup.number().min(-180).max(180).required(),
+    translations: yup.array().of(yup.string().min(4).required()).min(1).required(),
+    synonyms: yup.array().of(yup.string().min(4).required()).optional(),
   })
   .required()
 
@@ -42,6 +46,8 @@ export const placeSchema = yup
     latitude: yup.number().min(-90).max(90).required(),
     longitude: yup.number().min(-180).max(180).required(),
     tagIds: yup.array().of(yup.number().integer().positive().required()).optional(),
+    translations: yup.array().of(yup.string().min(4).required()).min(1).required(),
+    synonyms: yup.array().of(yup.string().min(4).required()).optional(),
   })
   .required()
 

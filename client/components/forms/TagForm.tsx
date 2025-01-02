@@ -41,7 +41,6 @@ export const TagForm: FC<TagFormProps> = (props) => {
   }, [mutation.error?.message])
 
   const {
-    register,
     control,
     handleSubmit,
     reset,
@@ -71,7 +70,7 @@ export const TagForm: FC<TagFormProps> = (props) => {
           <div>
             <div className={s.label}>Tag name</div>
             <Controller
-              {...register('name')}
+              name="name"
               control={control}
               render={({ field }) => <Input {...field} placeholder="baroque" />}
             />
