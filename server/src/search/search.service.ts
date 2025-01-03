@@ -33,7 +33,6 @@ export class SearchService {
         limit,
       },
     });
-    console.log(results);
 
     return results;
   }

@@ -57,7 +57,7 @@ export class CitiesService {
 
   async findAll() {
     const cities = await this.cityModel.findAll({
-      attributes: { exclude: ['tsvectorField'] },
+      attributes: { exclude: ['tsvector_field'] },
       include: {
         model: Images,
         where: { entityType: EntityType.CITY },
@@ -73,7 +73,7 @@ export class CitiesService {
     ensureId(id);
 
     const city = await this.cityModel.findByPk(id, {
-      attributes: { exclude: ['tsvectorField'] },
+      attributes: { exclude: ['tsvector_field'] },
       include: [
         {
           model: Images,

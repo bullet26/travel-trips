@@ -56,7 +56,7 @@ export class CountriesService {
 
   async findAll() {
     const countries = await this.countryModel.findAll({
-      attributes: { exclude: ['tsvectorField'] },
+      attributes: { exclude: ['tsvector_field'] },
       include: [
         {
           model: Images,
@@ -80,7 +80,7 @@ export class CountriesService {
     ensureId(id);
 
     const country = await this.countryModel.findByPk(id, {
-      attributes: { exclude: ['tsvectorField'] },
+      attributes: { exclude: ['tsvector_field'] },
       include: [
         {
           model: Images,

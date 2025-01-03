@@ -93,7 +93,7 @@ export class PlacesService {
 
   async findAll() {
     const places = await this.placeModel.findAll({
-      attributes: { exclude: ['tsvectorField'] },
+      attributes: { exclude: ['tsvector_field'] },
       include: [
         {
           model: Tag,
@@ -123,7 +123,7 @@ export class PlacesService {
 
     const places = await this.placeModel.findAll({
       where: { cityId },
-      attributes: { exclude: ['tsvectorField'] },
+      attributes: { exclude: ['tsvector_field'] },
       include: [
         {
           model: Tag,
@@ -148,7 +148,7 @@ export class PlacesService {
 
     const place = await this.placeModel.findByPk(id, {
       transaction,
-      attributes: { exclude: ['tsvectorField'] },
+      attributes: { exclude: ['tsvector_field'] },
       include: [
         {
           model: Tag,
@@ -178,7 +178,7 @@ export class PlacesService {
   async findAllByWishlistId(wishlistId: number, transaction?: Transaction) {
     const places = await this.placeModel.findAll({
       where: { wishlistId },
-      attributes: { exclude: ['tsvectorField'] },
+      attributes: { exclude: ['tsvector_field'] },
       order: [['name', 'ASC']],
       transaction,
     });
