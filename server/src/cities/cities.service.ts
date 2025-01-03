@@ -6,7 +6,12 @@ import { Images } from 'src/images/models/image.model';
 import { EntityType } from 'src/images/types/EntityType';
 import { Place } from 'src/places/models/place.model';
 import { Country } from 'src/countries/models/country.model';
-import { ensureEntityExists, ensureId } from 'src/utils';
+import {
+  ensureEntityExists,
+  ensureId,
+  generateTsvector,
+  shouldUpdateTsvector,
+} from 'src/utils';
 import { ImagesService } from 'src/images';
 
 @Injectable()
@@ -29,9 +34,15 @@ export class CitiesService {
       );
     }
 
-    const { file, ...cityData } = createCityDto;
+    const { file, name, translations, ...cityData } = createCityDto;
+    const tsvectorField = await generateTsvector({ name, translations });
 
-    const city = await this.cityModel.create(cityData);
+    const city = await this.cityModel.create({
+      ...cityData,
+      name,
+      translations,
+      tsvectorField,
+    });
 
     if (!!file) {
       await this.imagesService.create({
@@ -46,6 +57,7 @@ export class CitiesService {
 
   async findAll() {
     const cities = await this.cityModel.findAll({
+      attributes: { exclude: ['tsvectorField'] },
       include: {
         model: Images,
         where: { entityType: EntityType.CITY },
@@ -61,6 +73,7 @@ export class CitiesService {
     ensureId(id);
 
     const city = await this.cityModel.findByPk(id, {
+      attributes: { exclude: ['tsvectorField'] },
       include: [
         {
           model: Images,
@@ -97,9 +110,16 @@ export class CitiesService {
   async update(id: number, updateCityDto: UpdateCityDto) {
     const city = await this.findById(id);
 
-    const { file, ...cityData } = updateCityDto;
+    const { file, name, translations, ...cityData } = updateCityDto;
+    let tsvectorField = city.tsvectorField;
 
-    await city.update(cityData);
+    if (shouldUpdateTsvector({ name, translations, itemFromDB: city })) {
+      tsvectorField = await generateTsvector({
+        name: name || city.name,
+        translations: translations || city.translations,
+      });
+    }
+    await city.update({ ...cityData, name, translations, tsvectorField });
 
     if (!!file) {
       await this.imagesService.create({

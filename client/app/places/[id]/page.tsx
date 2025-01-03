@@ -31,10 +31,15 @@ const Place = async ({ params }: { params: Promise<IDParams> }) => {
         <span>{place.name}</span>,&nbsp;
         <Link href={`/cities/${place.city?.id}`}>{place.city?.name}</Link>
       </div>
+      {place.translations.map((item) => (
+        <Tag color="red" key={item} bordered={false}>
+          <div>#{item}</div>
+        </Tag>
+      ))}
       <ImageCarousel images={place.images} />
       {place.tags?.map(({ id, name }) => (
         <Link href={`/tags/${id}`} key={id}>
-          <Tag color="red" bordered={false}>
+          <Tag color="red-inverse" bordered={false}>
             <div>#{name}</div>
           </Tag>
         </Link>

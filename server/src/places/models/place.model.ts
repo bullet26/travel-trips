@@ -24,6 +24,8 @@ interface PlaceCreationAttrs {
   longitude: number;
   address: string;
   cityId: number;
+  translations: string[];
+  tsvectorField?: string;
 }
 
 @Table({ tableName: 'place' })
@@ -50,6 +52,12 @@ export class Place extends Model<Place, PlaceCreationAttrs> {
 
   @Column({ type: DataType.STRING, allowNull: false })
   address: string;
+
+  @Column({ type: DataType.ARRAY(DataType.STRING), allowNull: false })
+  translations: string[];
+
+  @Column({ type: DataType.TSVECTOR, allowNull: false })
+  tsvectorField: string;
 
   @ForeignKey(() => TripDay)
   @Column({ type: DataType.INTEGER })

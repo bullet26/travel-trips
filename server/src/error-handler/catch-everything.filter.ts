@@ -31,6 +31,8 @@ export class CatchEverythingFilter implements ExceptionFilter {
         ? exception.getResponse()
         : { message: 'Internal server error' };
 
+    console.log(exception);
+
     const responseBody = {
       statusCode: httpStatus,
       timestamp: new Date().toISOString(),

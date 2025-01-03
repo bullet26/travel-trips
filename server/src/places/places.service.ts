@@ -18,6 +18,8 @@ import { City } from 'src/cities/models/city.model';
 import {
   ensureEntityExists,
   ensureId,
+  generateTsvector,
+  shouldUpdateTsvector,
   transformArrayInFormData,
 } from 'src/utils';
 
@@ -30,13 +32,29 @@ export class PlacesService {
   ) {}
 
   async create(createPlaceDto: CreatePlaceDto) {
-    const { file, tagIds: tagValues, ...placeData } = createPlaceDto;
+    const {
+      file,
+      name,
+      translations,
+      tagIds: tagValues,
+      ...placeData
+    } = createPlaceDto;
 
     const transaction: Transaction =
       await this.placeModel.sequelize.transaction();
 
     try {
-      const place = await this.placeModel.create(placeData, { transaction });
+      const tsvectorField = await generateTsvector({ name, translations });
+
+      const place = await this.placeModel.create(
+        {
+          ...placeData,
+          name,
+          translations,
+          tsvectorField,
+        },
+        { transaction },
+      );
 
       if (tagValues) {
         const tagIds = transformArrayInFormData(tagValues);
@@ -75,6 +93,7 @@ export class PlacesService {
 
   async findAll() {
     const places = await this.placeModel.findAll({
+      attributes: { exclude: ['tsvectorField'] },
       include: [
         {
           model: Tag,
@@ -104,6 +123,7 @@ export class PlacesService {
 
     const places = await this.placeModel.findAll({
       where: { cityId },
+      attributes: { exclude: ['tsvectorField'] },
       include: [
         {
           model: Tag,
@@ -128,6 +148,7 @@ export class PlacesService {
 
     const place = await this.placeModel.findByPk(id, {
       transaction,
+      attributes: { exclude: ['tsvectorField'] },
       include: [
         {
           model: Tag,
@@ -157,6 +178,7 @@ export class PlacesService {
   async findAllByWishlistId(wishlistId: number, transaction?: Transaction) {
     const places = await this.placeModel.findAll({
       where: { wishlistId },
+      attributes: { exclude: ['tsvectorField'] },
       order: [['name', 'ASC']],
       transaction,
     });
@@ -175,11 +197,28 @@ export class PlacesService {
       await this.placeModel.sequelize.transaction();
 
     try {
-      const { file, tagIds = [], ...placeData } = updatePlaceDto;
+      const {
+        file,
+        name,
+        translations,
+        tagIds = [],
+        ...placeData
+      } = updatePlaceDto;
 
       let place = await this.findById(id, transaction);
+      let tsvectorField = place.tsvectorField;
 
-      await place.update(placeData);
+      if (shouldUpdateTsvector({ name, translations, itemFromDB: place })) {
+        tsvectorField = await generateTsvector({
+          name: name || place.name,
+          translations: translations || place.translations,
+        });
+      }
+
+      await place.update(
+        { ...placeData, name, translations, tsvectorField },
+        { transaction },
+      );
 
       if (!!file) {
         await this.imagesService.create(

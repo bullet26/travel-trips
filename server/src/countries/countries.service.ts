@@ -5,7 +5,12 @@ import { Country } from './models/country.model';
 import { Images } from 'src/images/models/image.model';
 import { EntityType } from 'src/images/types/EntityType';
 import { City } from 'src/cities/models/city.model';
-import { ensureEntityExists, ensureId } from 'src/utils';
+import {
+  ensureEntityExists,
+  ensureId,
+  generateTsvector,
+  shouldUpdateTsvector,
+} from 'src/utils';
 import { ImagesService } from 'src/images';
 
 @Injectable()
@@ -28,9 +33,15 @@ export class CountriesService {
       );
     }
 
-    const { file, ...countryData } = createCountryDto;
+    const { file, name, translations, ...countryData } = createCountryDto;
+    const tsvectorField = await generateTsvector({ name, translations });
 
-    const country = await this.countryModel.create(countryData);
+    const country = await this.countryModel.create({
+      ...countryData,
+      name,
+      translations,
+      tsvectorField,
+    });
 
     if (!!file) {
       await this.imagesService.create({
@@ -45,6 +56,7 @@ export class CountriesService {
 
   async findAll() {
     const countries = await this.countryModel.findAll({
+      attributes: { exclude: ['tsvectorField'] },
       include: [
         {
           model: Images,
@@ -68,6 +80,7 @@ export class CountriesService {
     ensureId(id);
 
     const country = await this.countryModel.findByPk(id, {
+      attributes: { exclude: ['tsvectorField'] },
       include: [
         {
           model: Images,
@@ -99,9 +112,17 @@ export class CountriesService {
   async update(id: number, updateCountryDto: UpdateCountryDto) {
     const country = await this.findById(id);
 
-    const { file, ...countryData } = updateCountryDto;
+    const { file, name, translations, ...countryData } = updateCountryDto;
+    let tsvectorField = country.tsvectorField;
 
-    await country.update(countryData);
+    if (shouldUpdateTsvector({ name, translations, itemFromDB: country })) {
+      tsvectorField = await generateTsvector({
+        name: name || country.name,
+        translations: translations || country.translations,
+      });
+    }
+
+    await country.update({ ...countryData, name, translations, tsvectorField });
 
     if (!!file) {
       await this.imagesService.create({

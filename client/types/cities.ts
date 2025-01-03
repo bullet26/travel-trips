@@ -7,7 +7,6 @@ export interface ICreateCity {
   longitude: number
   file?: string | Blob
   translations: string[]
-  synonyms?: string[]
 }
 
 export type IUpdateCity = Partial<ICreateCity>

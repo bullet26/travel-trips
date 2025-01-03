@@ -1,6 +1,5 @@
-import { Button, Collapse, CollapseProps } from 'antd'
+import { Collapse, CollapseProps } from 'antd'
 import { Control, Controller, FieldError, FieldErrors, FieldValues, Path } from 'react-hook-form'
-import { PlusOutlined } from '@ant-design/icons'
 import { FTSInputs } from './FTSInputs'
 import s from '../Form.module.scss'
 
@@ -24,46 +23,7 @@ export const FTSModule = <T extends FieldValues>(props: FTSModuleProps<T>) => {
             render={({ field }) => (
               <>
                 {field?.value?.map((_item: string, index: number) => (
-                  <FTSInputs
-                    key={index}
-                    type="translations"
-                    index={index}
-                    field={field}
-                    errors={errors}
-                  />
-                ))}
-              </>
-            )}
-          />
-          <div className={s.error}>{(errors.translations as FieldError)?.message}</div>
-        </div>
-      ),
-    },
-    {
-      key: '2',
-      label: <div className={s.label}>Synonyms</div>,
-      children: (
-        <div>
-          <Controller
-            name={'synonyms' as Path<T>}
-            control={control}
-            render={({ field }) => (
-              <>
-                {!field.value?.length && (
-                  <Button
-                    type="dashed"
-                    onClick={() => field.onChange([''])}
-                    icon={<PlusOutlined />}
-                  />
-                )}
-                {field?.value?.map((_item: string, index: number) => (
-                  <FTSInputs
-                    key={index}
-                    type="synonyms"
-                    index={index}
-                    field={field}
-                    errors={errors}
-                  />
+                  <FTSInputs key={index} index={index} field={field} errors={errors} />
                 ))}
               </>
             )}

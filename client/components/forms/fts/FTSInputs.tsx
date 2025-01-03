@@ -4,14 +4,13 @@ import s from '../Form.module.scss'
 import { ControllerRenderProps, FieldErrors, FieldValues, Path } from 'react-hook-form'
 
 interface FTSInputsProps<T extends FieldValues> {
-  type: 'translations' | 'synonyms'
   index: number
   field: ControllerRenderProps<T, Path<T>>
   errors: FieldErrors<T>
 }
 
 export const FTSInputs = <T extends FieldValues>(props: FTSInputsProps<T>) => {
-  const { type, index, field, errors } = props
+  const { index, field, errors } = props
 
   return (
     <div>
@@ -33,7 +32,7 @@ export const FTSInputs = <T extends FieldValues>(props: FTSInputsProps<T>) => {
             updatedArray[index] = e.target.value
             field.onChange(updatedArray)
           }}
-          placeholder={`Enter ${type} ${index + 1}`}
+          placeholder={`Enter translations ${index + 1}`}
         />
         {field?.value.length - 1 === index && (
           <Button
@@ -44,8 +43,8 @@ export const FTSInputs = <T extends FieldValues>(props: FTSInputsProps<T>) => {
         )}
       </div>
       <div className={s.error}>
-        {Array.isArray(errors[type]) && (
-          <div className={s.error}>{errors[type][index]?.message}</div>
+        {Array.isArray(errors.translations) && (
+          <div className={s.error}>{errors?.translations[index]?.message}</div>
         )}
       </div>
     </div>

@@ -17,6 +17,8 @@ interface CityCreationAttrs {
   name: string;
   latitude: number;
   longitude: number;
+  translations: string[];
+  tsvectorField?: string;
 }
 
 @Table({ tableName: 'city' })
@@ -37,6 +39,12 @@ export class City extends Model<City, CityCreationAttrs> {
 
   @Column({ type: DataType.FLOAT, allowNull: false })
   longitude: number;
+
+  @Column({ type: DataType.ARRAY(DataType.STRING), allowNull: false })
+  translations: string[];
+
+  @Column({ type: DataType.TSVECTOR, allowNull: false })
+  tsvectorField: string;
 
   @HasMany(() => Place)
   places: Place[];

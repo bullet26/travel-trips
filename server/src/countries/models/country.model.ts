@@ -7,6 +7,8 @@ interface CountryCreationAttrs {
   name: string;
   latitude: number;
   longitude: number;
+  translations: string[];
+  tsvectorField?: string;
 }
 
 @Table({ tableName: 'country' })
@@ -27,6 +29,12 @@ export class Country extends Model<Country, CountryCreationAttrs> {
 
   @Column({ type: DataType.FLOAT, allowNull: false })
   longitude: number;
+
+  @Column({ type: DataType.ARRAY(DataType.STRING), allowNull: false })
+  translations: string[];
+
+  @Column({ type: DataType.TSVECTOR, allowNull: false })
+  tsvectorField: string;
 
   @HasMany(() => City)
   cities: City[];

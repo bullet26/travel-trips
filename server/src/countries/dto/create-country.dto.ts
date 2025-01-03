@@ -26,8 +26,4 @@ export class CreateCountryDto {
   @IsArray()
   @ArrayNotEmpty()
   translations: string[];
-
-  @IsOptional()
-  @IsArray()
-  synonyms: string[];
 }

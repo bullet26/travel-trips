@@ -31,8 +31,4 @@ export class CreateCityDto {
   @IsArray()
   @ArrayNotEmpty()
   translations: string[];
-
-  @IsOptional()
-  @IsArray()
-  synonyms: string[];
 }

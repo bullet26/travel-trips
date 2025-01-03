@@ -3,6 +3,7 @@ import { fetcherServer } from 'api'
 import { CountryNest, IDParams } from 'types'
 import { Card, ImageCarousel } from 'components'
 import s from '../Countries.module.scss'
+import { Tag } from 'antd'
 
 export async function generateMetadata({
   params,
@@ -26,6 +27,11 @@ const Country = async ({ params }: { params: Promise<IDParams> }) => {
   return (
     <div className={s.itemWrapper}>
       <div className={s.title}>{country.name}</div>
+      {country.translations.map((item) => (
+        <Tag color="red" key={item} bordered={false}>
+          <div>#{item}</div>
+        </Tag>
+      ))}
       <ImageCarousel images={country.images} />
       <div className={s.wrapper}>
         {country.cities?.map((item) => (

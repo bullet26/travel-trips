@@ -56,7 +56,6 @@ const Places = () => {
         cityId,
         images,
         tags,
-        synonyms,
         translations,
       } = values
       setInitialValues({
@@ -67,7 +66,6 @@ const Places = () => {
         address,
         cityId,
         tagIds: tags?.map(({ id }) => id),
-        synonyms,
         translations,
       })
       setImages(images)

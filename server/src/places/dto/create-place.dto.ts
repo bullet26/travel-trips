@@ -44,10 +44,6 @@ export class CreatePlaceDto {
   @IsArray()
   @ArrayNotEmpty()
   translations: string[];
-
-  @IsOptional()
-  @IsArray()
-  synonyms: string[];
 }
 //tagIds- данные в formData всегла строки, а id должны быть number[], поэтому сначала преобразов данные через Transform, а потом провкряем
 // на фроонте должен формироваться string[], но кейс string тоже обрабатывается

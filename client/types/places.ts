@@ -14,7 +14,6 @@ export interface ICreatePlace {
   file?: string | Blob
   tagIds?: number[]
   translations: string[]
-  synonyms?: string[]
 }
 
 export type IUpdatePlace = Partial<ICreatePlace>

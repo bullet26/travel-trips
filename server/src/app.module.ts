@@ -17,6 +17,7 @@ import { CloudinaryModule, CloudinaryProvider } from './cloudinary';
 import { CitiesModule, City } from './cities';
 import { CountriesModule, Country } from './countries';
 import { RootModule } from './root';
+import { SearchModule } from './search';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { RootModule } from './root';
     CitiesModule,
     CountriesModule,
     RootModule,
+    SearchModule,
   ],
   controllers: [],
   providers: [

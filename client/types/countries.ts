@@ -6,7 +6,6 @@ export interface ICreateCountry {
   longitude: number
   file?: string | Blob
   translations: string[]
-  synonyms?: string[]
 }
 
 export type IUpdateCountry = Partial<ICreateCountry>
