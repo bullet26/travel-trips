@@ -51,7 +51,7 @@ export class PlacesService {
           ...placeData,
           name,
           translations,
-          tsvectorField,
+          tsvector_field: tsvectorField,
         },
         { transaction },
       );
@@ -206,7 +206,7 @@ export class PlacesService {
       } = updatePlaceDto;
 
       let place = await this.findById(id, transaction);
-      let tsvectorField = place.tsvectorField;
+      let tsvectorField = place.tsvector_field;
 
       if (shouldUpdateTsvector({ name, translations, itemFromDB: place })) {
         tsvectorField = await generateTsvector({
@@ -216,7 +216,7 @@ export class PlacesService {
       }
 
       await place.update(
-        { ...placeData, name, translations, tsvectorField },
+        { ...placeData, name, translations, tsvector_field: tsvectorField },
         { transaction },
       );
 

@@ -40,7 +40,7 @@ export class CountriesService {
       ...countryData,
       name,
       translations,
-      tsvectorField,
+      tsvector_field: tsvectorField,
     });
 
     if (!!file) {
@@ -113,7 +113,7 @@ export class CountriesService {
     const country = await this.findById(id);
 
     const { file, name, translations, ...countryData } = updateCountryDto;
-    let tsvectorField = country.tsvectorField;
+    let tsvectorField = country.tsvector_field;
 
     if (shouldUpdateTsvector({ name, translations, itemFromDB: country })) {
       tsvectorField = await generateTsvector({
@@ -122,7 +122,12 @@ export class CountriesService {
       });
     }
 
-    await country.update({ ...countryData, name, translations, tsvectorField });
+    await country.update({
+      ...countryData,
+      name,
+      translations,
+      tsvector_field: tsvectorField,
+    });
 
     if (!!file) {
       await this.imagesService.create({

@@ -25,7 +25,7 @@ interface PlaceCreationAttrs {
   address: string;
   cityId: number;
   translations: string[];
-  tsvectorField?: string;
+  tsvector_field: string;
 }
 
 @Table({ tableName: 'place' })
@@ -57,7 +57,7 @@ export class Place extends Model<Place, PlaceCreationAttrs> {
   translations: string[];
 
   @Column({ type: DataType.TSVECTOR, allowNull: false })
-  tsvectorField: string;
+  tsvector_field: string;
 
   @ForeignKey(() => TripDay)
   @Column({ type: DataType.INTEGER })

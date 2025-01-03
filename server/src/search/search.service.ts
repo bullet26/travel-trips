@@ -15,13 +15,13 @@ export class SearchService {
 
     const sql = `
         SELECT id, name, 'country' AS type FROM public.country
-        WHERE tsvectorField @@ to_tsquery('simple', :searchQuery)
+        WHERE tsvector_field @@ to_tsquery('simple', :searchQuery)
         UNION ALL
         SELECT id, name, 'city' AS type FROM public.city
-        WHERE tsvectorField @@ to_tsquery('simple', :searchQuery)
+        WHERE tsvector_field @@ to_tsquery('simple', :searchQuery)
         UNION ALL
         SELECT id, name, 'place' AS type FROM public.place
-        WHERE tsvectorField @@ to_tsquery('simple', :searchQuery)
+        WHERE tsvector_field @@ to_tsquery('simple', :searchQuery)
         ORDER BY name
         LIMIT :limit;
 `;

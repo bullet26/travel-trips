@@ -41,7 +41,7 @@ export class CitiesService {
       ...cityData,
       name,
       translations,
-      tsvectorField,
+      tsvector_field: tsvectorField,
     });
 
     if (!!file) {
@@ -111,7 +111,7 @@ export class CitiesService {
     const city = await this.findById(id);
 
     const { file, name, translations, ...cityData } = updateCityDto;
-    let tsvectorField = city.tsvectorField;
+    let tsvectorField = city.tsvector_field;
 
     if (shouldUpdateTsvector({ name, translations, itemFromDB: city })) {
       tsvectorField = await generateTsvector({
@@ -119,7 +119,12 @@ export class CitiesService {
         translations: translations || city.translations,
       });
     }
-    await city.update({ ...cityData, name, translations, tsvectorField });
+    await city.update({
+      ...cityData,
+      name,
+      translations,
+      tsvector_field: tsvectorField,
+    });
 
     if (!!file) {
       await this.imagesService.create({
