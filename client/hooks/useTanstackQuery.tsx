@@ -6,6 +6,7 @@ type UseTanstackQueryProps<T> = {
   queryKey: string[]
   options?: UseQueryOptions<T>
   id?: string | string[]
+  enabled?: boolean
 }
 
 export const useTanstackQuery = <T,>({
@@ -13,6 +14,7 @@ export const useTanstackQuery = <T,>({
   queryKey: incomeQKey,
   options,
   id,
+  enabled = true,
 }: UseTanstackQueryProps<T>): UseQueryResult<T> => {
   const fullUrl = id ? `${url}/${id}` : url
   const idKey = Array.isArray(id) ? id.join(',') : id
@@ -21,6 +23,7 @@ export const useTanstackQuery = <T,>({
   return useQuery<T>({
     queryKey,
     queryFn: () => fetcher<T>({ url: fullUrl, method: 'GET' }),
+    enabled,
     ...options,
   })
 }
