@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { Card as AntdCard } from 'antd'
+import { Card as AntdCard, Tooltip } from 'antd'
 import Image from 'next/image'
 import { cardDefault } from 'assets/images'
 import s from './Card.module.scss'
@@ -30,11 +30,11 @@ export const Card = (props: CardProps) => {
 
   return (
     <Link href={routeHref}>
-      <AntdCard hoverable className={s.card} cover={BookCover}>
-        {/* <Tooltip title={title}> */}
-        <Meta title={title} />
-        {/* </Tooltip> */}
-      </AntdCard>
+      <Tooltip title={title} placement="rightTop" color="#800020">
+        <AntdCard hoverable className={s.card} cover={BookCover}>
+          <Meta title={title} />
+        </AntdCard>
+      </Tooltip>
     </Link>
   )
 }

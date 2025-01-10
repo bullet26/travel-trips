@@ -6,13 +6,14 @@ import Image from 'next/image'
 import s from './DropZone.module.scss'
 
 interface DropZoneProps {
-  onChange: (file: string | Blob | null) => void
+  fileURL: string | null
+  onChange: (file: Blob | null) => void
+  onEditClick: () => void
 }
 
 export const DropZone: FC<DropZoneProps> = (props) => {
-  const { onChange } = props
+  const { onChange, fileURL, onEditClick } = props
 
-  const [fileURL, setFileURL] = useState('')
   const [text, setText] = useState('Drag and Drop here or click')
 
   const dropzoneRef = useRef<HTMLDivElement>(null)
@@ -20,7 +21,6 @@ export const DropZone: FC<DropZoneProps> = (props) => {
   const handleClickDropZone = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       onChange(event.target.files[0])
-      setFileURL(URL.createObjectURL(event.target.files[0]))
     }
   }
 
@@ -44,13 +44,11 @@ export const DropZone: FC<DropZoneProps> = (props) => {
 
     if (event.dataTransfer?.files.length) {
       onChange(event.dataTransfer.files[0])
-      setFileURL(URL.createObjectURL(event.dataTransfer.files[0]))
     }
   }
 
   const handleCancel = () => {
     setText('Drag and Drop here or click')
-    setFileURL('')
     onChange(null)
 
     if (dropzoneRef.current) {
@@ -77,13 +75,10 @@ export const DropZone: FC<DropZoneProps> = (props) => {
         className={s.hide}
         onChange={(e) => handleClickDropZone(e)}
       />
-      <Button
-        className={s.cancelBtn}
-        onClick={() => {
-          handleCancel()
-        }}>
-        Cancel
-      </Button>
+      <div className={s.dzBtnWrapper}>
+        <Button onClick={onEditClick}>Edit</Button>
+        <Button onClick={handleCancel}>Cancel</Button>
+      </div>
     </div>
   )
 }

@@ -5,7 +5,7 @@ import { Button, Input, InputNumber, Select, TreeSelect } from 'antd'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { ICreatePlace, PlaceNest, CountryNest, EntityType, ImageAttributesNest } from 'types'
-import { DropZone, ImageIEdited } from 'components'
+import { ImageUploadBlock, ImageIEdited } from 'components'
 import { useContextActions, useTanstackMutation, useTanstackQuery } from 'hooks'
 import { placeSchema, transformForSelect, transformForTreeSelect } from './utils'
 import { FTSModule } from './fts'
@@ -22,7 +22,7 @@ interface PlaceFormProps {
 export const PlaceForm: FC<PlaceFormProps> = (props) => {
   const { mode, id, initialValues, onSuccess, images = [] } = props
 
-  const [file, setFile] = useState<string | Blob | null>(null)
+  const [file, setFile] = useState<Blob | null>(null)
 
   const { setInfoMsg, setErrorMsg } = useContextActions()
 
@@ -103,7 +103,7 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
       <form onSubmit={handleSubmit(onSubmit)} className={s.form}>
         <div className={s.dropzoneWrapper}>
           <div className={s.dropZoneTagWrapper}>
-            <DropZone onChange={setFile} />
+            <ImageUploadBlock onChange={setFile} file={file} />
             <div>
               <div className={s.label}>Choose tags</div>
               <Controller

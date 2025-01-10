@@ -5,7 +5,7 @@ import { Button, Input, InputNumber, Select } from 'antd'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { ICreateCity, CountryNest, CityNest, EntityType, ImageAttributesNest } from 'types'
-import { DropZone, ImageIEdited } from 'components'
+import { ImageUploadBlock, ImageIEdited } from 'components'
 import { useContextActions, useTanstackMutation, useTanstackQuery } from 'hooks'
 import { citySchema, transformForSelect } from './utils'
 import { FTSModule } from './fts'
@@ -22,7 +22,7 @@ interface CityFormProps {
 export const CityForm: FC<CityFormProps> = (props) => {
   const { mode, id, initialValues, onSuccess, images = [] } = props
 
-  const [file, setFile] = useState<string | Blob | null>(null)
+  const [file, setFile] = useState<Blob | null>(null)
 
   const { setInfoMsg, setErrorMsg } = useContextActions()
 
@@ -100,7 +100,7 @@ export const CityForm: FC<CityFormProps> = (props) => {
       ))}
       <form onSubmit={handleSubmit(onSubmit)} className={s.form}>
         <div className={s.dropzoneWrapper}>
-          <DropZone onChange={setFile} />
+          <ImageUploadBlock onChange={setFile} file={file} />
           <div className={s.inputsWrapper}>
             <div>
               <div className={s.label}>City name</div>

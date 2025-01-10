@@ -5,7 +5,7 @@ import { Button, Input, InputNumber } from 'antd'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { ICreateCountry, CountryNest, EntityType, ImageAttributesNest } from 'types'
-import { DropZone, ImageIEdited } from 'components'
+import { ImageUploadBlock, ImageIEdited } from 'components'
 import { useContextActions, useTanstackMutation } from 'hooks'
 import { countrySchema } from './utils'
 import { FTSModule } from './fts'
@@ -22,7 +22,7 @@ interface CountryFormProps {
 export const CountryForm: FC<CountryFormProps> = (props) => {
   const { mode, id, initialValues, onSuccess, images = [] } = props
 
-  const [file, setFile] = useState<string | Blob | null>(null)
+  const [file, setFile] = useState<Blob | null>(null)
 
   const { setInfoMsg, setErrorMsg } = useContextActions()
 
@@ -98,7 +98,7 @@ export const CountryForm: FC<CountryFormProps> = (props) => {
       ))}
       <form onSubmit={handleSubmit(onSubmit)} className={s.form}>
         <div className={s.dropzoneWrapper}>
-          <DropZone onChange={setFile} />
+          <ImageUploadBlock onChange={setFile} file={file} />
           <div className={s.inputsWrapper}>
             <div>
               <div className={s.label}>Country name</div>
