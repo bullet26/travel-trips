@@ -5,7 +5,7 @@ const CreateTrip = () => {
   return (
     <div>
       <div className={s.title}>Create new trip</div>
-      <TripForm mode="crete" />
+      <TripForm mode="create" />
     </div>
   )
 }

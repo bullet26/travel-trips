@@ -12,7 +12,7 @@ import { FTSModule } from './fts'
 import s from './Form.module.scss'
 
 interface CountryFormProps {
-  mode: 'crete' | 'update'
+  mode: 'create' | 'update'
   id?: number | null
   initialValues?: ICreateCountry
   images?: ImageAttributesNest[]
@@ -26,8 +26,8 @@ export const CountryForm: FC<CountryFormProps> = (props) => {
 
   const { setInfoMsg, setErrorMsg } = useContextActions()
 
-  const method = mode === 'crete' ? 'POST' : 'PATCH'
-  const btnText = mode === 'crete' ? 'Create' : 'Update'
+  const method = mode === 'create' ? 'POST' : 'PATCH'
+  const btnText = mode === 'create' ? 'Create' : 'Update'
 
   const mutation = useTanstackMutation<CountryNest>({
     url: 'countries',

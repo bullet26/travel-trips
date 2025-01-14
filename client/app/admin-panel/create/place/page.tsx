@@ -5,7 +5,7 @@ const CreatePlace = () => {
   return (
     <div>
       <div className={s.title}>Create new place</div>
-      <PlaceForm mode="crete" />
+      <PlaceForm mode="create" />
     </div>
   )
 }

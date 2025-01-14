@@ -2,9 +2,11 @@
 
 import { FC, useEffect, useState } from 'react'
 import { Button, Input, DatePicker } from 'antd'
+import type { GetProps } from 'antd'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
 import { TripsNest, EntityType, ImageAttributesNest, ICreateTrip, UserNestInfo } from 'types'
 import { ImageUploadBlock, ImageIEdited } from 'components'
 import { useContextActions, useTanstackMutation, useTanstackQuery } from 'hooks'
@@ -12,12 +14,16 @@ import { tripSchema } from './utils'
 import s from './Form.module.scss'
 
 interface TripFormProps {
-  mode: 'crete' | 'update'
+  mode: 'create' | 'update'
   id?: number | null
   initialValues?: ICreateTrip
   images?: ImageAttributesNest[]
   onSuccess?: () => void
 }
+
+type RangePickerProps = GetProps<typeof DatePicker.RangePicker>
+
+dayjs.extend(utc)
 
 export const TripForm: FC<TripFormProps> = (props) => {
   const { mode, id, initialValues, onSuccess, images = [] } = props
@@ -29,8 +35,8 @@ export const TripForm: FC<TripFormProps> = (props) => {
 
   const { setInfoMsg, setErrorMsg } = useContextActions()
 
-  const method = mode === 'crete' ? 'POST' : 'PATCH'
-  const btnText = mode === 'crete' ? 'Create' : 'Update'
+  const method = mode === 'create' ? 'POST' : 'PATCH'
+  const btnText = mode === 'create' ? 'Create' : 'Update'
 
   const { data: user } = useTanstackQuery<UserNestInfo>({
     url: 'users/me',
@@ -99,6 +105,20 @@ export const TripForm: FC<TripFormProps> = (props) => {
     mutation.mutate({ formData, id })
   }
 
+  const getDate = (): [dayjs.Dayjs | null, dayjs.Dayjs | null] => {
+    const start = getValues('startDate') ? dayjs(getValues('startDate')).local() : null
+    const end = getValues('finishDate') ? dayjs(getValues('finishDate')).local() : null
+    return [start, end]
+  }
+
+  const setDate = (dates: RangePickerProps['value']) => {
+    if (dates?.length === 2) {
+      const [startDate, finishDate] = dates
+      if (startDate) setValue('startDate', startDate.utc().toDate())
+      if (finishDate) setValue('finishDate', finishDate.utc().toDate())
+    }
+  }
+
   return (
     <>
       {images.map((item) => (
@@ -131,20 +151,7 @@ export const TripForm: FC<TripFormProps> = (props) => {
                 name="startDate"
                 control={control}
                 render={({ field }) => (
-                  <RangePicker
-                    {...field}
-                    value={[
-                      getValues('startDate') ? dayjs(getValues('startDate')) : null,
-                      getValues('finishDate') ? dayjs(getValues('finishDate')) : null,
-                    ]}
-                    onChange={(dates) => {
-                      if (dates?.length === 2) {
-                        const [startDate, finishDate] = dates
-                        if (startDate) setValue('startDate', startDate.toDate())
-                        if (finishDate) setValue('finishDate', finishDate.toDate())
-                      }
-                    }}
-                  />
+                  <RangePicker {...field} value={getDate()} onChange={setDate} />
                 )}
               />
               <div className={s.error}>{errors.startDate?.message}</div>

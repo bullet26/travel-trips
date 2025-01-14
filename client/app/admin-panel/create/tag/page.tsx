@@ -5,7 +5,7 @@ const CreateTag = () => {
   return (
     <div>
       <div className={s.title}>Create new tag</div>
-      <TagForm mode="crete" />
+      <TagForm mode="create" />
     </div>
   )
 }

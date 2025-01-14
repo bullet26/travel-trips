@@ -5,7 +5,7 @@ const CreateCity = () => {
   return (
     <div>
       <div className={s.title}>Create new city</div>
-      <CityForm mode="crete" />
+      <CityForm mode="create" />
     </div>
   )
 }

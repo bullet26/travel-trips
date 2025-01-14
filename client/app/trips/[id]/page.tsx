@@ -1,16 +1,16 @@
 'use client'
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { Button, Card, Drawer } from 'antd'
+import { Button, Drawer } from 'antd'
 import { useTanstackQuery, useTanstackMutation, useContextActions } from 'hooks'
 import { useParams, useRouter } from 'next/navigation'
-import { TripsNest } from 'types'
+import { ICreateTrip, TripsNest } from 'types'
 import { ImageCarousel, TripForm } from 'components'
-import { formatToDateString } from 'utils'
+import { TripDaysAccordion } from '../TripDaysAccordion'
 import s from '../Trips.module.scss'
 
 const Trip = () => {
   const [openDrawer, setDrawerStatus] = useState(false)
+  const [initialValues, setInitialValues] = useState<undefined | ICreateTrip>(undefined)
 
   const { setInfoMsg, setErrorMsg } = useContextActions()
 
@@ -42,6 +42,16 @@ const Trip = () => {
   }, [mutation.error?.message])
 
   const onEdit = () => {
+    if (trip) {
+      const { comment, title, startDate, finishDate } = trip
+      setInitialValues({
+        title,
+        startDate,
+        finishDate,
+        ...(!!comment && { comment }),
+      })
+    }
+
     setDrawerStatus(true)
   }
 
@@ -63,20 +73,12 @@ const Trip = () => {
             <Button onClick={onDelete}>Delete</Button>
           </div>
           <ImageCarousel images={trip.images} />
-          <Link href={`/trips/${id}/unassigned-places/${trip?.unassignedPlaces?.id}`}>
-            <Card>
-              <div>unassigned places</div>
-            </Card>
-          </Link>
-
-          {trip.tripDays?.map((item) => (
-            <Link key={item.id} href={`/trips/${id}/trip-days/${item.id}`}>
-              <Card>
-                <div>{formatToDateString(item.date)}</div>
-              </Card>
-            </Link>
-          ))}
+          <TripDaysAccordion
+            unassignedPlacesId={trip?.unassignedPlaces?.id}
+            tripDays={trip.tripDays}
+          />
           {!!trip?.comment && <p className={s.comment}>{trip.comment}</p>}
+
           <Drawer
             title="Update trip"
             onClose={onClose}
@@ -86,7 +88,7 @@ const Trip = () => {
             <TripForm
               mode="update"
               id={id}
-              initialValues={{ ...trip, ...(!!trip?.comment && { comment: trip.comment }) }}
+              initialValues={initialValues}
               images={trip.images}
               onSuccess={onClose}
             />

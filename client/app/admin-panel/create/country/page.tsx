@@ -5,7 +5,7 @@ const CreateCountry = () => {
   return (
     <div>
       <div className={s.title}>Create new country</div>
-      <CountryForm mode="crete" />
+      <CountryForm mode="create" />
     </div>
   )
 }

@@ -204,7 +204,7 @@ export class TripsService {
           if (!exists) {
             newDates.push(new Date(currentDate));
           }
-          currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+          currentDate.setDate(currentDate.getDate() + 1);
         }
 
         const newDayPromises = newDates.map((date) =>

@@ -1,3 +1,8 @@
+import * as dayjs from 'dayjs';
+import * as utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
+
 export const transformArrayInFormData = (value: string | string[]) => {
   if (typeof value === 'string') {
     return value.split(',').map((v) => Number(v));
@@ -9,9 +14,7 @@ export const transformArrayInFormData = (value: string | string[]) => {
 };
 
 export const normalizeDate = (dateString: string | Date): Date => {
-  const date = dateString instanceof Date ? dateString : new Date(dateString);
-
-  return new Date(
-    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
-  );
+  return dateString instanceof Date
+    ? dateString
+    : dayjs(dateString).utc().toDate();
 };

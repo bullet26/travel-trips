@@ -12,7 +12,7 @@ import { FTSModule } from './fts'
 import s from './Form.module.scss'
 
 interface PlaceFormProps {
-  mode: 'crete' | 'update'
+  mode: 'create' | 'update'
   id?: number | null
   initialValues?: ICreatePlace
   images?: ImageAttributesNest[]
@@ -26,8 +26,8 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
 
   const { setInfoMsg, setErrorMsg } = useContextActions()
 
-  const method = mode === 'crete' ? 'POST' : 'PATCH'
-  const btnText = mode === 'crete' ? 'Create' : 'Update'
+  const method = mode === 'create' ? 'POST' : 'PATCH'
+  const btnText = mode === 'create' ? 'Create' : 'Update'
 
   const query = useTanstackQuery<CountryNest[]>({ url: 'countries', queryKey: ['countries'] })
 

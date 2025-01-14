@@ -10,7 +10,7 @@ import { tagSchema } from './utils'
 import s from './Form.module.scss'
 
 interface TagFormProps {
-  mode: 'crete' | 'update'
+  mode: 'create' | 'update'
   id?: number | null
   initialValues?: ICreateTag
   onSuccess?: () => void
@@ -21,8 +21,8 @@ export const TagForm: FC<TagFormProps> = (props) => {
 
   const { setInfoMsg, setErrorMsg } = useContextActions()
 
-  const method = mode === 'crete' ? 'POST' : 'PATCH'
-  const btnText = mode === 'crete' ? 'Create' : 'Update'
+  const method = mode === 'create' ? 'POST' : 'PATCH'
+  const btnText = mode === 'create' ? 'Create' : 'Update'
 
   const mutation = useTanstackMutation<TagNest>({
     url: 'tags',
