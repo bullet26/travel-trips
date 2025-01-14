@@ -1,10 +1,15 @@
 @import '../../styles/variables.scss';
 
-.form {
+.form,
+.fullPageForm {
   margin-top: 25px;
   display: flex;
   flex-direction: column;
   row-gap: 27px;
+}
+
+.fullPageForm {
+  padding: 0 45px 0 35px;
 }
 
 .dropzoneWrapper {

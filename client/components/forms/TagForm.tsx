@@ -30,7 +30,7 @@ export const TagForm: FC<TagFormProps> = (props) => {
     queryKey: ['tags'],
     onSuccess: (data) => {
       if (data) {
-        setInfoMsg(`New Tag - ${data.name} was created`)
+        setInfoMsg(`New Tag - ${data.name} was ${btnText}`)
         if (onSuccess) onSuccess()
       }
     },

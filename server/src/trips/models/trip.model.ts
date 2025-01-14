@@ -32,7 +32,7 @@ export class Trip extends Model<Trip, TripCreationAttrs> {
   id: number;
 
   @Column({ type: DataType.STRING, allowNull: false })
-  name: string;
+  title: string;
 
   @Column({ type: DataType.DATE, allowNull: false })
   startDate: Date;

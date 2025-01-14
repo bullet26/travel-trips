@@ -1,19 +1,19 @@
+'use client'
+
 import { Card } from 'components'
-import { fetcherServer } from 'api'
+import { useTanstackQuery } from 'hooks'
 import { CountryNest } from 'types'
-import { Metadata } from 'next'
 import s from './Countries.module.scss'
 
-export const metadata: Metadata = {
-  title: 'Countries',
-}
-
-const Countries = async () => {
-  const country = await fetcherServer<CountryNest[]>({ url: `countries/` })
+const Countries = () => {
+  const { data: countries } = useTanstackQuery<CountryNest[]>({
+    url: 'countries',
+    queryKey: ['countries'],
+  })
 
   return (
     <div className={s.wrapper}>
-      {country?.map((item) => (
+      {countries?.map((item) => (
         <Card
           key={item.id}
           imgUrl={item.images?.at(0)?.url}

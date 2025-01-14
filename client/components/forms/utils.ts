@@ -53,3 +53,13 @@ export const tagSchema = yup
     name: yup.string().min(4).required(),
   })
   .required()
+
+export const tripSchema = yup
+  .object({
+    userId: yup.number().min(1),
+    title: yup.string().min(4).required(),
+    startDate: yup.date().required(),
+    finishDate: yup.date().required(),
+    comment: yup.string().optional().nullable(),
+  })
+  .required()

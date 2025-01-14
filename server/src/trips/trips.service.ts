@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateTripDto, UpdateTripDto } from './dto';
 import { Trip } from './models/trip.model';
@@ -9,7 +13,7 @@ import {
   UnassignedPlacesService,
 } from 'src/unassigned-places';
 import { Transaction } from 'sequelize';
-import { ensureEntityExists, ensureId } from 'src/utils';
+import { ensureEntityExists, ensureId, normalizeDate } from 'src/utils';
 
 @Injectable()
 export class TripsService {
@@ -21,7 +25,15 @@ export class TripsService {
   ) {}
 
   async create(createTripDto: CreateTripDto, transaction?: Transaction) {
-    const { startDate, finishDate } = createTripDto;
+    const {
+      file,
+      startDate: startDateString,
+      finishDate: finishDateString,
+      ...tripData
+    } = createTripDto;
+
+    const finishDate = normalizeDate(finishDateString);
+    const startDate = normalizeDate(startDateString);
 
     if (finishDate.getTime() <= startDate.getTime()) {
       throw new BadRequestException(
@@ -29,11 +41,13 @@ export class TripsService {
       );
     }
 
-    const { file, ...tripData } = createTripDto;
-
-    const trip = await this.tripModel.create(tripData, { transaction });
+    const trip = await this.tripModel.create(
+      { ...tripData, startDate, finishDate },
+      { transaction },
+    );
 
     let currentDate = new Date(startDate);
+
     const createDayPromises = [];
 
     while (currentDate.getTime() <= finishDate.getTime()) {
@@ -78,7 +92,7 @@ export class TripsService {
     return trips;
   }
 
-  async findById(id: number) {
+  async findById(id: number, transaction?: Transaction) {
     ensureId(id);
 
     const trip = await this.tripModel.findByPk(id, {
@@ -96,10 +110,13 @@ export class TripsService {
         },
         {
           model: TripDay,
+          as: 'tripDays',
           attributes: ['id', 'date'],
           required: false, // LEFT JOIN вместо INNER JOIN
         },
       ],
+      order: [[{ model: TripDay, as: 'tripDays' }, 'date', 'ASC']],
+      transaction,
     });
 
     ensureEntityExists({ entity: trip, entityName: 'Trip', value: id });
@@ -124,27 +141,104 @@ export class TripsService {
   }
 
   async update(id: number, updateTripDto: UpdateTripDto) {
-    const trip = await this.findById(id);
+    const transaction: Transaction =
+      await this.tripModel.sequelize.transaction();
 
-    const { file, ...tripData } = updateTripDto;
+    try {
+      const trip = await this.findById(id, transaction);
 
-    await trip.update(tripData);
-
-    if (!!file) {
-      await this.imagesService.create({
-        entityType: EntityType.TRIP,
-        entityId: trip.id,
+      const {
         file,
-      });
-    }
+        startDate: startDateString,
+        finishDate: finishDateString,
+        ...tripData
+      } = updateTripDto;
 
-    return trip;
+      const finishDate = normalizeDate(finishDateString);
+      const startDate = normalizeDate(startDateString);
+
+      if (finishDate.getTime() <= startDate.getTime()) {
+        throw new BadRequestException(
+          'The end date of the trip must be later than the start date.',
+        );
+      }
+
+      if (
+        finishDate.getTime() !== trip.finishDate.getTime() ||
+        startDate.getTime() !== trip.startDate.getTime()
+      ) {
+        const existingTripDays = await this.tripsDayService.findAllByTrip(
+          trip.id,
+          transaction,
+        );
+
+        const daysToRemove = existingTripDays.filter(
+          (day) =>
+            day.date.getTime() < startDate.getTime() ||
+            day.date.getTime() > finishDate.getTime(),
+        );
+
+        for (const day of daysToRemove) {
+          const placePromises = day.places.map((place) =>
+            this.tripsDayService.movePlaceToUnassignedPlaces(
+              day.id,
+              {
+                placeId: place.id,
+                unassignedPlacesId: trip.unassignedPlaces.id,
+              },
+              transaction,
+            ),
+          );
+
+          await Promise.all(placePromises);
+          await this.tripsDayService.remove(day.id, transaction);
+        }
+
+        const newDates: Date[] = [];
+        let currentDate = new Date(startDate);
+        while (currentDate.getTime() <= finishDate.getTime()) {
+          const exists = existingTripDays.some(
+            (day) => day.date.getTime() === currentDate.getTime(),
+          );
+
+          if (!exists) {
+            newDates.push(new Date(currentDate));
+          }
+          currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+        }
+
+        const newDayPromises = newDates.map((date) =>
+          this.tripsDayService.create({ date, tripId: trip.id }, transaction),
+        );
+        await Promise.all(newDayPromises);
+      }
+
+      await trip.update(
+        { ...tripData, startDate, finishDate },
+        { transaction },
+      );
+
+      if (!!file) {
+        await this.imagesService.create({
+          entityType: EntityType.TRIP,
+          entityId: trip.id,
+          file,
+        });
+      }
+      await transaction.commit();
+      return trip;
+    } catch (error) {
+      await transaction.rollback();
+      throw new InternalServerErrorException(
+        error.message || 'Internal server error',
+      );
+    }
   }
 
   async remove(id: number) {
-    const trip = await this.findById(id);
+    ensureId(id);
 
-    await trip.destroy();
+    await this.tripModel.destroy({ where: { id } });
 
     await Promise.all([
       this.unassignedPlacesService.findByTripIdAndRemove(id),

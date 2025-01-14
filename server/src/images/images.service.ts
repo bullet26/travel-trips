@@ -69,9 +69,7 @@ export class ImagesService {
   }
 
   async remove(id: number) {
-    ensureId(id);
-
-    const image = await this.imageModel.findByPk(id);
+    const image = await this.findById(id);
     ensureEntityExists({ entity: image, entityName: 'Image', value: id });
 
     await this.cloudinary

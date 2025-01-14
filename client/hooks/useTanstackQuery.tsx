@@ -5,7 +5,7 @@ type UseTanstackQueryProps<T> = {
   url: string
   queryKey: string[]
   options?: UseQueryOptions<T>
-  id?: string | string[]
+  id?: string | string[] | number
   enabled?: boolean
 }
 

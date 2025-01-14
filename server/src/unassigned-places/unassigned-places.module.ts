@@ -6,8 +6,10 @@ import { UnassignedPlaces } from './models/unassigned-places.model';
 import { Place } from 'src/places/models/place.model';
 import { PlacesModule } from 'src/places/places.module';
 import { TripsDayModule } from 'src/trips-day/trips-day.module';
+import { UnassignedPlacesController } from './unassigned-places.controller';
 
 @Module({
+  controllers: [UnassignedPlacesController],
   providers: [UnassignedPlacesService],
   imports: [
     SequelizeModule.forFeature([Trip, UnassignedPlaces, Place]),

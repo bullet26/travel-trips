@@ -18,3 +18,11 @@ export interface IMovePlaceToTripDay {
   placeId: number
   tripDayId: number
 }
+
+export interface TripDayNest extends ICreateTripsDay {
+  createdAt: Date
+  date: Date
+  id: number
+  places: []
+  updatedAt: Date
+}

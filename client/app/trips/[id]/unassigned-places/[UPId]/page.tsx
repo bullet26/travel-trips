@@ -4,27 +4,26 @@ import Link from 'next/link'
 import { Button } from 'antd'
 import { ArrowUpOutlined } from '@ant-design/icons'
 import { useTanstackQuery } from 'hooks'
-import { TripDayNest } from 'types'
-import { formatToDateString } from 'utils'
+import { UnassignedPlacesNest } from 'types'
 import s from '../../../Trips.module.scss'
 
-const TripDay = () => {
+const UnassignedPlaces = () => {
   const params = useParams()
-  const id = Number(params.tripDayId)
+  const id = Number(params.UPId)
   const tripId = Number(params.id)
 
-  const { data: tripDay } = useTanstackQuery<TripDayNest>({
-    url: 'trips-day',
-    queryKey: ['trips-day'],
+  const { data: up } = useTanstackQuery<UnassignedPlacesNest>({
+    url: 'unassigned-places',
+    queryKey: ['unassigned-places'],
     id,
   })
 
   return (
     <div>
-      {tripDay && (
+      {up && (
         <>
           <div className={s.title}>
-            <span>{formatToDateString(tripDay.date)}</span>
+            <span>Unassigned places</span>
             <Link href={`/trips/${tripId}`}>
               <Button icon={<ArrowUpOutlined />} />
             </Link>
@@ -35,4 +34,4 @@ const TripDay = () => {
   )
 }
 
-export default TripDay
+export default UnassignedPlaces

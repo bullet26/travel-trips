@@ -56,7 +56,7 @@ export class UsersService {
       include: { model: Role, attributes: ['role'] },
     });
 
-    return { email, role: user.role.role, name: user.name };
+    return { email, role: user.role.role, name: user.name, userId: user.id };
   }
 
   async getUserByProviderId(providerId: string) {

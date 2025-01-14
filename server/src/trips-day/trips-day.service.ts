@@ -53,6 +53,7 @@ export class TripsDayService {
         attributes: ['name', 'description'],
         required: false, // LEFT JOIN вместо INNER JOIN
       },
+      order: [[{ model: Place, as: 'places' }, 'name', 'ASC']],
     });
 
     ensureEntityExists({ entity: tripDay, entityName: 'Trip_Day', value: id });
@@ -60,7 +61,7 @@ export class TripsDayService {
     return tripDay;
   }
 
-  async findAllByTrip(tripId: number) {
+  async findAllByTrip(tripId: number, transaction?: Transaction) {
     ensureId(tripId);
 
     const tripDays = await this.tripDayModel.findAll({
@@ -68,8 +69,10 @@ export class TripsDayService {
       include: {
         model: Place,
         attributes: ['name', 'description'],
+        order: [['name', 'ASC']],
         required: false, // LEFT JOIN вместо INNER JOIN
       },
+      transaction,
     });
     return tripDays;
   }
@@ -81,10 +84,10 @@ export class TripsDayService {
     return tripDay;
   }
 
-  async remove(id: number) {
-    const tripDay = await this.findById(id);
+  async remove(id: number, transaction?: Transaction) {
+    ensureId(id);
 
-    await tripDay.destroy();
+    await this.tripDayModel.destroy({ where: { id }, transaction });
     return { message: 'Trip_Day was successfully deleted' };
   }
 
@@ -136,11 +139,12 @@ export class TripsDayService {
   async movePlaceToUnassignedPlaces(
     id: number,
     movePlaceToUnassignedPlacesDto: MovePlaceToUnassignedPlacesDto,
+    transactionIncome?: Transaction,
   ) {
     const { placeId, unassignedPlacesId } = movePlaceToUnassignedPlacesDto;
 
     const transaction: Transaction =
-      await this.tripDayModel.sequelize.transaction();
+      transactionIncome || (await this.tripDayModel.sequelize.transaction());
 
     try {
       const tripDay = await this.findById(id, transaction);
@@ -161,10 +165,15 @@ export class TripsDayService {
         transaction,
       );
 
-      await transaction.commit();
+      // Фиксируем транзакцию, если она локальная
+      if (!transactionIncome) {
+        await transaction.commit();
+      }
       return tripDay;
     } catch (error) {
-      await transaction.rollback();
+      if (!transactionIncome) {
+        await transaction.rollback();
+      }
       throw new InternalServerErrorException(
         error.message || 'Internal server error',
       );

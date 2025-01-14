@@ -6,15 +6,17 @@ export {
   type ILoginUser,
   type IUser,
   type NestAuthTokens,
+  type UserNestInfo,
 } from './user'
-export { type ICreateUnassignedPlace } from './unassigned-places'
-export { type ICreateTrip, type IUpdateTrip } from './trips'
+export { type ICreateUnassignedPlace, type UnassignedPlacesNest } from './unassigned-places'
+export { type ICreateTrip, type IUpdateTrip, type TripsNest } from './trips'
 export {
   type IAddPlace,
   type ICreateTripsDay,
   type IUpdateTripsDay,
   type IMovePlaceToUnassignedPlaces,
   type IMovePlaceToTripDay,
+  type TripDayNest,
 } from './trips-day'
 export { type ICreateTag, type IUpdateTag, type TagNest, type TagAttributesNest } from './tags'
 export { type ICreateRole, RoleType } from './roles'

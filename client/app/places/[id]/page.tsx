@@ -1,53 +1,46 @@
-import { Metadata } from 'next'
+'use client'
+
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
 import { Tag } from 'antd'
-import { fetcherServer } from 'api'
-import { PlaceNest, IDParams } from 'types'
+import { useTanstackQuery } from 'hooks'
+import { PlaceNest } from 'types'
 import { ImageCarousel } from 'components'
 import s from './Places.module.scss'
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<IDParams>
-}): Promise<Metadata> {
-  const id = (await params).id
+const Place = () => {
+  const params = useParams()
+  const id = params.id
 
-  const place = await fetcherServer<PlaceNest>({ url: `places/${id}` })
-
-  return {
-    title: place.name,
-  }
-}
-
-const Place = async ({ params }: { params: Promise<IDParams> }) => {
-  const id = (await params).id
-
-  const place = await fetcherServer<PlaceNest>({ url: `places/${id}` })
+  const { data: place } = useTanstackQuery<PlaceNest>({ url: 'places', queryKey: ['places'], id })
 
   return (
     <div className={s.itemWrapper}>
-      <div className={s.title}>
-        <span>{place.name}</span>,&nbsp;
-        <Link href={`/cities/${place.city?.id}`}>{place.city?.name}</Link>
-      </div>
-      {place.translations.map((item) => (
-        <Tag color="red" key={item} bordered={false}>
-          <div>#{item}</div>
-        </Tag>
-      ))}
-      <ImageCarousel images={place.images} />
-      {place.tags?.map(({ id, name }) => (
-        <Link href={`/tags/${id}`} key={id}>
-          <Tag color="red-inverse" bordered={false}>
-            <div>#{name}</div>
-          </Tag>
-        </Link>
-      ))}
-      <div className={s.addressWrapper}>
-        <span>Address:</span> <span className={s.address}>{place.address}</span>
-      </div>
-      <div className={s.description}>{place.description}</div>
+      {place && (
+        <>
+          <div className={s.title}>
+            <span>{place.name}</span>,&nbsp;
+            <Link href={`/cities/${place.city?.id}`}>{place.city?.name}</Link>
+          </div>
+          {place.translations.map((item) => (
+            <Tag color="red" key={item} bordered={false}>
+              <div>#{item}</div>
+            </Tag>
+          ))}
+          <ImageCarousel images={place.images} />
+          {place.tags?.map(({ id, name }) => (
+            <Link href={`/tags/${id}`} key={id}>
+              <Tag color="red-inverse" bordered={false}>
+                <div>#{name}</div>
+              </Tag>
+            </Link>
+          ))}
+          <div className={s.addressWrapper}>
+            <span>Address:</span> <span className={s.address}>{place.address}</span>
+          </div>
+          <div className={s.description}>{place.description}</div>
+        </>
+      )}
     </div>
   )
 }

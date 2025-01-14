@@ -1,15 +1,22 @@
 import { ImageAttributesNest } from 'types'
 
 export interface ICreateTrip {
-  userId: number
+  userId?: number
   title: string
   startDate: Date
   finishDate: Date
-  comment?: string
+  comment?: string | null
 }
 
 export type IUpdateTrip = Partial<ICreateTrip>
 
-export interface TripsNest extends ICreateTrip {
+export interface TripsNest extends Omit<ICreateTrip, 'comment'> {
+  id: number
+  comment: string | null
   images: ImageAttributesNest[]
+  createdAt: Date
+  updatedAt: Date
+  userId: number
+  tripDays: { id: number; date: Date }[]
+  unassignedPlaces: { id: number }
 }

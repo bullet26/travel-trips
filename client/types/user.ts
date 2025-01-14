@@ -30,3 +30,10 @@ export interface NestAuthTokens {
   refreshToken: string
   refreshTokenExpires: number
 }
+
+export interface UserNestInfo {
+  email: string
+  role: RoleType
+  name: string
+  userId: number
+}

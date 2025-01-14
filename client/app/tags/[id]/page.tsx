@@ -1,30 +1,18 @@
-import { fetcherServer } from 'api'
-import { Metadata } from 'next'
+'use client'
+
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
 import { Tag as AntdTag, Button } from 'antd'
-import { IDParams, TagNest } from 'types'
+import { useTanstackQuery } from 'hooks'
+import { TagNest } from 'types'
 import { Card } from 'components'
 import s from '../Tags.module.scss'
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<IDParams>
-}): Promise<Metadata> {
-  const id = (await params).id
+const Tag = () => {
+  const params = useParams()
+  const id = params.id
 
-  const tag = await fetcherServer<TagNest>({ url: `tags/${id}` })
-
-  return {
-    title: `#${tag.name}`,
-  }
-}
-
-const Tag = async ({ params }: { params: Promise<IDParams> }) => {
-  const id = (await params).id
-  const tag = await fetcherServer<TagNest>({ url: `tags/${id}` })
-
-  console.log(tag)
+  const { data: tag } = useTanstackQuery<TagNest>({ url: 'tags', queryKey: ['tags'], id })
 
   return (
     <>

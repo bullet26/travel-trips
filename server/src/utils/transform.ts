@@ -7,3 +7,11 @@ export const transformArrayInFormData = (value: string | string[]) => {
     return value.map((v) => Number(v));
   }
 };
+
+export const normalizeDate = (dateString: string | Date): Date => {
+  const date = dateString instanceof Date ? dateString : new Date(dateString);
+
+  return new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+  );
+};

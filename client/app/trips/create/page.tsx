@@ -1,5 +1,13 @@
-const CreateTrip = () => {
-    return <div>1111</div>;
-};
+import { TripForm } from 'components'
+import s from '../Trips.module.scss'
 
-export default CreateTrip;
+const CreateTrip = () => {
+  return (
+    <div>
+      <div className={s.title}>Create new trip</div>
+      <TripForm mode="crete" />
+    </div>
+  )
+}
+
+export default CreateTrip

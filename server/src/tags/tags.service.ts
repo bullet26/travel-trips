@@ -68,9 +68,9 @@ export class TagsService {
   }
 
   async remove(id: number) {
-    const tag = await this.findById(id);
+    ensureId(id);
 
-    await tag.destroy();
+    await this.tagModel.destroy({ where: { id } });
     return { message: 'Tag was successfully deleted' };
   }
 }

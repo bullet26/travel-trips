@@ -141,9 +141,9 @@ export class CountriesService {
   }
 
   async remove(id: number) {
-    const country = await this.findById(id);
+    ensureId(id);
 
-    await country.destroy();
+    await this.countryModel.destroy({ where: { id } });
     return { message: 'Country was successfully deleted' };
   }
 }

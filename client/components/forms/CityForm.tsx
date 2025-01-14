@@ -37,7 +37,7 @@ export const CityForm: FC<CityFormProps> = (props) => {
     queryKey: ['cities'],
     onSuccess: (data) => {
       if (data) {
-        setInfoMsg(`New city - ${data.name} was created`)
+        setInfoMsg(`New city - ${data.name} was ${btnText}`)
         if (onSuccess) onSuccess()
       }
     },

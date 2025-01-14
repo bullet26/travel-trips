@@ -46,6 +46,7 @@ export class UnassignedPlacesService {
         attributes: ['id', 'name', 'description'],
         required: false, // LEFT JOIN вместо INNER JOIN
       },
+      order: [[{ model: Place, as: 'places' }, 'name', 'ASC']],
     });
 
     ensureEntityExists({

@@ -138,9 +138,9 @@ export class CitiesService {
   }
 
   async remove(id: number) {
-    const city = await this.findById(id);
+    ensureId(id);
 
-    await city.destroy();
+    await this.cityModel.destroy({ where: { id } });
     return { message: 'City was successfully deleted' };
   }
 }

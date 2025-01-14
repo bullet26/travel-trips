@@ -68,9 +68,9 @@ export class WishlistsService {
   }
 
   async remove(id: number) {
-    const wishlist = await this.findById(id);
+    ensureId(id);
 
-    await wishlist.destroy();
+    await this.wishlistModel.destroy({ where: { id } });
     return { message: 'Wishlist was successfully deleted' };
   }
 

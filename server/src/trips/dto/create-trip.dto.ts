@@ -9,12 +9,15 @@ export class CreateTripDto {
   @IsString()
   readonly title: string;
 
+  @Type(() => Date)
   @IsDate()
   readonly startDate: Date;
 
+  @Type(() => Date)
   @IsDate()
   readonly finishDate: Date;
 
+  @IsOptional()
   @IsString()
   readonly comment?: string;
 

@@ -1,3 +1,3 @@
 export { ensureId, ensureEntityExists } from './check';
-export { transformArrayInFormData } from './transform';
+export { transformArrayInFormData, normalizeDate } from './transform';
 export { generateTsvector, shouldUpdateTsvector } from './fts';
