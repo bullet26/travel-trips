@@ -32,4 +32,4 @@ export { type ICreateCountry, type IUpdateCountry, type CountryNest } from './co
 export { type ICreateCity, type IUpdateCity, type CityNest } from './cities'
 export { type HTTPError } from './error'
 export { type IDParams } from './general'
-export { type SearchNestResult, type SearchType } from './search'
+export { type SearchNestResult, type SearchType, type SearchPlaceNestResult } from './search'

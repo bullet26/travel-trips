@@ -4,8 +4,7 @@ import { Button, Drawer } from 'antd'
 import { useTanstackQuery, useTanstackMutation, useContextActions } from 'hooks'
 import { useParams, useRouter } from 'next/navigation'
 import { ICreateTrip, TripsNest } from 'types'
-import { ImageCarousel, TripForm } from 'components'
-import { TripDaysAccordion } from '../TripDaysAccordion'
+import { ImageCarousel, TripForm, TripDaysAccordion } from 'components'
 import s from '../Trips.module.scss'
 
 const Trip = () => {

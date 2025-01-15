@@ -4,7 +4,6 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
-  NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUnassignedPlaceDto } from './dto';
@@ -14,6 +13,7 @@ import { AddPlaceDto, MovePlaceToTripDayDto } from 'src/trips-day/dto';
 import { TripsDayService } from 'src/trips-day/trips-day.service';
 import { Transaction } from 'sequelize';
 import { ensureEntityExists, ensureId } from 'src/utils';
+import { EntityType, Images } from 'src/images';
 
 @Injectable()
 export class UnassignedPlacesService {
@@ -43,8 +43,16 @@ export class UnassignedPlacesService {
       transaction,
       include: {
         model: Place,
-        attributes: ['id', 'name', 'description'],
+        attributes: ['id', 'name'],
         required: false, // LEFT JOIN вместо INNER JOIN
+        include: [
+          {
+            model: Images,
+            where: { entityType: EntityType.PLACE },
+            attributes: ['url', 'id'],
+            required: false, // LEFT JOIN вместо INNER JOIN
+          },
+        ],
       },
       order: [[{ model: Place, as: 'places' }, 'name', 'ASC']],
     });

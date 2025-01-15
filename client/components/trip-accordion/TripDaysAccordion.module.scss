@@ -1,0 +1,32 @@
+.settingBtnWrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 7px;
+}
+
+.accordionWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  column-gap: 25px;
+}
+
+.searchWrapper {
+  width: 300px;
+
+  .cardWrapper {
+    margin-top: 15px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-template-rows: auto;
+    gap: 7px;
+
+    .card {
+      cursor: move;
+    }
+  }
+}
+
+.deleteBtn {
+  margin-bottom: 7px;
+}

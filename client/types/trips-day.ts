@@ -1,3 +1,5 @@
+import { PlaceNest } from 'types'
+
 export interface IAddPlace {
   placeId: number
 }
@@ -23,6 +25,6 @@ export interface TripDayNest extends ICreateTripsDay {
   createdAt: Date
   date: Date
   id: number
-  places: []
+  places: Pick<PlaceNest, 'id' | 'name' | 'images'>[]
   updatedAt: Date
 }

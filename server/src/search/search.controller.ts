@@ -7,10 +7,18 @@ export class SearchController {
   constructor(private readonly searchService: SearchService) {}
 
   @Get()
-  async searchCountries(@Query() query: SearchAllDto) {
+  async searchEverywhere(@Query() query: SearchAllDto) {
     if (!query?.searchString) {
       return { message: 'Search string is required' };
     }
     return this.searchService.searchEverywhere(query);
+  }
+
+  @Get('/places')
+  async searchPlaces(@Query() query: SearchAllDto) {
+    if (!query?.searchString) {
+      return { message: 'Search string is required' };
+    }
+    return this.searchService.searchPlaces(query);
   }
 }

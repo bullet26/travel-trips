@@ -4,7 +4,6 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
-  NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Transaction } from 'sequelize';
@@ -18,6 +17,9 @@ import {
 } from './dto';
 import { UnassignedPlacesService } from 'src/unassigned-places/unassigned-places.service';
 import { ensureEntityExists, ensureId } from 'src/utils';
+import { EntityType, Images } from 'src/images';
+import { Trip } from 'src/trips';
+import { UnassignedPlaces } from 'src/unassigned-places';
 
 @Injectable()
 export class TripsDayService {
@@ -50,10 +52,56 @@ export class TripsDayService {
       transaction,
       include: {
         model: Place,
-        attributes: ['name', 'description'],
+        attributes: ['id', 'name'],
         required: false, // LEFT JOIN вместо INNER JOIN
+        include: [
+          {
+            model: Images,
+            where: { entityType: EntityType.PLACE },
+            attributes: ['url', 'id'],
+            required: false, // LEFT JOIN вместо INNER JOIN
+          },
+        ],
       },
       order: [[{ model: Place, as: 'places' }, 'name', 'ASC']],
+    });
+
+    ensureEntityExists({ entity: tripDay, entityName: 'Trip_Day', value: id });
+
+    return tripDay;
+  }
+
+  async findByIdWithTripInfo(id: number, transaction?: Transaction) {
+    ensureId(id);
+
+    const tripDay = await this.tripDayModel.findByPk(id, {
+      transaction,
+      include: [
+        {
+          model: Place,
+          attributes: ['id', 'name'],
+          required: false, // LEFT JOIN вместо INNER JOIN
+        },
+        {
+          model: Trip,
+          attributes: ['id', 'title'],
+          required: false, // LEFT JOIN вместо INNER JOIN
+          include: [
+            {
+              model: UnassignedPlaces,
+              attributes: ['id'],
+              required: false, // LEFT JOIN вместо INNER JOIN
+              include: [
+                {
+                  model: Place,
+                  attributes: ['id', 'name'],
+                  required: false, // LEFT JOIN вместо INNER JOIN
+                },
+              ],
+            },
+          ],
+        },
+      ],
     });
 
     ensureEntityExists({ entity: tripDay, entityName: 'Trip_Day', value: id });
@@ -106,7 +154,7 @@ export class TripsDayService {
   ) {
     const { placeId } = AddPlaceDto;
 
-    const tripDay = await this.findById(id);
+    const tripDay = await this.findByIdWithTripInfo(id);
 
     const place = await this.placesService.findById(placeId, transaction);
 

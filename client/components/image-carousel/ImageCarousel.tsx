@@ -24,7 +24,7 @@ export const ImageCarousel: FC<ImageCarouselProps> = (props) => {
           effect="fade"
           className={s.carousel}>
           {images.map((item) => (
-            <div className={s.container} key={item.id}>
+            <div className={s.container} key={`img_${item.id}`}>
               <img className={s.backgroundImage} src={item.url} alt="background" />
               <Image
                 width={800}

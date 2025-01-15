@@ -7,3 +7,5 @@ interface SearchNestItem {
 }
 
 export type SearchNestResult = SearchNestItem[]
+
+export type SearchPlaceNestResult = { id: number; name: string }[]
