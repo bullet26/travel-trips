@@ -12,9 +12,8 @@ const Country = () => {
   const id = params.id
 
   const { data: country } = useTanstackQuery<CountryNest>({
-    url: 'countries',
-    queryKey: ['countries'],
-    id,
+    url: `countries${id}`,
+    queryKey: ['countries', `${id}`],
   })
 
   return (

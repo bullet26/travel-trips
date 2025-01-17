@@ -85,7 +85,7 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
       formData.append('file', file)
     }
 
-    mutation.mutate({ formData, id })
+    mutation.mutate({ formData, id, queryKeyWithId: [['places'], ['places', `${id}`]] })
   }
 
   return (

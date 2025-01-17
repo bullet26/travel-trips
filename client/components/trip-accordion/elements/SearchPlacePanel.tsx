@@ -2,9 +2,16 @@ import { useState } from 'react'
 import { Card, Input } from 'antd'
 import { useDebounce, useTanstackQuery } from 'hooks'
 import { SearchPlaceNestResult } from 'types'
-import s from './TripDaysAccordion.module.scss'
+import { DragCard } from './DragCard'
+import s from '../TripDaysAccordion.module.scss'
 
-export const SearchPlacePanel = () => {
+interface SearchPlacePanel {
+  dragType: string
+}
+
+export const SearchPlacePanel = (props: SearchPlacePanel) => {
+  const { dragType } = props
+
   const { Search } = Input
 
   const [inputValue, setInputValue] = useState('')
@@ -28,9 +35,14 @@ export const SearchPlacePanel = () => {
       />
       <div className={s.cardWrapper}>
         {data.map((item) => (
-          <Card key={item.id} size="small" className={s.card}>
-            <div>{item.name}</div>
-          </Card>
+          <DragCard
+            key={`place-searchResult-${item.id}`}
+            type="searchResult"
+            placeId={item.id}
+            dragType={dragType}
+            title={item.name}
+            {...item}
+          />
         ))}
         {isSuccess && !data.length && (
           <Card key={0} size="small">

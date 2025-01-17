@@ -81,7 +81,7 @@ export const CountryForm: FC<CountryFormProps> = (props) => {
       formData.append('file', file)
     }
 
-    mutation.mutate({ formData, id })
+    mutation.mutate({ formData, id, queryKeyWithId: [['countries'], ['countries', `${id}`]] })
   }
 
   return (

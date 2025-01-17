@@ -12,11 +12,12 @@ type UseTanstackQueryProps<T> = {
 
 export const useTanstackLazyQuery = <T, TVariable>({
   url,
-  queryKey,
+  queryKey: incomeQKey,
   options,
 }: UseTanstackQueryProps<T>) => {
   const [variable, setVariable] = useState<TVariable | undefined>(undefined)
   const [isTriggered, setTriggered] = useState(false)
+  const [queryKey, seQueryKey] = useState(incomeQKey)
 
   const queryFn = () => {
     if (!variable) {
@@ -25,18 +26,21 @@ export const useTanstackLazyQuery = <T, TVariable>({
     return fetcher<T>({ url: `${url}/${variable}`, method: 'GET' })
   }
 
-  const queryKeyFull = variable ? [...queryKey, variable] : queryKey
+  console.log('queryKey useTanstackLazyQuery', queryKey)
 
   const queryInfo = useQuery<T>({
-    queryKey: queryKeyFull,
+    queryKey,
     queryFn,
-    enabled: isTriggered,
+    enabled: !!variable || isTriggered,
     ...options,
   })
 
-  const trigger = (newVariable?: TVariable) => {
+  const trigger = (newVariable?: TVariable, queryKeyWithId?: string[]) => {
     setVariable(newVariable)
     setTriggered(true)
+    if (queryKeyWithId) {
+      seQueryKey(queryKeyWithId)
+    }
   }
 
   return [trigger, queryInfo] as const

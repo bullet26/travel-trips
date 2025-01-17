@@ -2,7 +2,14 @@ import '@ant-design/v5-patch-for-react-19'
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
-import { ReactQueryProvider, Header, ContextProvider, InfoMessage, ErrorMessage } from 'components'
+import {
+  ReactQueryProvider,
+  Header,
+  ContextProvider,
+  InfoMessage,
+  ErrorMessage,
+  DndProvider,
+} from 'components'
 import { AntdTheme } from 'theme'
 import 'styles/globals.scss'
 
@@ -34,12 +41,14 @@ const RootLayout = ({
         <AntdRegistry>
           <AntdTheme>
             <ReactQueryProvider>
-              <ContextProvider>
-                <Header />
-                <main>{children}</main>
-                <InfoMessage />
-                <ErrorMessage />
-              </ContextProvider>
+              <DndProvider>
+                <ContextProvider>
+                  <Header />
+                  <main>{children}</main>
+                  <InfoMessage />
+                  <ErrorMessage />
+                </ContextProvider>
+              </DndProvider>
             </ReactQueryProvider>
           </AntdTheme>
         </AntdRegistry>

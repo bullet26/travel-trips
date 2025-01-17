@@ -12,7 +12,10 @@ const City = () => {
   const params = useParams()
   const id = params.id
 
-  const { data: city } = useTanstackQuery<CityNest>({ url: 'cities', queryKey: ['cities'], id })
+  const { data: city } = useTanstackQuery<CityNest>({
+    url: `cities/${id}`,
+    queryKey: ['cities', `${id}`],
+  })
 
   return (
     <div className={s.itemWrapper}>

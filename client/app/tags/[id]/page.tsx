@@ -12,7 +12,10 @@ const Tag = () => {
   const params = useParams()
   const id = params.id
 
-  const { data: tag } = useTanstackQuery<TagNest>({ url: 'tags', queryKey: ['tags'], id })
+  const { data: tag } = useTanstackQuery<TagNest>({
+    url: `tags/${id}`,
+    queryKey: ['tags', `${id}`],
+  })
 
   return (
     <>

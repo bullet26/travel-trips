@@ -18,9 +18,8 @@ const Trip = () => {
   const router = useRouter()
 
   const { data: trip } = useTanstackQuery<TripsNest>({
-    url: 'trips',
-    queryKey: ['trips'],
-    id,
+    url: `trips/${id}`,
+    queryKey: ['trips', `${id}`],
   })
 
   const mutation = useTanstackMutation<{ message: string }>({

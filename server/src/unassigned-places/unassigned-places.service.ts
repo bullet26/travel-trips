@@ -14,6 +14,8 @@ import { TripsDayService } from 'src/trips-day/trips-day.service';
 import { Transaction } from 'sequelize';
 import { ensureEntityExists, ensureId } from 'src/utils';
 import { EntityType, Images } from 'src/images';
+import { Trip } from 'src/trips';
+import { TripDay } from 'src/trips-day';
 
 @Injectable()
 export class UnassignedPlacesService {
@@ -66,6 +68,44 @@ export class UnassignedPlacesService {
     return unassignedPlaces;
   }
 
+  async findByIdWithTripInfo(id: number, transaction?: Transaction) {
+    ensureId(id);
+
+    const tripDay = await this.unassignedPlacesModel.findByPk(id, {
+      transaction,
+      include: [
+        {
+          model: Place,
+          attributes: ['id', 'name'],
+          required: false, // LEFT JOIN вместо INNER JOIN
+        },
+        {
+          model: Trip,
+          attributes: ['id', 'title'],
+          required: false, // LEFT JOIN вместо INNER JOIN
+          include: [
+            {
+              model: TripDay,
+              attributes: ['id'],
+              required: false, // LEFT JOIN вместо INNER JOIN
+              include: [
+                {
+                  model: Place,
+                  attributes: ['id', 'name'],
+                  required: false, // LEFT JOIN вместо INNER JOIN
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
+    ensureEntityExists({ entity: tripDay, entityName: 'Trip_Day', value: id });
+
+    return tripDay;
+  }
+
   async findByTripId(tripId: number, transaction?: Transaction) {
     const unassignedPlace = await this.unassignedPlacesModel.findOne({
       where: { tripId },
@@ -81,7 +121,7 @@ export class UnassignedPlacesService {
   ) {
     const { placeId } = AddPlaceDto;
 
-    const unassignedPlaces = await this.findById(id, transaction);
+    const unassignedPlaces = await this.findByIdWithTripInfo(id, transaction);
 
     const place = await this.placesService.findById(placeId, transaction);
 
@@ -135,7 +175,11 @@ export class UnassignedPlacesService {
       );
 
       await unassignedPlaces.$remove('places', place.id, { transaction });
-      await this.tripsDayService.addPlace(tripDayId, { placeId }, transaction);
+      await this.tripsDayService.addPlaceFromUnassignedPlaces(
+        tripDayId,
+        { placeId },
+        transaction,
+      );
 
       await transaction.commit();
       return tripDay;

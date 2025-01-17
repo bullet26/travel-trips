@@ -2,10 +2,11 @@
 
 import { Button } from 'antd'
 import Link from 'next/link'
-import { useTanstackQuery } from 'hooks'
+import { useTanstackLazyQuery, useTanstackQuery } from 'hooks'
 import { UserNestInfo, TripsNest } from 'types'
 import { Card } from 'components'
 import s from './Trips.module.scss'
+import { useEffect } from 'react'
 
 const Trips = () => {
   const { data: user } = useTanstackQuery<UserNestInfo>({
@@ -13,11 +14,16 @@ const Trips = () => {
     queryKey: ['users'],
   })
 
-  const { data: trips } = useTanstackQuery<TripsNest[]>({
+  const [trigger, { data: trips }] = useTanstackLazyQuery<TripsNest[], number>({
     url: 'trips/user',
     queryKey: ['trips'],
-    id: user?.userId,
   })
+
+  useEffect(() => {
+    if (user?.userId) {
+      trigger(user.userId)
+    }
+  }, [user?.userId])
 
   return (
     <>

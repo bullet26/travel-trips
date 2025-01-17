@@ -14,6 +14,7 @@ import {
   AddPlaceDto,
   CreateTripsDayDto,
   UpdateTripsDayDto,
+  MovePlaceToTripDayDto,
 } from './dto';
 import { UnassignedPlacesService } from 'src/unassigned-places/unassigned-places.service';
 import { ensureEntityExists, ensureId } from 'src/utils';
@@ -173,6 +174,21 @@ export class TripsDayService {
     return tripDay;
   }
 
+  async addPlaceFromUnassignedPlaces(
+    id: number,
+    AddPlaceDto: AddPlaceDto,
+    transaction?: Transaction,
+  ) {
+    const { placeId } = AddPlaceDto;
+
+    const tripDay = await this.findByIdWithTripInfo(id);
+
+    const place = await this.placesService.findById(placeId, transaction);
+
+    await tripDay.$add('places', place.id, { transaction });
+    return tripDay;
+  }
+
   async removePlace(id: number, AddPlaceDto: AddPlaceDto) {
     const { placeId } = AddPlaceDto;
 
@@ -182,6 +198,21 @@ export class TripsDayService {
 
     await tripDay.$remove('places', place.id);
     return tripDay;
+  }
+
+  async movePlaceToAnotherTripDay(
+    id: number,
+    movePlaceToTripDayDto: MovePlaceToTripDayDto,
+  ) {
+    const { placeId, tripDayId } = movePlaceToTripDayDto;
+
+    const tripDay = await this.findById(id);
+    const targetTripDay = await this.findById(tripDayId);
+    const place = await this.placesService.findById(placeId);
+
+    await tripDay.$remove('places', place.id);
+    await targetTripDay.$add('places', place.id);
+    return targetTripDay;
   }
 
   async movePlaceToUnassignedPlaces(

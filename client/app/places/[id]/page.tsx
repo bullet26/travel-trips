@@ -12,7 +12,10 @@ const Place = () => {
   const params = useParams()
   const id = params.id
 
-  const { data: place } = useTanstackQuery<PlaceNest>({ url: 'places', queryKey: ['places'], id })
+  const { data: place } = useTanstackQuery<PlaceNest>({
+    url: `places/${id}`,
+    queryKey: ['places', `${id}`],
+  })
 
   return (
     <div className={s.itemWrapper}>

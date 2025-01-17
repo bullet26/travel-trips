@@ -14,6 +14,7 @@ import {
   AddPlaceDto,
   UpdateTripsDayDto,
   CreateTripsDayDto,
+  MovePlaceToTripDayDto,
 } from './dto';
 
 @Controller('trips-day')
@@ -51,14 +52,25 @@ export class TripsDayController {
     return this.tripsDayService.removePlace(Number(id), addPlaceDto);
   }
 
-  @Patch('/place/move/:id')
-  movePlaceToTripDay(
+  @Patch('/place/move/up/:id')
+  movePlaceToUnassignedPlaces(
     @Param('id') id: string,
     @Body() movePlaceToUnassignedPlacesDto: MovePlaceToUnassignedPlacesDto,
   ) {
     return this.tripsDayService.movePlaceToUnassignedPlaces(
       Number(id),
       movePlaceToUnassignedPlacesDto,
+    );
+  }
+
+  @Patch('/place/move/td/:id')
+  movePlaceToAnotherTripDay(
+    @Param('id') id: string,
+    @Body() movePlaceToTripDayDto: MovePlaceToTripDayDto,
+  ) {
+    return this.tripsDayService.movePlaceToAnotherTripDay(
+      Number(id),
+      movePlaceToTripDayDto,
     );
   }
 
@@ -72,6 +84,6 @@ export class TripsDayController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.tripsDayService.remove(+id);
+    return this.tripsDayService.remove(Number(id));
   }
 }

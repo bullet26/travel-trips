@@ -12,6 +12,7 @@ type mutationFnProps = {
   id?: number | null
   body?: object
   formData?: FormData
+  queryKeyWithId?: string[][]
 }
 
 export const useTanstackMutation = <T,>({
@@ -29,10 +30,16 @@ export const useTanstackMutation = <T,>({
 
       return fetcher<T>({ url: fullUrl, method, body, formData })
     },
-    onSuccess: (data) => {
+    onSuccess: (data, { queryKeyWithId }) => {
       if (onSuccess) onSuccess(data)
 
-      if (queryKey?.length) {
+      if (queryKeyWithId?.length) {
+        queryKeyWithId.forEach((queryKey) => {
+          console.log(queryKey, 'queryKeyWithId useMutation')
+          queryClient.invalidateQueries({ queryKey })
+        })
+      } else if (queryKey?.length) {
+        console.log(queryKey, 'queryKey useMutation')
         queryClient.invalidateQueries({ queryKey })
       } else {
         queryClient.invalidateQueries()
