@@ -6,7 +6,7 @@ import { useState } from 'react'
 
 type UseTanstackQueryProps<T> = {
   url: string
-  queryKey: string[]
+  queryKey?: string[]
   options?: UseQueryOptions<T>
 }
 
@@ -17,7 +17,7 @@ export const useTanstackLazyQuery = <T, TVariable>({
 }: UseTanstackQueryProps<T>) => {
   const [variable, setVariable] = useState<TVariable | undefined>(undefined)
   const [isTriggered, setTriggered] = useState(false)
-  const [queryKey, seQueryKey] = useState(incomeQKey)
+  const [queryKey, seQueryKey] = useState(incomeQKey || [])
 
   const queryFn = () => {
     if (!variable) {
@@ -25,8 +25,6 @@ export const useTanstackLazyQuery = <T, TVariable>({
     }
     return fetcher<T>({ url: `${url}/${variable}`, method: 'GET' })
   }
-
-  console.log('queryKey useTanstackLazyQuery', queryKey)
 
   const queryInfo = useQuery<T>({
     queryKey,

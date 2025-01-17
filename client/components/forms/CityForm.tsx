@@ -83,7 +83,7 @@ export const CityForm: FC<CityFormProps> = (props) => {
       formData.append('file', file)
     }
 
-    mutation.mutate({ formData, id, queryKeyWithId: [['cities'], ['cities', `${id}`]] })
+    mutation.mutate({ formData, id, queryKeyWithId: id ? [['cities', `${id}`]] : [] })
   }
 
   return (

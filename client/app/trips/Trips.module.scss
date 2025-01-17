@@ -14,8 +14,12 @@
   column-gap: 15px;
 }
 
-.tripWrapper {
+.tripItemWrapper,
+.tripsWrapper {
   padding: 25px 35px;
+}
+
+.tripsWrapper {
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;

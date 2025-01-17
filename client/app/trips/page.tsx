@@ -32,7 +32,7 @@ const Trips = () => {
           Create new trip
         </Button>
       </Link>
-      <div className={s.tripWrapper}>
+      <div className={s.tripsWrapper}>
         {trips?.map((item) => (
           <Card
             key={item.id}

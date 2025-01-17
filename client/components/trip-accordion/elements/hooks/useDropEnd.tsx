@@ -8,31 +8,26 @@ export const useDropEnd = () => {
   const addPlaceTD = useTanstackMutation<TripDayNest>({
     url: `trips-day/place/add`,
     method: 'PATCH',
-    queryKey: ['trips-day'],
   })
 
   const addPlaceUP = useTanstackMutation<UnassignedPlacesNest>({
     url: `unassigned-places/place/add`,
     method: 'PATCH',
-    queryKey: ['unassigned-places'],
   })
 
   const movePlaceToUP = useTanstackMutation<TripDayNest>({
     url: `trips-day/place/move/up`,
     method: 'PATCH',
-    queryKey: ['trips-day', 'unassigned-places'],
   })
 
   const movePlaceFromTDToTD = useTanstackMutation<TripDayNest>({
     url: `trips-day/place/move/td`,
     method: 'PATCH',
-    queryKey: ['trips-day'],
   })
 
   const movePlaceFromUPToTD = useTanstackMutation<UnassignedPlacesNest>({
     url: `unassigned-places/place/move`,
     method: 'PATCH',
-    queryKey: ['trips-day', 'unassigned-places'],
   })
 
   const handleError = (error: Error | null) => {
@@ -58,11 +53,28 @@ export const useDropEnd = () => {
     const { placeId, sourceType, sourceId } = dragItem
     const { targetId, targetType } = dropItem
 
+    const queryKeyMap = {
+      addPlaceTD: [['trips-day', `${targetId}`]],
+      addPlaceUP: [['unassigned-places', `${targetId}`]],
+      movePlaceToUP: [
+        [`trips-day`, `${sourceId}`],
+        [`unassigned-places`, `${targetId}`],
+      ],
+      movePlaceFromTDToTD: [
+        ['trips-day', `${sourceId}`],
+        ['trips-day', `${targetId}`],
+      ],
+      movePlaceFromUPToTD: [
+        ['unassigned-places', `${sourceId}`],
+        ['trips-day', `${targetId}`],
+      ],
+    }
+
     if (sourceType === 'searchResult' && targetType === 'up') {
       addPlaceUP.mutate({
         id: targetId,
         body: { placeId },
-        queryKeyWithId: [['unassigned-places', `${targetId}`]],
+        queryKeyWithId: queryKeyMap.addPlaceUP,
       })
       return addPlaceUP
     }
@@ -71,7 +83,7 @@ export const useDropEnd = () => {
       addPlaceTD.mutate({
         id: targetId,
         body: { placeId },
-        queryKeyWithId: [['trips-day', `${targetId}`]],
+        queryKeyWithId: queryKeyMap.addPlaceTD,
       })
       return addPlaceTD
     }
@@ -84,10 +96,7 @@ export const useDropEnd = () => {
       movePlaceFromUPToTD.mutate({
         id: sourceId,
         body: { placeId, tripDayId: targetId },
-        queryKeyWithId: [
-          [`unassigned-places`, `${sourceId}`],
-          [`trips-day`, `${targetId}`],
-        ],
+        queryKeyWithId: queryKeyMap.movePlaceFromUPToTD,
       })
       return movePlaceFromUPToTD
     }
@@ -96,10 +105,7 @@ export const useDropEnd = () => {
       movePlaceFromTDToTD.mutate({
         id: sourceId,
         body: { placeId, tripDayId: targetId },
-        queryKeyWithId: [
-          [`trips-day`, `${sourceId}`],
-          [`trips-day`, `${targetId}`],
-        ],
+        queryKeyWithId: queryKeyMap.movePlaceFromTDToTD,
       })
       return movePlaceFromTDToTD
     }
@@ -108,10 +114,7 @@ export const useDropEnd = () => {
       movePlaceToUP.mutate({
         id: sourceId,
         body: { placeId, unassignedPlacesId: targetId },
-        queryKeyWithId: [
-          [`trips-day`, `${sourceId}`],
-          [`unassigned-places`, `${targetId}`],
-        ],
+        queryKeyWithId: queryKeyMap.movePlaceToUP,
       })
       return movePlaceToUP
     }

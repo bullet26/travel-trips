@@ -60,7 +60,7 @@ export const TagForm: FC<TagFormProps> = (props) => {
   }, [isSubmitSuccessful, reset])
 
   const onSubmit: SubmitHandler<ICreateTag> = async (values) => {
-    mutation.mutate({ body: values, id, queryKeyWithId: [['tags'], ['tags', `${id}`]] })
+    mutation.mutate({ body: values, id, queryKeyWithId: id ? [['tags', `${id}`]] : [] })
   }
 
   return (

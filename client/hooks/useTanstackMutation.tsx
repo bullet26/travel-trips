@@ -30,19 +30,22 @@ export const useTanstackMutation = <T,>({
 
       return fetcher<T>({ url: fullUrl, method, body, formData })
     },
-    onSuccess: (data, { queryKeyWithId }) => {
+    onSuccess: async (data, { queryKeyWithId }) => {
       if (onSuccess) onSuccess(data)
 
+      if (queryKey?.length) {
+        await queryClient.invalidateQueries({ queryKey })
+      }
+
       if (queryKeyWithId?.length) {
-        queryKeyWithId.forEach((queryKey) => {
-          console.log(queryKey, 'queryKeyWithId useMutation')
-          queryClient.invalidateQueries({ queryKey })
-        })
-      } else if (queryKey?.length) {
-        console.log(queryKey, 'queryKey useMutation')
-        queryClient.invalidateQueries({ queryKey })
-      } else {
-        queryClient.invalidateQueries()
+        for (const queryKey of queryKeyWithId) {
+          await queryClient.invalidateQueries({ queryKey, refetchType: 'all' })
+          //await queryClient.refetchQueries({ queryKey })
+        }
+      }
+
+      if (!queryKeyWithId?.length && !queryKey?.length) {
+        await queryClient.invalidateQueries()
       }
     },
   })

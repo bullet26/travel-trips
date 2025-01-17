@@ -8,13 +8,11 @@ export const useDeleteCard = () => {
   const removePlaceTD = useTanstackMutation<TripDayNest>({
     url: `trips-day/place/remove`,
     method: 'PATCH',
-    queryKey: ['trips-day'],
   })
 
   const removePlaceUP = useTanstackMutation<UnassignedPlacesNest>({
     url: `unassigned-places/place/remove`,
     method: 'PATCH',
-    queryKey: ['unassigned-places'],
   })
 
   const handleError = (error: Error | null) => {
@@ -27,18 +25,23 @@ export const useDeleteCard = () => {
   return ({ id, type, placeId }: { type: 'up' | 'td'; placeId: number; id: number }) => {
     if (!placeId || !type || !id) return null
 
+    const queryKeyMap = {
+      removePlaceTD: [['trips-day', `${id}`]],
+      removePlaceUP: [['unassigned-places', `${id}`]],
+    }
+
     if (type === 'up') {
       removePlaceUP.mutate({
         id,
         body: { placeId },
-        queryKeyWithId: [['unassigned-places', `${id}`]],
+        queryKeyWithId: queryKeyMap.removePlaceUP,
       })
 
       return removePlaceUP
     }
 
     if (type === 'td') {
-      removePlaceTD.mutate({ id, body: { placeId }, queryKeyWithId: [['trips-day', `${id}`]] })
+      removePlaceTD.mutate({ id, body: { placeId }, queryKeyWithId: queryKeyMap.removePlaceTD })
       return removePlaceTD
     }
   }

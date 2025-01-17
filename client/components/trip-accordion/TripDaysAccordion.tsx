@@ -25,13 +25,11 @@ export const TripDaysAccordion = (props: TripDaysAccordionProps) => {
   const [triggerTripDay, { data: tdData, isLoading: isLoadingTripDay, isError: isErrorTD }] =
     useTanstackLazyQuery<TripDayNest, number>({
       url: 'trips-day',
-      queryKey: ['trips-day'],
     })
 
   const [triggerUP, { data: upData, isLoading: isLoadingUp, isError: isErrorUp }] =
     useTanstackLazyQuery<UnassignedPlacesNest, number>({
       url: 'unassigned-places',
-      queryKey: ['unassigned-places'],
     })
 
   useEffect(() => {
@@ -48,20 +46,27 @@ export const TripDaysAccordion = (props: TripDaysAccordionProps) => {
     }
   }, [tdData])
 
+  const updateData = (keyToLoad: string) => {
+    const [type, id] = keyToLoad.split('_')
+
+    if (type === 'up') {
+      triggerUP(Number(id), ['unassigned-places', `${id}`])
+    }
+    if (type === 'td') {
+      triggerTripDay(Number(id), ['trips-day', `${id}`])
+    }
+  }
+
   const handlePanelChange = async (keys: string | string[]) => {
-    const newKeys = Array.isArray(keys) ? keys : [keys]
-    setOpenKeys(newKeys)
+    const allKeys = Array.isArray(keys) ? keys : [keys]
+    setOpenKeys(allKeys)
 
-    const keyToLoad = newKeys.find((key) => !dataCache[key])
-    if (keyToLoad) {
-      const [type, id] = keyToLoad.split('_')
-
-      if (type === 'up') {
-        triggerUP(Number(id), ['unassigned-places', `${id}`])
-      }
-      if (type === 'td') {
-        triggerTripDay(Number(id), ['trips-day', `${id}`])
-      }
+    if (isEditMode) {
+      allKeys.forEach((item) => updateData(item))
+    } else {
+      const keyToLoad = allKeys.find((key) => !dataCache[key])
+      if (!keyToLoad) return
+      updateData(keyToLoad)
     }
   }
 

@@ -14,7 +14,6 @@ export const useTanstackQuery = <T,>({
   options,
   enabled = true,
 }: UseTanstackQueryProps<T>): UseQueryResult<T> => {
-  console.log('useTanstackQuery queryKey', queryKey)
   return useQuery<T>({
     queryKey,
     queryFn: () => fetcher<T>({ url, method: 'GET' }),

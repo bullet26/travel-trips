@@ -64,7 +64,7 @@ const Trip = () => {
   return (
     <div>
       {trip && (
-        <div className={s.tripWrapper}>
+        <div className={s.tripItemWrapper}>
           <div className={s.title}>{trip.title}</div>
           <div className={s.editBtnWrapper}>
             <Button onClick={onEdit}>Edit</Button>

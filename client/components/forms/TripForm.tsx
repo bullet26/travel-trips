@@ -102,7 +102,7 @@ export const TripForm: FC<TripFormProps> = (props) => {
       formData.append('file', file)
     }
 
-    mutation.mutate({ formData, id, queryKeyWithId: [['trips'], ['trips', `${id}`]] })
+    mutation.mutate({ formData, id, queryKeyWithId: id ? [['trips', `${id}`]] : [] })
   }
 
   const getDate = (): [dayjs.Dayjs | null, dayjs.Dayjs | null] => {
