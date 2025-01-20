@@ -1,13 +1,15 @@
+'use client'
+
 import { useRef } from 'react'
 import { DeleteOutlined } from '@ant-design/icons'
 import { Button, Card as AntCard } from 'antd'
 import { useDrag } from 'react-dnd'
 import { Card } from 'components'
 import { useDropEnd, useDeleteCard } from './hooks'
-import s from '../TripDaysAccordion.module.scss'
+import s from './DnD.module.scss'
 
 interface DragCardProps {
-  type: 'up' | 'td' | 'searchResult'
+  type: 'up' | 'td' | 'wl' | 'searchResult'
   placeId: number
   isEditMode?: boolean
   dragType: string
@@ -65,7 +67,7 @@ export const DragCard = (props: DragCardProps) => {
           </AntCard>
         </>
       )}
-      {(type === 'up' || type === 'td') && (
+      {(type === 'up' || type === 'td' || type === 'wl') && (
         <div>
           {isEditMode && (
             <Button icon={<DeleteOutlined />} className={s.deleteBtn} onClick={onDeleteClick}>

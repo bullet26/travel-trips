@@ -1,12 +1,11 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Button, Card, Divider, Drawer, Tabs } from 'antd'
+import { Button, Divider, Drawer, Tabs } from 'antd'
 import { useTanstackQuery } from 'hooks/useTanstackQuery'
 import { CityNest, CountryNest, ICreateCity, ImageAttributesNest } from 'types'
-import { DeleteOutlined } from '@ant-design/icons'
 import clsx from 'clsx'
 import { useContextActions, useTanstackMutation } from 'hooks'
-import { CityForm } from 'components'
+import { CardWithDelete, CityForm } from 'components'
 import s from '../Update.module.scss'
 
 const Cities = () => {
@@ -72,12 +71,14 @@ const Cities = () => {
             children: (
               <div className={s.wrapper}>
                 {query.data?.map((item) => (
-                  <Card key={item.id}>
-                    <div className={s.card}>
-                      <p onClick={() => onEdit(item.id)}>{item.name}</p>
-                      <DeleteOutlined onClick={() => onDelete(item.id)} />
-                    </div>
-                  </Card>
+                  <CardWithDelete
+                    key={item.id}
+                    id={item.id}
+                    title={item.name}
+                    entity="city"
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                  />
                 ))}
               </div>
             ),
@@ -104,12 +105,14 @@ const Cities = () => {
                   {queryCountries.data
                     ?.find(({ id }) => id === countryId)
                     ?.cities?.map((item) => (
-                      <Card key={item.id}>
-                        <div className={s.card}>
-                          <p onClick={() => onEdit(item.id)}>{item.name}</p>
-                          <DeleteOutlined onClick={() => onDelete(item.id)} />
-                        </div>
-                      </Card>
+                      <CardWithDelete
+                        key={item.id}
+                        id={item.id}
+                        title={item.name}
+                        entity="city"
+                        onEdit={onEdit}
+                        onDelete={onDelete}
+                      />
                     ))}
                 </div>
               </>

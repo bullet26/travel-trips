@@ -1,11 +1,9 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Button, Collapse } from 'antd'
 import { ArrowUpOutlined, ArrowDownOutlined, SettingOutlined } from '@ant-design/icons'
-import { useTanstackLazyQuery } from 'hooks'
-import { TripDayNest, UnassignedPlacesNest } from 'types'
 import { formatToDateString } from 'utils'
-import { TripDayAndUPItem, SearchPlacePanel } from './elements'
+import { DropCardItem, SearchPlacePanel } from 'components'
 import s from './TripDaysAccordion.module.scss'
 
 interface TripDaysAccordionProps {
@@ -19,56 +17,6 @@ export const TripDaysAccordion = (props: TripDaysAccordionProps) => {
   const dragType = 'trip'
 
   const [isEditMode, setEditModeStatus] = useState(false)
-  const [openKeys, setOpenKeys] = useState<string[]>([])
-  const [dataCache, setDataCache] = useState<Record<string, TripDayNest | UnassignedPlacesNest>>({})
-
-  const [triggerTripDay, { data: tdData, isLoading: isLoadingTripDay, isError: isErrorTD }] =
-    useTanstackLazyQuery<TripDayNest, number>({
-      url: 'trips-day',
-    })
-
-  const [triggerUP, { data: upData, isLoading: isLoadingUp, isError: isErrorUp }] =
-    useTanstackLazyQuery<UnassignedPlacesNest, number>({
-      url: 'unassigned-places',
-    })
-
-  useEffect(() => {
-    if (upData) {
-      const key = `up_${unassignedPlacesId}`
-      setDataCache((prev) => ({ ...prev, [key]: upData }))
-    }
-  }, [upData, unassignedPlacesId])
-
-  useEffect(() => {
-    if (tdData) {
-      const key = `td_${tdData.id}`
-      setDataCache((prev) => ({ ...prev, [key]: tdData }))
-    }
-  }, [tdData])
-
-  const updateData = (keyToLoad: string) => {
-    const [type, id] = keyToLoad.split('_')
-
-    if (type === 'up') {
-      triggerUP(Number(id), ['unassigned-places', `${id}`])
-    }
-    if (type === 'td') {
-      triggerTripDay(Number(id), ['trips-day', `${id}`])
-    }
-  }
-
-  const handlePanelChange = async (keys: string | string[]) => {
-    const allKeys = Array.isArray(keys) ? keys : [keys]
-    setOpenKeys(allKeys)
-
-    if (isEditMode) {
-      allKeys.forEach((item) => updateData(item))
-    } else {
-      const keyToLoad = allKeys.find((key) => !dataCache[key])
-      if (!keyToLoad) return
-      updateData(keyToLoad)
-    }
-  }
 
   const onEditClick = () => setEditModeStatus((prevState) => !prevState)
 
@@ -78,13 +26,10 @@ export const TripDaysAccordion = (props: TripDaysAccordionProps) => {
       label: 'unassigned places',
       styles: { header: { border: '1px solid #252525' }, body: { border: '1px solid #252525' } },
       children: (
-        <TripDayAndUPItem
+        <DropCardItem
           id={unassignedPlacesId}
           type="up"
           dragType={dragType}
-          isLoading={isLoadingUp && openKeys.includes(`up_${unassignedPlacesId}`)}
-          isError={isErrorUp}
-          places={dataCache[`up_${unassignedPlacesId}`]?.places || []}
           isEditMode={isEditMode}
         />
       ),
@@ -95,15 +40,7 @@ export const TripDaysAccordion = (props: TripDaysAccordionProps) => {
         label: <div>{formatToDateString(item.date)}</div>,
         styles: { header: { border: '1px solid #252525' }, body: { border: '1px solid #252525' } },
         children: (
-          <TripDayAndUPItem
-            id={item.id}
-            type="td"
-            dragType={dragType}
-            isLoading={isLoadingTripDay && openKeys.includes(`td_${item.id}`)}
-            isError={isErrorTD}
-            places={dataCache[`td_${item.id}`]?.places || []}
-            isEditMode={isEditMode}
-          />
+          <DropCardItem id={item.id} type="td" dragType={dragType} isEditMode={isEditMode} />
         ),
       }
     }),
@@ -122,7 +59,6 @@ export const TripDaysAccordion = (props: TripDaysAccordionProps) => {
         <Collapse
           items={items}
           size="large"
-          onChange={handlePanelChange}
           ghost
           expandIconPosition="end"
           expandIcon={({ isActive }) => (isActive ? <ArrowUpOutlined /> : <ArrowDownOutlined />)}

@@ -1,5 +1,6 @@
 import { CSSProperties, FC } from 'react'
 import Image from 'next/image'
+import { Popconfirm } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
 import { useContextActions, useTanstackMutation } from 'hooks'
 import { EntityType } from 'types'
@@ -57,7 +58,12 @@ export const ImageIEdited: FC<ImageIEditedProps> = (props) => {
         <span>
           {entityType}, {entityId}
         </span>
-        <DeleteOutlined onClick={() => onDelete(id)} />
+        <Popconfirm
+          title="Delete the image"
+          description="Are you sure to delete this image from cloud?"
+          onConfirm={() => onDelete(id)}>
+          <DeleteOutlined />
+        </Popconfirm>
       </div>
     </div>
   )

@@ -49,7 +49,7 @@ export const TripForm: FC<TripFormProps> = (props) => {
     queryKey: ['trips'],
     onSuccess: (data) => {
       if (data) {
-        setInfoMsg(`New trip - ${data.title} was ${btnText}`)
+        setInfoMsg(`Trip - ${data.title} was ${btnText}`)
         if (onSuccess) onSuccess()
       }
     },

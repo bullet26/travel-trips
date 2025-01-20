@@ -1,0 +1,17 @@
+.deleteBtn {
+  margin-bottom: 7px;
+}
+
+.card {
+  cursor: move;
+}
+
+.dayItem {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  column-gap: 25px;
+  min-height: 35px;
+  height: fit-content;
+}

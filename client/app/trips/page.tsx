@@ -1,12 +1,12 @@
 'use client'
 
+import { useEffect } from 'react'
 import { Button } from 'antd'
 import Link from 'next/link'
 import { useTanstackLazyQuery, useTanstackQuery } from 'hooks'
 import { UserNestInfo, TripsNest } from 'types'
 import { Card } from 'components'
 import s from './Trips.module.scss'
-import { useEffect } from 'react'
 
 const Trips = () => {
   const { data: user } = useTanstackQuery<UserNestInfo>({

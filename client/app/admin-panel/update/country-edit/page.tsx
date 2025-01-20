@@ -1,11 +1,10 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Card, Drawer } from 'antd'
+import { Drawer } from 'antd'
 import { useTanstackQuery } from 'hooks/useTanstackQuery'
 import { CountryNest, ICreateCountry, ImageAttributesNest } from 'types'
-import { DeleteOutlined } from '@ant-design/icons'
 import { useContextActions, useTanstackMutation } from 'hooks'
-import { CountryForm } from 'components'
+import { CardWithDelete, CountryForm } from 'components'
 import s from '../Update.module.scss'
 
 const Countries = () => {
@@ -58,12 +57,14 @@ const Countries = () => {
     <>
       <div className={s.wrapper}>
         {query.data?.map((item) => (
-          <Card key={item.id}>
-            <div className={s.card}>
-              <p onClick={() => onEdit(item.id)}>{item.name}</p>
-              <DeleteOutlined onClick={() => onDelete(item.id)} />
-            </div>
-          </Card>
+          <CardWithDelete
+            key={item.id}
+            id={item.id}
+            title={item.name}
+            entity="country"
+            onEdit={onEdit}
+            onDelete={onDelete}
+          />
         ))}
       </div>
       <Drawer title="Update country" onClose={onClose} open={openDrawer} width={800} destroyOnClose>

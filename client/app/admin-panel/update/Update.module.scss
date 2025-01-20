@@ -7,15 +7,7 @@
   row-gap: 15px;
 }
 
-.card {
-  display: flex;
-  justify-content: space-between;
 
-  p,
-  svg {
-    cursor: pointer;
-  }
-}
 
 .active {
   border: 2px solid $primary-color !important;

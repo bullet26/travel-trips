@@ -35,7 +35,7 @@ export const CountryForm: FC<CountryFormProps> = (props) => {
     queryKey: ['countries'],
     onSuccess: (data) => {
       if (data) {
-        setInfoMsg(`New country - ${data.name} was ${btnText}`)
+        setInfoMsg(`Country - ${data.name} was ${btnText}`)
         if (onSuccess) onSuccess()
       }
     },

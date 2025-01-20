@@ -1,0 +1,11 @@
+.searchWrapper {
+  width: 300px;
+
+  .cardWrapper {
+    margin-top: 15px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-template-rows: auto;
+    gap: 7px;
+  }
+}

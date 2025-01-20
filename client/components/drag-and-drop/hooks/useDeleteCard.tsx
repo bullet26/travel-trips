@@ -1,6 +1,6 @@
 import { useContextActions, useTanstackMutation } from 'hooks'
 import { useEffect } from 'react'
-import { TripDayNest, UnassignedPlacesNest } from 'types'
+import { TripDayNest, UnassignedPlacesNest, WishlistNest } from 'types'
 
 export const useDeleteCard = () => {
   const { setErrorMsg } = useContextActions()
@@ -15,19 +15,26 @@ export const useDeleteCard = () => {
     method: 'PATCH',
   })
 
+  const removePlaceWL = useTanstackMutation<WishlistNest>({
+    url: `wishlists/place/remove`,
+    method: 'PATCH',
+  })
+
   const handleError = (error: Error | null) => {
     if (error?.message) setErrorMsg(error.message)
   }
 
   useEffect(() => handleError(removePlaceTD.error), [removePlaceTD.error])
   useEffect(() => handleError(removePlaceUP.error), [removePlaceUP.error])
+  useEffect(() => handleError(removePlaceWL.error), [removePlaceWL.error])
 
-  return ({ id, type, placeId }: { type: 'up' | 'td'; placeId: number; id: number }) => {
+  return ({ id, type, placeId }: { type: 'up' | 'td' | 'wl'; placeId: number; id: number }) => {
     if (!placeId || !type || !id) return null
 
     const queryKeyMap = {
       removePlaceTD: [['trips-day', `${id}`]],
       removePlaceUP: [['unassigned-places', `${id}`]],
+      removePlaceWL: [['wishlists', `${id}`]],
     }
 
     if (type === 'up') {
@@ -43,6 +50,16 @@ export const useDeleteCard = () => {
     if (type === 'td') {
       removePlaceTD.mutate({ id, body: { placeId }, queryKeyWithId: queryKeyMap.removePlaceTD })
       return removePlaceTD
+    }
+
+    if (type === 'wl') {
+      removePlaceWL.mutate({
+        id,
+        body: { placeId },
+        queryKeyWithId: queryKeyMap.removePlaceWL,
+      })
+
+      return removePlaceWL
     }
   }
 }

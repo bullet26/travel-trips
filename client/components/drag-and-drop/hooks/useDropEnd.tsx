@@ -1,6 +1,6 @@
 import { useContextActions, useTanstackMutation } from 'hooks'
 import { useEffect } from 'react'
-import { TripDayNest, UnassignedPlacesNest } from 'types'
+import { TripDayNest, UnassignedPlacesNest, WishlistNest } from 'types'
 
 export const useDropEnd = () => {
   const { setErrorMsg } = useContextActions()
@@ -12,6 +12,11 @@ export const useDropEnd = () => {
 
   const addPlaceUP = useTanstackMutation<UnassignedPlacesNest>({
     url: `unassigned-places/place/add`,
+    method: 'PATCH',
+  })
+
+  const addPlaceWL = useTanstackMutation<WishlistNest>({
+    url: `wishlists/place/add`,
     method: 'PATCH',
   })
 
@@ -36,6 +41,7 @@ export const useDropEnd = () => {
 
   useEffect(() => handleError(addPlaceTD.error), [addPlaceTD.error])
   useEffect(() => handleError(addPlaceUP.error), [addPlaceUP.error])
+  useEffect(() => handleError(addPlaceWL.error), [addPlaceWL.error])
   useEffect(() => handleError(movePlaceToUP.error), [movePlaceToUP.error])
   useEffect(() => handleError(movePlaceFromTDToTD.error), [movePlaceFromTDToTD.error])
   useEffect(() => handleError(movePlaceFromUPToTD.error), [movePlaceFromUPToTD.error])
@@ -43,10 +49,10 @@ export const useDropEnd = () => {
   return (
     dragItem: {
       placeId: number
-      sourceType: 'up' | 'td' | 'searchResult'
+      sourceType: 'up' | 'td' | 'wl' | 'searchResult'
       sourceId: number | null
     },
-    dropItem: { dropEffect: string; targetId: number; targetType: 'up' | 'td' } | null,
+    dropItem: { dropEffect: string; targetId: number; targetType: 'up' | 'td' | 'wl' } | null,
   ) => {
     if (!dragItem || !dropItem) return null
 
@@ -56,6 +62,7 @@ export const useDropEnd = () => {
     const queryKeyMap = {
       addPlaceTD: [['trips-day', `${targetId}`]],
       addPlaceUP: [['unassigned-places', `${targetId}`]],
+      addPlaceWL: [['wishlists', `${targetId}`]],
       movePlaceToUP: [
         [`trips-day`, `${sourceId}`],
         [`unassigned-places`, `${targetId}`],
@@ -86,6 +93,15 @@ export const useDropEnd = () => {
         queryKeyWithId: queryKeyMap.addPlaceTD,
       })
       return addPlaceTD
+    }
+
+    if (sourceType === 'searchResult' && targetType === 'wl') {
+      addPlaceWL.mutate({
+        id: targetId,
+        body: { placeId },
+        queryKeyWithId: queryKeyMap.addPlaceWL,
+      })
+      return addPlaceWL
     }
 
     if (sourceType === 'up' && targetType === 'up') {

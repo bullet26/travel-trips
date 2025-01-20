@@ -1,4 +1,9 @@
-export { type ICreateWishlist, type IUpdateWishlist, type ITransformWLToTrip } from './wishlists'
+export {
+  type ICreateWishlist,
+  type IUpdateWishlist,
+  type ITransformWLToTrip,
+  type WishlistNest,
+} from './wishlists'
 export {
   type ICreateUser,
   type IUpdateUser,

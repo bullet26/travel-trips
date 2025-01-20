@@ -39,7 +39,7 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
     queryKey: ['places'],
     onSuccess: (data) => {
       if (data) {
-        setInfoMsg(`New place - ${data.name} was ${btnText}`)
+        setInfoMsg(`Place - ${data.name} was ${btnText}`)
         if (onSuccess) onSuccess()
       }
     },

@@ -1,4 +1,61 @@
+@import '../../styles/variables.scss';
+
 .mainBtn {
   width: 100%;
   height: 48px;
+}
+
+.wlItemWrapper,
+.wishlistsWrapper {
+  padding: 25px 35px;
+}
+
+.wishlistsWrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  column-gap: 25px;
+  row-gap: 15px;
+}
+
+.title {
+  font-size: 24px;
+  color: $primary-color;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  column-gap: 15px;
+}
+
+.editBtnWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 25px;
+  column-gap: 15px;
+
+  button {
+    flex: 1;
+  }
+}
+
+.settingBtnWrapper {
+  margin-top: 25px;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 7px;
+}
+
+.dropSearchWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  column-gap: 25px;
+}
+
+.comment {
+  margin-top: 15px;
+  font-size: 16px;
+  color: $light;
+  font-style: italic;
 }

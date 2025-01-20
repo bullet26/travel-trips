@@ -10,33 +10,3 @@
   align-items: flex-start;
   column-gap: 25px;
 }
-
-.searchWrapper {
-  width: 300px;
-
-  .cardWrapper {
-    margin-top: 15px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    grid-template-rows: auto;
-    gap: 7px;
-
-    .card {
-      cursor: move;
-    }
-  }
-}
-
-.deleteBtn {
-  margin-bottom: 7px;
-}
-
-.dayItem {
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  column-gap: 25px;
-  min-height: 35px;
-  height: fit-content;
-}

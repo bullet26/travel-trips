@@ -39,8 +39,7 @@ export const useTanstackMutation = <T,>({
 
       if (queryKeyWithId?.length) {
         for (const queryKey of queryKeyWithId) {
-          await queryClient.invalidateQueries({ queryKey, refetchType: 'all' })
-          //await queryClient.refetchQueries({ queryKey })
+          await queryClient.invalidateQueries({ queryKey })
         }
       }
 

@@ -11,8 +11,9 @@ import { Place } from 'src/places/models/place.model';
 import { User } from 'src/users/models/users.model';
 
 interface WishlistCreationAttrs {
-  name: string;
+  title: string;
   comment?: string;
+  userId: number;
 }
 
 @Table({ tableName: 'wishlist' })
@@ -26,7 +27,7 @@ export class Wishlist extends Model<Wishlist, WishlistCreationAttrs> {
   id: number;
 
   @Column({ type: DataType.STRING, allowNull: false })
-  name: string;
+  title: string;
 
   @Column({ type: DataType.STRING, allowNull: true })
   comment: string;

@@ -12,6 +12,7 @@ import { UnassignedPlacesService } from 'src/unassigned-places';
 import { AddPlaceDto } from 'src/trips-day/dto';
 import { Transaction } from 'sequelize';
 import { ensureEntityExists, ensureId } from 'src/utils';
+import { EntityType, Images } from 'src/images';
 
 @Injectable()
 export class WishlistsService {
@@ -29,7 +30,7 @@ export class WishlistsService {
 
   async findAll() {
     const wishlists = await this.wishlistModel.findAll({
-      order: [['name', 'ASC']],
+      order: [['title', 'ASC']],
     });
     return wishlists;
   }
@@ -39,7 +40,7 @@ export class WishlistsService {
 
     const wishlists = await this.wishlistModel.findAll({
       where: { userId },
-      order: [['name', 'ASC']],
+      order: [['title', 'ASC']],
     });
     return wishlists;
   }
@@ -51,8 +52,16 @@ export class WishlistsService {
       transaction,
       include: {
         model: Place,
-        attributes: ['name', 'description'],
+        attributes: ['id', 'name'],
         required: false, // LEFT JOIN вместо INNER JOIN
+        include: [
+          {
+            model: Images,
+            where: { entityType: EntityType.PLACE },
+            attributes: ['url', 'id'],
+            required: false, // LEFT JOIN вместо INNER JOIN
+          },
+        ],
       },
     });
     ensureEntityExists({ entity: wishlist, entityName: 'Wishlist', value: id });

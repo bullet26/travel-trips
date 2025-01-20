@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { fetcherServer } from 'api'
-import { CityNest, IDParams } from 'types'
+import { IDParams, WishlistNest } from 'types'
 
 export async function generateMetadata({
   params,
@@ -9,10 +9,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const id = (await params).id
 
-  const wishlist = await fetcherServer<CityNest>({ url: `wishlists/${id}` })
+  const wishlist = await fetcherServer<WishlistNest>({ url: `wishlists/${id}` })
 
   return {
-    title: wishlist.name,
+    title: wishlist.title,
   }
 }
 

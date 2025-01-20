@@ -9,7 +9,8 @@ import { Button } from 'antd'
 import clsx from 'clsx'
 import { gothicCastle } from 'assets'
 import { RoleType } from 'types'
-import { Search, Profile } from './elements'
+import { Search } from 'components'
+import { Profile } from './elements'
 import s from './Header.module.scss'
 
 export const Header = () => {

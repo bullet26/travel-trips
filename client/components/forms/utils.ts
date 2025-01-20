@@ -63,3 +63,11 @@ export const tripSchema = yup
     comment: yup.string().optional().nullable(),
   })
   .required()
+
+export const wishlistSchema = yup
+  .object({
+    userId: yup.number().min(1),
+    title: yup.string().min(4).required(),
+    comment: yup.string().optional().nullable(),
+  })
+  .required()

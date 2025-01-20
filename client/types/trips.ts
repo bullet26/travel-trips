@@ -10,7 +10,7 @@ export interface ICreateTrip {
 
 export type IUpdateTrip = Partial<ICreateTrip>
 
-export interface TripsNest extends Omit<ICreateTrip, 'comment'> {
+export interface TripsNest extends ICreateTrip {
   id: number
   comment: string | null
   images: ImageAttributesNest[]

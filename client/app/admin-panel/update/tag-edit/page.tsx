@@ -3,9 +3,8 @@ import { useEffect, useState } from 'react'
 import { Drawer, Tag } from 'antd'
 import { useTanstackQuery } from 'hooks/useTanstackQuery'
 import { TagNest, ICreateTag } from 'types'
-import { DeleteOutlined } from '@ant-design/icons'
 import { useContextActions, useTanstackMutation } from 'hooks'
-import { TagForm } from 'components'
+import { CardWithDelete, TagForm } from 'components'
 import s from '../Update.module.scss'
 
 const Tags = () => {
@@ -53,10 +52,14 @@ const Tags = () => {
       <div className={s.wrapper}>
         {query.data?.map(({ id, name }) => (
           <Tag key={id} color="red" bordered={false} className={s.card}>
-            <div className={s.card}>
-              <div onClick={() => onEdit(id)}>#{name}</div>
-              <DeleteOutlined onClick={() => onDelete(id)} />
-            </div>
+            <CardWithDelete
+              id={id}
+              title={`#${name}`}
+              entity="tag"
+              onEdit={onEdit}
+              onDelete={onDelete}
+              withoutCard
+            />
           </Tag>
         ))}
       </div>

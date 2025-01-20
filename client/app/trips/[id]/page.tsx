@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Button, Drawer } from 'antd'
+import { Button, Drawer, Popconfirm } from 'antd'
 import { useTanstackQuery, useTanstackMutation, useContextActions } from 'hooks'
 import { useParams, useRouter } from 'next/navigation'
 import { ICreateTrip, TripsNest } from 'types'
@@ -68,7 +68,12 @@ const Trip = () => {
           <div className={s.title}>{trip.title}</div>
           <div className={s.editBtnWrapper}>
             <Button onClick={onEdit}>Edit</Button>
-            <Button onClick={onDelete}>Delete</Button>
+            <Popconfirm
+              title="Delete the trip"
+              description="Are you sure to delete this trip from DB?"
+              onConfirm={onDelete}>
+              <Button>Delete</Button>
+            </Popconfirm>
           </div>
           <ImageCarousel images={trip.images} />
           <TripDaysAccordion

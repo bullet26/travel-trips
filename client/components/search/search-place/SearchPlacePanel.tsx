@@ -1,9 +1,11 @@
+'use client'
+
 import { useState } from 'react'
 import { Card, Input } from 'antd'
 import { useDebounce, useTanstackQuery } from 'hooks'
 import { SearchPlaceNestResult } from 'types'
-import { DragCard } from './DragCard'
-import s from '../TripDaysAccordion.module.scss'
+import { DragCard } from 'components'
+import s from './SearchPlace.module.scss'
 
 interface SearchPlacePanel {
   dragType: string
