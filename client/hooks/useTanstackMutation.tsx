@@ -4,7 +4,7 @@ import { fetcher } from 'api'
 type UseTanstackMutationProps<T> = {
   url: string
   queryKey?: string[]
-  method: 'POST' | 'GET' | 'PATCH' | 'DELETE'
+  method: 'POST' | 'GET' | 'PATCH' | 'DELETE' | 'PUT'
   onSuccess?: (data?: T) => void
 }
 

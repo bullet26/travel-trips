@@ -194,6 +194,13 @@ export class UnassignedPlacesService {
   async findByTripIdAndRemove(tripId: number, transaction?: Transaction) {
     ensureId(tripId);
 
+    const unassignedPlaces = await this.findByTripId(tripId);
+
+    await this.placesService.unlinkFromUnassignedPlaces(
+      unassignedPlaces.id,
+      transaction,
+    );
+
     await this.unassignedPlacesModel.destroy({
       where: { tripId },
       transaction,

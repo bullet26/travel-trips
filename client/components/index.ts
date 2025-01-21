@@ -8,7 +8,15 @@ export {
   DndProvider,
 } from './providers'
 export { Header } from './header'
-export { CountryForm, CityForm, PlaceForm, TagForm, TripForm, WishlistForm } from './forms'
+export {
+  CountryForm,
+  CityForm,
+  PlaceForm,
+  TagForm,
+  TripForm,
+  WishlistForm,
+  TransformWishlistForm,
+} from './forms'
 export { ImageUploadBlock } from './dropzone'
 export { ImageIEdited } from './image-edit-item'
 export { Card, CardWithDelete } from './card'

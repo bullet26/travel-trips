@@ -140,11 +140,15 @@ export class TripsDayService {
     return { message: 'Trip_Day was successfully deleted' };
   }
 
-  async removeAllByTripId(tripId: number) {
-    ensureId(tripId);
+  async removeAllByTripId(tripId: number, transaction?: Transaction) {
+    const tripDays = await this.findAllByTrip(tripId, transaction);
+    const tripDayIds = tripDays.map((day) => day.id);
+
+    await this.placesService.unlinkFromTripDays(tripDayIds, transaction);
 
     await this.tripDayModel.destroy({
       where: { tripId },
+      transaction,
     });
   }
 

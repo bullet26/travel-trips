@@ -75,42 +75,40 @@ export const WishlistForm: FC<WishlistFormProps> = (props) => {
   }, [isSubmitSuccessful, reset])
 
   const onSubmit: SubmitHandler<ICreateWishlist> = async (values) => {
-    mutation.mutate({ body: values, id, queryKeyWithId: id ? [['tags', `${id}`]] : [] })
+    mutation.mutate({ body: values, id, queryKeyWithId: id ? [['wishlists', `${id}`]] : [] })
   }
 
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className={s.fullPageForm}>
-        <div className={s.dropzoneWrapper}>
-          <div className={s.inputsWrapper}>
-            <input type="hidden" {...register('userId')} />
-            <div>
-              <div className={s.label}>Wishlist` title</div>
-              <Controller
-                name="title"
-                control={control}
-                render={({ field }) => <Input {...field} placeholder="Prague future trip" />}
-              />
-              <div className={s.error}>{errors.title?.message}</div>
-            </div>
+        <div className={s.inputsWrapper}>
+          <input type="hidden" {...register('userId')} />
+          <div>
+            <div className={s.label}>Wishlist` title</div>
+            <Controller
+              name="title"
+              control={control}
+              render={({ field }) => <Input {...field} placeholder="Prague future trip" />}
+            />
+            <div className={s.error}>{errors.title?.message}</div>
+          </div>
 
-            <div>
-              <div className={s.label}>Comment</div>
-              <Controller
-                name="comment"
-                control={control}
-                render={({ field }) => (
-                  <TextArea
-                    {...field}
-                    value={getValues('comment') || ''}
-                    placeholder="Type comment (optional)"
-                    autoSize
-                    style={{ resize: 'none' }}
-                  />
-                )}
-              />
-              <div className={s.error}>{errors.comment?.message}</div>
-            </div>
+          <div>
+            <div className={s.label}>Comment</div>
+            <Controller
+              name="comment"
+              control={control}
+              render={({ field }) => (
+                <TextArea
+                  {...field}
+                  value={getValues('comment') || ''}
+                  placeholder="Type comment (optional)"
+                  autoSize
+                  style={{ resize: 'none' }}
+                />
+              )}
+            />
+            <div className={s.error}>{errors.comment?.message}</div>
           </div>
         </div>
         <Button htmlType="submit" disabled={mutation.isPending}>

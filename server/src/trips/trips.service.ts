@@ -238,13 +238,24 @@ export class TripsService {
   async remove(id: number) {
     ensureId(id);
 
-    await this.tripModel.destroy({ where: { id } });
+    const transaction: Transaction =
+      await this.tripModel.sequelize.transaction();
 
-    await Promise.all([
-      this.unassignedPlacesService.findByTripIdAndRemove(id),
-      this.tripsDayService.removeAllByTripId(id),
-    ]);
+    try {
+      await Promise.all([
+        this.unassignedPlacesService.findByTripIdAndRemove(id, transaction),
+        this.tripsDayService.removeAllByTripId(id, transaction),
+      ]);
 
-    return { message: 'Trip and related entities successfully deleted' };
+      await this.tripModel.destroy({ where: { id }, transaction });
+
+      await transaction.commit();
+      return { message: 'Trip and related entities successfully deleted' };
+    } catch (error) {
+      await transaction.rollback();
+      throw new InternalServerErrorException(
+        error.message || 'Internal server error',
+      );
+    }
   }
 }

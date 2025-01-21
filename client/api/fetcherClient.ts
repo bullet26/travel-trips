@@ -15,7 +15,7 @@ export const handleError = (resJson: any): never => {
 
 type FetcherProps = {
   url: string
-  method?: 'POST' | 'GET' | 'PATCH' | 'DELETE'
+  method?: 'POST' | 'GET' | 'PATCH' | 'DELETE' | 'PUT'
   body?: object
   formData?: FormData
   token?: string

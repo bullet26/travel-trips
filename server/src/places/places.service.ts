@@ -302,4 +302,18 @@ export class PlacesService {
     await place.$remove('tags', tag.id);
     return place;
   }
+
+  async unlinkFromTripDays(tripDayIds: number[], transaction?: Transaction) {
+    await this.placeModel.update(
+      { tripDayId: null },
+      { where: { tripDayId: tripDayIds }, transaction },
+    );
+  }
+
+  async unlinkFromUnassignedPlaces(upId: number, transaction?: Transaction) {
+    await this.placeModel.update(
+      { unassignedPlacesId: null },
+      { where: { unassignedPlacesId: upId }, transaction },
+    );
+  }
 }

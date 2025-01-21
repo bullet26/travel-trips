@@ -5,11 +5,12 @@ import { SettingOutlined } from '@ant-design/icons'
 import { useTanstackQuery, useTanstackMutation, useContextActions } from 'hooks'
 import { useParams, useRouter } from 'next/navigation'
 import { ICreateWishlist, WishlistNest } from 'types'
-import { SearchPlacePanel, WishlistForm, DropCardItem } from 'components'
+import { SearchPlacePanel, WishlistForm, DropCardItem, TransformWishlistForm } from 'components'
 import s from '../Wishlists.module.scss'
 
 const Wishlist = () => {
-  const [openDrawer, setDrawerStatus] = useState(false)
+  const [openEditDrawer, setDrawerEditStatus] = useState(false)
+  const [openTransformDrawer, setDrawerTransformStatus] = useState(false)
   const [initialValues, setInitialValues] = useState<undefined | ICreateWishlist>(undefined)
 
   const { setInfoMsg, setErrorMsg } = useContextActions()
@@ -53,17 +54,30 @@ const Wishlist = () => {
       })
     }
 
-    setDrawerStatus(true)
+    setDrawerEditStatus(true)
   }
 
   const onEditModeClick = () => setEditModeStatus((prevState) => !prevState)
+
+  const onTransform = () => {
+    setDrawerTransformStatus(true)
+  }
 
   const onDelete = () => {
     mutation.mutate({ id })
   }
 
-  const onClose = () => {
-    setDrawerStatus(false)
+  const onCloseDrawerEdit = () => {
+    setDrawerEditStatus(false)
+  }
+
+  const onCloseDrawerTransform = () => {
+    setDrawerTransformStatus(false)
+  }
+
+  const onSuccessTransform = () => {
+    onCloseDrawerTransform()
+    router.push('/trips')
   }
 
   return (
@@ -73,7 +87,7 @@ const Wishlist = () => {
           <div className={s.title}>{wishlist.title}</div>
           <div className={s.editBtnWrapper}>
             <Button onClick={onEdit}>Edit</Button>
-            <Button onClick={() => alert('Transform')}>Transform wl to trip</Button>
+            <Button onClick={onTransform}>Transform wl to trip</Button>
             <Popconfirm
               title="Delete the wishlist"
               description="Are you sure to delete this wishlist from DB?"
@@ -102,11 +116,29 @@ const Wishlist = () => {
 
           <Drawer
             title="Update trip"
-            onClose={onClose}
-            open={openDrawer}
+            onClose={onCloseDrawerEdit}
+            open={openEditDrawer}
             width={800}
             destroyOnClose>
-            <WishlistForm mode="update" id={id} initialValues={initialValues} onSuccess={onClose} />
+            <WishlistForm
+              mode="update"
+              id={id}
+              initialValues={initialValues}
+              onSuccess={onCloseDrawerEdit}
+            />
+          </Drawer>
+
+          <Drawer
+            title="Transform wishlist to trip"
+            onClose={onCloseDrawerTransform}
+            open={openTransformDrawer}
+            width={800}
+            destroyOnClose>
+            <TransformWishlistForm
+              id={id}
+              title={wishlist?.title || ''}
+              onSuccess={onSuccessTransform}
+            />
           </Drawer>
         </div>
       )}

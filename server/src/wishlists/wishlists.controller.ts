@@ -58,9 +58,9 @@ export class WishlistsController {
     return this.wishlistsService.update(Number(id), updateWishlistDto);
   }
 
-  @Put(':id')
+  @Put('/transform-to-trip/:id')
   transformWishlistToTrip(
-    @Param('/transform-to-trip/:id') id: string,
+    @Param('id') id: string,
     @Body() transformWLToTripDto: TransformWLToTripDto,
   ) {
     return this.wishlistsService.transformWishlistToTrip(
