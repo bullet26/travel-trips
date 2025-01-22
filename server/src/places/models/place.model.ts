@@ -13,8 +13,11 @@ import { Images } from 'src/images/models/image.model';
 import { EntityType } from 'src/images/types/EntityType';
 import { PlacesTags } from 'src/tags/models/places-tags.model';
 import { Tag } from 'src/tags/models/tag.model';
+import { Places_TripDays } from 'src/trips-day/models/places-trips-day.model';
 import { TripDay } from 'src/trips-day/models/trips-day.model';
+import { Places_UnassignedPlaces } from 'src/unassigned-places/models/places-unassigned-places.model';
 import { UnassignedPlaces } from 'src/unassigned-places/models/unassigned-places.model';
+import { Places_Wishlists } from 'src/wishlists/models/places-wishlist.model';
 import { Wishlist } from 'src/wishlists/models/wishlist.model';
 
 interface PlaceCreationAttrs {
@@ -59,27 +62,6 @@ export class Place extends Model<Place, PlaceCreationAttrs> {
   @Column({ type: DataType.TSVECTOR, allowNull: false })
   tsvector_field: string;
 
-  @ForeignKey(() => TripDay)
-  @Column({ type: DataType.INTEGER })
-  tripDayId: number;
-
-  @BelongsTo(() => TripDay)
-  tripDay: TripDay;
-
-  @ForeignKey(() => Wishlist)
-  @Column({ type: DataType.INTEGER })
-  wishlistId: number;
-
-  @BelongsTo(() => Wishlist)
-  wishlist: Wishlist;
-
-  @ForeignKey(() => UnassignedPlaces)
-  @Column({ type: DataType.INTEGER })
-  unassignedPlacesId: number;
-
-  @BelongsTo(() => UnassignedPlaces)
-  unassignedPlaces: UnassignedPlaces;
-
   @ForeignKey(() => City)
   @Column({ type: DataType.INTEGER })
   cityId: number;
@@ -87,13 +69,22 @@ export class Place extends Model<Place, PlaceCreationAttrs> {
   @BelongsTo(() => City)
   city: City;
 
+  @BelongsToMany(() => Tag, () => PlacesTags)
+  tags: Tag[];
+
+  @BelongsToMany(() => TripDay, () => Places_TripDays)
+  tripDays: TripDay[];
+
+  @BelongsToMany(() => UnassignedPlaces, () => Places_UnassignedPlaces)
+  unassignedPlaces: UnassignedPlaces[];
+
+  @BelongsToMany(() => Wishlist, () => Places_Wishlists)
+  wishlists: Wishlist[];
+
   @HasMany(() => Images, {
     foreignKey: 'entityId',
     constraints: false, // убираем ограничения для полиморфной связи
     scope: { entityType: EntityType.PLACE }, // устанавливаем тип сущности
   })
   images: Images[];
-
-  @BelongsToMany(() => Tag, () => PlacesTags)
-  tags: Tag[];
 }

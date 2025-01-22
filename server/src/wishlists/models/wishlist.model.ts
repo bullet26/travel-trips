@@ -1,5 +1,6 @@
 import {
   BelongsTo,
+  BelongsToMany,
   Column,
   DataType,
   ForeignKey,
@@ -9,6 +10,7 @@ import {
 } from 'sequelize-typescript';
 import { Place } from 'src/places/models/place.model';
 import { User } from 'src/users/models/users.model';
+import { Places_Wishlists } from './places-wishlist.model';
 
 interface WishlistCreationAttrs {
   title: string;
@@ -39,6 +41,6 @@ export class Wishlist extends Model<Wishlist, WishlistCreationAttrs> {
   @BelongsTo(() => User)
   user: User;
 
-  @HasMany(() => Place)
+  @BelongsToMany(() => Place, () => Places_Wishlists)
   places: Place[];
 }

@@ -22,6 +22,7 @@ import {
   shouldUpdateTsvector,
   transformArrayInFormData,
 } from 'src/utils';
+import { Wishlist } from 'src/wishlists/models/wishlist.model';
 
 @Injectable()
 export class PlacesService {
@@ -177,7 +178,13 @@ export class PlacesService {
 
   async findAllByWishlistId(wishlistId: number, transaction?: Transaction) {
     const places = await this.placeModel.findAll({
-      where: { wishlistId },
+      include: [
+        {
+          model: Wishlist,
+          where: { id: wishlistId },
+          through: { attributes: [] }, // Исключаем данные из промежуточной таблицы
+        },
+      ],
       attributes: { exclude: ['tsvector_field'] },
       order: [['name', 'ASC']],
       transaction,
@@ -301,19 +308,5 @@ export class PlacesService {
 
     await place.$remove('tags', tag.id);
     return place;
-  }
-
-  async unlinkFromTripDays(tripDayIds: number[], transaction?: Transaction) {
-    await this.placeModel.update(
-      { tripDayId: null },
-      { where: { tripDayId: tripDayIds }, transaction },
-    );
-  }
-
-  async unlinkFromUnassignedPlaces(upId: number, transaction?: Transaction) {
-    await this.placeModel.update(
-      { unassignedPlacesId: null },
-      { where: { unassignedPlacesId: upId }, transaction },
-    );
   }
 }

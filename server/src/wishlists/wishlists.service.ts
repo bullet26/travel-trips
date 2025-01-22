@@ -13,11 +13,15 @@ import { AddPlaceDto } from 'src/trips-day/dto';
 import { Transaction } from 'sequelize';
 import { ensureEntityExists, ensureId } from 'src/utils';
 import { EntityType, Images } from 'src/images';
+import { Places_Wishlists } from './models/places-wishlist.model';
 
 @Injectable()
 export class WishlistsService {
   constructor(
     @InjectModel(Wishlist) private wishlistModel: typeof Wishlist,
+    @InjectModel(Places_Wishlists)
+    private placesWishlistsModel: typeof Places_Wishlists,
+
     private placesService: PlacesService,
     private tripsService: TripsService,
     private unassignedPlacesService: UnassignedPlacesService,
@@ -52,6 +56,7 @@ export class WishlistsService {
       transaction,
       include: {
         model: Place,
+        through: { attributes: [] }, // Убираем промежуточные атрибуты
         attributes: ['id', 'name'],
         required: false, // LEFT JOIN вместо INNER JOIN
         include: [
@@ -79,6 +84,8 @@ export class WishlistsService {
   async remove(id: number) {
     ensureId(id);
 
+    await this.unlinkAllPlaces(id);
+
     await this.wishlistModel.destroy({ where: { id } });
     return { message: 'Wishlist was successfully deleted' };
   }
@@ -94,7 +101,7 @@ export class WishlistsService {
     return wishlist;
   }
 
-  async removePlace(id: number, AddPlaceDto: AddPlaceDto) {
+  async unlinkPlace(id: number, AddPlaceDto: AddPlaceDto) {
     const { placeId } = AddPlaceDto;
 
     const wishlist = await this.findById(id);
@@ -103,6 +110,13 @@ export class WishlistsService {
 
     await wishlist.$remove('places', place.id);
     return wishlist;
+  }
+
+  async unlinkAllPlaces(wishlistId: number, transaction?: Transaction) {
+    await this.placesWishlistsModel.destroy({
+      where: { wishlistId },
+      transaction,
+    });
   }
 
   async transformWishlistToTrip(

@@ -20,7 +20,7 @@ export class UnassignedPlacesController {
 
   @Patch('/place/remove/:id')
   removePlace(@Param('id') id: string, @Body() addPlaceDto: AddPlaceDto) {
-    return this.unassignedPlacesService.removePlace(Number(id), addPlaceDto);
+    return this.unassignedPlacesService.unlinkPlace(Number(id), addPlaceDto);
   }
 
   @Patch('/place/move/:id')

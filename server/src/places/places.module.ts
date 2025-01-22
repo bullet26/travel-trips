@@ -10,6 +10,9 @@ import { UnassignedPlaces } from 'src/unassigned-places/models/unassigned-places
 import { TripDay } from 'src/trips-day/models/trips-day.model';
 import { City } from 'src/cities/models/city.model';
 import { ImagesModule } from 'src/images/images.module';
+import { Places_TripDays } from 'src/trips-day/models/places-trips-day.model';
+import { Places_UnassignedPlaces } from 'src/unassigned-places/models/places-unassigned-places.model';
+import { Places_Wishlists } from 'src/wishlists/models/places-wishlist.model';
 
 @Module({
   controllers: [PlacesController],
@@ -24,6 +27,9 @@ import { ImagesModule } from 'src/images/images.module';
       Wishlist,
       UnassignedPlaces,
       City,
+      Places_TripDays,
+      Places_UnassignedPlaces,
+      Places_Wishlists,
     ]),
     TagsModule,
     ImagesModule,

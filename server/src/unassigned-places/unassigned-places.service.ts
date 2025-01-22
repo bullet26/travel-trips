@@ -16,12 +16,15 @@ import { ensureEntityExists, ensureId } from 'src/utils';
 import { EntityType, Images } from 'src/images';
 import { Trip } from 'src/trips';
 import { TripDay } from 'src/trips-day';
+import { Places_UnassignedPlaces } from './models/places-unassigned-places.model';
 
 @Injectable()
 export class UnassignedPlacesService {
   constructor(
     @InjectModel(UnassignedPlaces)
     private unassignedPlacesModel: typeof UnassignedPlaces,
+    @InjectModel(Places_UnassignedPlaces)
+    private placesUnassignedPlacesModel: typeof Places_UnassignedPlaces,
     private placesService: PlacesService,
     @Inject(forwardRef(() => TripsDayService))
     private tripsDayService: TripsDayService,
@@ -45,6 +48,7 @@ export class UnassignedPlacesService {
       transaction,
       include: {
         model: Place,
+        through: { attributes: [] }, // Убираем промежуточные атрибуты
         attributes: ['id', 'name'],
         required: false, // LEFT JOIN вместо INNER JOIN
         include: [
@@ -71,11 +75,12 @@ export class UnassignedPlacesService {
   async findByIdWithTripInfo(id: number, transaction?: Transaction) {
     ensureId(id);
 
-    const tripDay = await this.unassignedPlacesModel.findByPk(id, {
+    const unassignedPlaces = await this.unassignedPlacesModel.findByPk(id, {
       transaction,
       include: [
         {
           model: Place,
+          through: { attributes: [] }, // Убираем промежуточные атрибуты
           attributes: ['id', 'name'],
           required: false, // LEFT JOIN вместо INNER JOIN
         },
@@ -91,6 +96,7 @@ export class UnassignedPlacesService {
               include: [
                 {
                   model: Place,
+                  through: { attributes: [] }, // Убираем промежуточные атрибуты
                   attributes: ['id', 'name'],
                   required: false, // LEFT JOIN вместо INNER JOIN
                 },
@@ -101,9 +107,13 @@ export class UnassignedPlacesService {
       ],
     });
 
-    ensureEntityExists({ entity: tripDay, entityName: 'Trip_Day', value: id });
+    ensureEntityExists({
+      entity: unassignedPlaces,
+      entityName: 'Unassigned_Places',
+      value: id,
+    });
 
-    return tripDay;
+    return unassignedPlaces;
   }
 
   async findByTripId(tripId: number, transaction?: Transaction) {
@@ -140,7 +150,7 @@ export class UnassignedPlacesService {
     return unassignedPlaces;
   }
 
-  async removePlace(
+  async unlinkPlace(
     id: number,
     AddPlaceDto: AddPlaceDto,
     transaction?: Transaction,
@@ -153,6 +163,13 @@ export class UnassignedPlacesService {
 
     await unassignedPlaces.$remove('places', place.id, { transaction });
     return unassignedPlaces;
+  }
+
+  async unlinkAllPlaces(unassignedPlacesId: number, transaction?: Transaction) {
+    await this.placesUnassignedPlacesModel.destroy({
+      where: { unassignedPlacesId },
+      transaction,
+    });
   }
 
   async movePlaceToTripDay(
@@ -196,10 +213,7 @@ export class UnassignedPlacesService {
 
     const unassignedPlaces = await this.findByTripId(tripId);
 
-    await this.placesService.unlinkFromUnassignedPlaces(
-      unassignedPlaces.id,
-      transaction,
-    );
+    await this.unlinkAllPlaces(unassignedPlaces.id, transaction);
 
     await this.unassignedPlacesModel.destroy({
       where: { tripId },

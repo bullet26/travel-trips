@@ -3,15 +3,19 @@ import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 
-import { Wishlist, WishlistsModule } from './wishlists';
+import { Places_Wishlists, Wishlist, WishlistsModule } from './wishlists';
 import { User, UsersModule } from './users';
 import { Role, RolesModule } from './roles';
 import { Images, ImagesModule } from './images';
 import { Trip, TripsModule } from './trips';
-import { TripDay, TripsDayModule } from './trips-day';
+import { Places_TripDays, TripDay, TripsDayModule } from './trips-day';
 import { Place, PlacesModule } from './places';
 import { PlacesTags, Tag, TagsModule } from './tags';
-import { UnassignedPlaces, UnassignedPlacesModule } from './unassigned-places';
+import {
+  Places_UnassignedPlaces,
+  UnassignedPlaces,
+  UnassignedPlacesModule,
+} from './unassigned-places';
 import { AuthModule, JwtAuthGuard, JwtStrategy, RolesGuard } from './auth';
 import { CloudinaryModule, CloudinaryProvider } from './cloudinary';
 import { CitiesModule, City } from './cities';
@@ -38,11 +42,14 @@ import { SearchModule } from './search';
         Images,
         Trip,
         TripDay,
+        Places_TripDays,
         Place,
         Tag,
         PlacesTags,
         Wishlist,
+        Places_Wishlists,
         UnassignedPlaces,
+        Places_UnassignedPlaces,
         City,
         Country,
       ],

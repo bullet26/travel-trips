@@ -47,7 +47,7 @@ export class WishlistsController {
 
   @Patch('/place/remove/:id')
   removePlace(@Param('id') id: string, @Body() addPlaceDto: AddPlaceDto) {
-    return this.wishlistsService.removePlace(Number(id), addPlaceDto);
+    return this.wishlistsService.unlinkPlace(Number(id), addPlaceDto);
   }
 
   @Patch(':id')

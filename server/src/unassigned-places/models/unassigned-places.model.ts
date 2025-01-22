@@ -1,5 +1,6 @@
 import {
   BelongsTo,
+  BelongsToMany,
   Column,
   DataType,
   ForeignKey,
@@ -9,6 +10,7 @@ import {
 } from 'sequelize-typescript';
 import { Place } from 'src/places/models/place.model';
 import { Trip } from 'src/trips/models/trip.model';
+import { Places_UnassignedPlaces } from './places-unassigned-places.model';
 
 interface UnassignedPlacesCreationAttrs {
   tripId: number;
@@ -34,6 +36,6 @@ export class UnassignedPlaces extends Model<
   @BelongsTo(() => Trip)
   trip: Trip;
 
-  @HasMany(() => Place)
+  @BelongsToMany(() => Place, () => Places_UnassignedPlaces)
   places: Place[];
 }

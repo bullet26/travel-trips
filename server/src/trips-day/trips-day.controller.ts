@@ -49,7 +49,7 @@ export class TripsDayController {
 
   @Patch('/place/remove/:id')
   removePlace(@Param('id') id: string, @Body() addPlaceDto: AddPlaceDto) {
-    return this.tripsDayService.removePlace(Number(id), addPlaceDto);
+    return this.tripsDayService.unlinkPlace(Number(id), addPlaceDto);
   }
 
   @Patch('/place/move/up/:id')

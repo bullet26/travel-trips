@@ -21,11 +21,14 @@ import { ensureEntityExists, ensureId } from 'src/utils';
 import { EntityType, Images } from 'src/images';
 import { Trip } from 'src/trips';
 import { UnassignedPlaces } from 'src/unassigned-places';
+import { Places_TripDays } from './models/places-trips-day.model';
 
 @Injectable()
 export class TripsDayService {
   constructor(
     @InjectModel(TripDay) private tripDayModel: typeof TripDay,
+    @InjectModel(Places_TripDays)
+    private placesTripDaysModel: typeof Places_TripDays,
     private placesService: PlacesService,
     @Inject(forwardRef(() => UnassignedPlacesService))
     private unassignedPlacesService: UnassignedPlacesService,
@@ -53,6 +56,7 @@ export class TripsDayService {
       transaction,
       include: {
         model: Place,
+        through: { attributes: [] }, // Убираем промежуточные атрибуты
         attributes: ['id', 'name'],
         required: false, // LEFT JOIN вместо INNER JOIN
         include: [
@@ -80,6 +84,7 @@ export class TripsDayService {
       include: [
         {
           model: Place,
+          through: { attributes: [] }, // Убираем промежуточные атрибуты
           attributes: ['id', 'name'],
           required: false, // LEFT JOIN вместо INNER JOIN
         },
@@ -95,6 +100,7 @@ export class TripsDayService {
               include: [
                 {
                   model: Place,
+                  through: { attributes: [] }, // Убираем промежуточные атрибуты
                   attributes: ['id', 'name'],
                   required: false, // LEFT JOIN вместо INNER JOIN
                 },
@@ -117,7 +123,8 @@ export class TripsDayService {
       where: { tripId },
       include: {
         model: Place,
-        attributes: ['name', 'description'],
+        through: { attributes: [] }, // Убираем промежуточные атрибуты
+        attributes: ['name', 'id'],
         order: [['name', 'ASC']],
         required: false, // LEFT JOIN вместо INNER JOIN
       },
@@ -136,6 +143,8 @@ export class TripsDayService {
   async remove(id: number, transaction?: Transaction) {
     ensureId(id);
 
+    await this.unlinkAllPlaces(id, transaction);
+
     await this.tripDayModel.destroy({ where: { id }, transaction });
     return { message: 'Trip_Day was successfully deleted' };
   }
@@ -144,7 +153,7 @@ export class TripsDayService {
     const tripDays = await this.findAllByTrip(tripId, transaction);
     const tripDayIds = tripDays.map((day) => day.id);
 
-    await this.placesService.unlinkFromTripDays(tripDayIds, transaction);
+    await this.unlinkAllPlaces(tripDayIds, transaction);
 
     await this.tripDayModel.destroy({
       where: { tripId },
@@ -193,7 +202,7 @@ export class TripsDayService {
     return tripDay;
   }
 
-  async removePlace(id: number, AddPlaceDto: AddPlaceDto) {
+  async unlinkPlace(id: number, AddPlaceDto: AddPlaceDto) {
     const { placeId } = AddPlaceDto;
 
     const tripDay = await this.findById(id);
@@ -202,6 +211,16 @@ export class TripsDayService {
 
     await tripDay.$remove('places', place.id);
     return tripDay;
+  }
+
+  async unlinkAllPlaces(
+    tripDayIds: number | number[],
+    transaction?: Transaction,
+  ) {
+    await this.placesTripDaysModel.destroy({
+      where: { tripDayId: tripDayIds },
+      transaction,
+    });
   }
 
   async movePlaceToAnotherTripDay(

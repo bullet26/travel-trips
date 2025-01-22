@@ -7,12 +7,13 @@ import { TripDay } from './models/trips-day.model';
 import { Place } from 'src/places/models/place.model';
 import { PlacesModule } from 'src/places/places.module';
 import { UnassignedPlacesModule } from 'src/unassigned-places/unassigned-places.module';
+import { Places_TripDays } from './models/places-trips-day.model';
 
 @Module({
   controllers: [TripsDayController],
   providers: [TripsDayService],
   imports: [
-    SequelizeModule.forFeature([Trip, TripDay, Place]),
+    SequelizeModule.forFeature([Trip, TripDay, Place, Places_TripDays]),
     forwardRef(() => UnassignedPlacesModule),
     PlacesModule,
   ],

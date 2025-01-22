@@ -1,5 +1,6 @@
 import {
   BelongsTo,
+  BelongsToMany,
   Column,
   DataType,
   ForeignKey,
@@ -9,6 +10,7 @@ import {
 } from 'sequelize-typescript';
 import { Place } from 'src/places/models/place.model';
 import { Trip } from 'src/trips/models/trip.model';
+import { Places_TripDays } from './places-trips-day.model';
 
 interface TripDayCreationAttrs {
   tripId: number;
@@ -35,6 +37,6 @@ export class TripDay extends Model<TripDay, TripDayCreationAttrs> {
   @BelongsTo(() => Trip)
   trip: Trip;
 
-  @HasMany(() => Place)
+  @BelongsToMany(() => Place, () => Places_TripDays)
   places: Place[];
 }
