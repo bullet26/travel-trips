@@ -59,6 +59,14 @@ export class AuthController {
       }
       const tokens = await this.authService.googleSignIn(req.user);
 
+      const userAgent = req.headers['user-agent'] || '';
+      const isMobile = /android|iphone|ipad|ipod/i.test(userAgent);
+
+      if (isMobile) {
+        return res.redirect(
+          `myapp://auth-success?accessToken=${tokens.accessToken}&accessTokenExpires=${tokens.accessTokenExpires}&refreshToken=${tokens.refreshToken}&refreshTokenExpires=${tokens.refreshTokenExpires}`,
+        );
+      }
       return res.redirect(
         `${process.env.FRONTEND_URL}/auth-success?accessToken=${tokens.accessToken}&accessTokenExpires=${tokens.accessTokenExpires}&refreshToken=${tokens.refreshToken}&refreshTokenExpires=${tokens.refreshTokenExpires}`,
       );
