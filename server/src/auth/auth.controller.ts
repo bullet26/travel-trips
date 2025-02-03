@@ -51,6 +51,9 @@ export class AuthController {
   @Get('google/redirect')
   @UseGuards(GoogleOauthGuard)
   async googleAuthRedirect(@Req() req, @Res() res: Response) {
+    const userAgent = req.headers['user-agent'] || '';
+    const isMobile = /android|iphone|ipad|ipod/i.test(userAgent);
+
     try {
       if (!req.user) {
         return res.redirect(
@@ -58,9 +61,6 @@ export class AuthController {
         );
       }
       const tokens = await this.authService.googleSignIn(req.user);
-
-      const userAgent = req.headers['user-agent'] || '';
-      const isMobile = /android|iphone|ipad|ipod/i.test(userAgent);
 
       if (isMobile) {
         return res.redirect(
@@ -72,6 +72,11 @@ export class AuthController {
       );
     } catch (error) {
       const message = error.response?.message || 'Unknown error occurred';
+
+      if (isMobile) {
+        return res.redirect(`myapp://error=${encodeURIComponent(message)}`);
+      }
+
       return res.redirect(
         `${process.env.FRONTEND_URL}/login?error=${encodeURIComponent(message)}`,
       );
