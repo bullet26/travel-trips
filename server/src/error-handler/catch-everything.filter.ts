@@ -21,7 +21,7 @@ export class CatchEverythingFilter implements ExceptionFilter {
     const response = ctx.getResponse();
     const path = httpAdapter.getRequestUrl(ctx.getRequest());
 
-    console.log(exception);
+    this.logger.log('CatchEverythingError', exception);
 
     const httpStatus =
       exception instanceof HttpException

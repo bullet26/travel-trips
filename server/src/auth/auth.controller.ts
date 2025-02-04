@@ -8,6 +8,7 @@ import {
   Req,
   Get,
   Body,
+  Logger,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
@@ -19,6 +20,8 @@ import { RefreshDTO } from './dto';
 @Public()
 @Controller('auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+
   constructor(private authService: AuthService) {}
 
   @UseGuards(LocalAuthGuard)
@@ -53,6 +56,7 @@ export class AuthController {
   async googleAuthRedirect(@Req() req, @Res() res: Response) {
     const userAgent = req.headers['user-agent'] || '';
     const isMobile = /android|iphone|ipad|ipod/i.test(userAgent);
+    this.logger.log('userAgent', userAgent, 'isMobile', isMobile);
 
     try {
       if (!req.user) {
