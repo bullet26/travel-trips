@@ -7,7 +7,7 @@ import { Logger } from '@nestjs/common';
 
 const start = async () => {
   const PORT = process.env.PORT || 5000;
-  const logger = new Logger('Bootstrap');
+  const logger = new Logger('Main');
 
   const app = await NestFactory.create(AppModule);
 

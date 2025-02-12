@@ -49,7 +49,7 @@ export class UnassignedPlacesService {
       include: {
         model: Place,
         through: { attributes: [] }, // Убираем промежуточные атрибуты
-        attributes: ['id', 'name'],
+        attributes: ['id', 'name', 'latitude', 'longitude'],
         required: false, // LEFT JOIN вместо INNER JOIN
         include: [
           {

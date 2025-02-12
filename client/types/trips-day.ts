@@ -25,6 +25,6 @@ export interface TripDayNest extends ICreateTripsDay {
   createdAt: Date
   date: Date
   id: number
-  places: Pick<PlaceNest, 'id' | 'name' | 'images'>[]
+  places: Pick<PlaceNest, 'id' | 'name' | 'images' | 'latitude' | 'longitude'>[]
   updatedAt: Date
 }
