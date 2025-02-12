@@ -100,6 +100,7 @@ export class CitiesService {
           required: false, // LEFT JOIN вместо INNER JOIN
         },
       ],
+      order: [[{ model: Place, as: 'places' }, 'name', 'ASC']],
     });
 
     ensureEntityExists({ entity: city, entityName: 'City', value: id });

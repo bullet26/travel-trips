@@ -102,6 +102,7 @@ export class CountriesService {
           ],
         },
       ],
+      order: [[{ model: City, as: 'cities' }, 'name', 'ASC']],
     });
 
     ensureEntityExists({ entity: country, entityName: 'Country', value: id });
