@@ -4,8 +4,15 @@ import { FC, useEffect, useState } from 'react'
 import { Button, Input, InputNumber, Select } from 'antd'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { ICreateCity, CountryNest, CityNest, EntityType, ImageAttributesNest } from 'types'
-import { ImageUploadBlock, ImageIEdited } from 'components'
+import {
+  ICreateCity,
+  CountryNest,
+  CityNest,
+  EntityType,
+  ImageAttributesNest,
+  Coordinates,
+} from 'types'
+import { ImageUploadBlock, ImageIEdited, MapComponent } from 'components'
 import { useContextActions, useTanstackMutation, useTanstackQuery } from 'hooks'
 import { citySchema, transformForSelect } from './utils'
 import { FTSModule } from './fts'
@@ -51,6 +58,8 @@ export const CityForm: FC<CityFormProps> = (props) => {
     control,
     handleSubmit,
     reset,
+    setValue,
+    getValues,
     formState: { isSubmitSuccessful, errors },
   } = useForm({
     defaultValues: initialValues || {
@@ -84,6 +93,11 @@ export const CityForm: FC<CityFormProps> = (props) => {
     }
 
     mutation.mutate({ formData, id, queryKeyWithId: id ? [['cities', `${id}`]] : [] })
+  }
+
+  const setCoordinates = ({ latitude, longitude }: Coordinates) => {
+    setValue('latitude', latitude)
+    setValue('longitude', longitude)
   }
 
   return (
@@ -154,7 +168,11 @@ export const CityForm: FC<CityFormProps> = (props) => {
                   <div className={s.error}>{errors.longitude?.message}</div>
                 </div>
               </div>
-              <Button shape="round">Choose on map</Button>
+              <MapComponent
+                latitude={getValues('latitude')}
+                longitude={getValues('longitude')}
+                setCoordinates={setCoordinates}
+              />
             </div>
             <FTSModule<ICreateCity> control={control} errors={errors} />
           </div>

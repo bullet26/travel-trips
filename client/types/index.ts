@@ -25,7 +25,13 @@ export {
 } from './trips-day'
 export { type ICreateTag, type IUpdateTag, type TagNest, type TagAttributesNest } from './tags'
 export { type ICreateRole, RoleType } from './roles'
-export { type IAddTag, type ICreatePlace, type IUpdatePlace, type PlaceNest } from './places'
+export {
+  type IAddTag,
+  type ICreatePlace,
+  type IUpdatePlace,
+  type PlaceNest,
+  type Coordinates,
+} from './places'
 export {
   EntityType,
   type ICreateImage,

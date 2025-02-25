@@ -4,6 +4,11 @@ export interface IAddTag {
   tagId: number
 }
 
+export interface Coordinates {
+  latitude: number
+  longitude: number
+}
+
 export interface ICreatePlace {
   name: string
   description: string
