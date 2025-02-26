@@ -12,16 +12,18 @@ const Countries = () => {
   })
 
   return (
-    <div className={s.wrapper}>
-      {countries?.map((item) => (
-        <Card
-          key={item.id}
-          imgUrl={item.images?.at(0)?.url}
-          title={item.name}
-          routeHref={`/countries/${item.id}`}
-        />
-      ))}
-    </div>
+    <>
+      <div className={s.wrapper}>
+        {countries?.map((item) => (
+          <Card
+            key={item.id}
+            imgUrl={item.images?.at(0)?.url}
+            title={item.name}
+            routeHref={`/countries/${item.id}`}
+          />
+        ))}
+      </div>
+    </>
   )
 }
 

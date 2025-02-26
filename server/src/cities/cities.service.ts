@@ -58,12 +58,19 @@ export class CitiesService {
   async findAll() {
     const cities = await this.cityModel.findAll({
       attributes: { exclude: ['tsvector_field'] },
-      include: {
-        model: Images,
-        where: { entityType: EntityType.CITY },
-        attributes: ['url', 'id'],
-        required: false, // LEFT JOIN вместо INNER JOIN
-      },
+      include: [
+        {
+          model: Images,
+          where: { entityType: EntityType.CITY },
+          attributes: ['url', 'id'],
+          required: false, // LEFT JOIN вместо INNER JOIN
+        },
+        {
+          model: Country,
+          attributes: ['name', 'id'],
+          required: false, // LEFT JOIN вместо INNER JOIN
+        },
+      ],
       order: [['name', 'ASC']],
     });
     return cities;

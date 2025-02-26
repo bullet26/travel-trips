@@ -1,1 +1,2 @@
-export { MapComponent } from './MapComponent'
+export { GoogleMapModal } from './GoogleMapModal'
+export { GoogleMaps } from './GoogleMaps'

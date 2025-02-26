@@ -1,8 +1,9 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
-import { GoogleMap, useJsApiLoader, Marker, Autocomplete } from '@react-google-maps/api'
-import { Button, Modal, Spin } from 'antd'
+import { useState, useEffect } from 'react'
+import { GoogleMap, useLoadScript, Marker, Autocomplete, Libraries } from '@react-google-maps/api'
+import { Button, Input, Modal, Spin } from 'antd'
 import { Coordinates } from 'types'
+import s from './MapComponent.module.scss'
 
 interface MapComponentProps {
   latitude?: number
@@ -17,18 +18,19 @@ const containerStyle = {
 
 const center = { lat: 50.4501, lng: 30.5234 }
 
-export const MapComponent = (props: MapComponentProps) => {
+const libraries: Libraries = ['places']
+
+export const GoogleMapModal = (props: MapComponentProps) => {
   const { setCoordinates, latitude, longitude } = props
 
-  const { isLoaded, loadError } = useJsApiLoader({
+  const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
-    libraries: ['places'],
+    libraries,
   })
 
   const [marker, setMarker] = useState(center)
   const [isModalOpen, setModalStatus] = useState(false)
-
-  const autocompleteRef = useRef<google.maps.places.Autocomplete>(null)
+  const [searchResult, setSearchResult] = useState<google.maps.places.Autocomplete>()
 
   useEffect(() => {
     if (!latitude || !longitude) return
@@ -53,17 +55,20 @@ export const MapComponent = (props: MapComponentProps) => {
     setMarker({ lat, lng })
   }
 
+  const onLoad = (autocomplete: google.maps.places.Autocomplete) => setSearchResult(autocomplete)
+
   const onPlaceChanged = () => {
-    if (!autocompleteRef?.current) return
-    const place = autocompleteRef.current.getPlace()
+    if (!searchResult) return
+    const place = searchResult.getPlace()
 
     if (!place?.geometry?.location) return
 
-    const newMarker = {
-      lat: place.geometry.location.lat(),
-      lng: place.geometry.location.lng(),
-    }
-    setMarker(newMarker)
+    const lat = place.geometry.location.lat()
+    const lng = place.geometry.location.lng()
+
+    if (!lat || !lng) return
+
+    setMarker({ lat, lng })
   }
 
   return (
@@ -76,19 +81,18 @@ export const MapComponent = (props: MapComponentProps) => {
         title="Choose coordinates"
         open={isModalOpen}
         centered
+        destroyOnClose
         onOk={onConfirm}
         onCancel={hideMap}
+        zIndex={1010}
         width={1000}>
         {isLoaded ? (
           <>
             <Autocomplete
-              onLoad={(ref) => (autocompleteRef.current = ref)}
-              onPlaceChanged={onPlaceChanged}>
-              <input
-                type="text"
-                placeholder="Search google maps"
-                style={{ width: '100%', padding: '8px', marginBottom: '10px' }}
-              />
+              onLoad={onLoad}
+              onPlaceChanged={onPlaceChanged}
+              className={s.autocomplete}>
+              <Input type="text" placeholder="Search google maps" />
             </Autocomplete>
             <GoogleMap
               mapContainerStyle={containerStyle}

@@ -49,6 +49,13 @@ export const Header = () => {
           </Link>
         )}
         <Search />
+        <Link key="Maps" href="/maps">
+          <Button
+            type="text"
+            className={clsx(s.menuItem, { [s.activeMenu]: pathname.includes('maps') })}>
+            Maps
+          </Button>
+        </Link>
         <div className={s.userWrapper}>
           <Link key="My trips" href="/trips">
             <Button

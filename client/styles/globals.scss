@@ -46,3 +46,28 @@ body {
 a {
   text-decoration: none;
 }
+
+// google maps override style
+.pac-container {
+  background-color: $dark;
+  border-top-color: $border !important;
+  z-index: 1010 !important;
+
+  .pac-item {
+    cursor: pointer;
+    color: $light !important;
+    border-top-color: $border !important;
+
+    &:hover {
+      color: #000 !important;
+
+      .pac-item-query {
+        color: $accent !important;
+      }
+    }
+
+    .pac-item-query {
+      color: $primary-color !important;
+    }
+  }
+}

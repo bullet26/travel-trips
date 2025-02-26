@@ -12,7 +12,7 @@ import {
   ImageAttributesNest,
   Coordinates,
 } from 'types'
-import { ImageUploadBlock, ImageIEdited, MapComponent } from 'components'
+import { ImageUploadBlock, ImageIEdited, GoogleMapModal } from 'components'
 import { useContextActions, useTanstackMutation, useTanstackQuery } from 'hooks'
 import { citySchema, transformForSelect } from './utils'
 import { FTSModule } from './fts'
@@ -168,7 +168,7 @@ export const CityForm: FC<CityFormProps> = (props) => {
                   <div className={s.error}>{errors.longitude?.message}</div>
                 </div>
               </div>
-              <MapComponent
+              <GoogleMapModal
                 latitude={getValues('latitude')}
                 longitude={getValues('longitude')}
                 setCoordinates={setCoordinates}

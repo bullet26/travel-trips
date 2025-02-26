@@ -5,7 +5,7 @@ import { Button, Input, InputNumber } from 'antd'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { ICreateCountry, CountryNest, EntityType, ImageAttributesNest, Coordinates } from 'types'
-import { ImageUploadBlock, ImageIEdited, MapComponent } from 'components'
+import { ImageUploadBlock, ImageIEdited, GoogleMapModal } from 'components'
 import { useContextActions, useTanstackMutation } from 'hooks'
 import { countrySchema } from './utils'
 import { FTSModule } from './fts'
@@ -142,7 +142,7 @@ export const CountryForm: FC<CountryFormProps> = (props) => {
                   <div className={s.error}>{errors.longitude?.message}</div>
                 </div>
               </div>
-              <MapComponent
+              <GoogleMapModal
                 latitude={getValues('latitude')}
                 longitude={getValues('longitude')}
                 setCoordinates={setCoordinates}
