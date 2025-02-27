@@ -2,6 +2,7 @@
 
 import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api'
 import { Spin } from 'antd'
+import { useRouter } from 'next/navigation'
 import { useTanstackQuery } from 'hooks'
 import { CityNest } from 'types'
 import { createGradientIcon } from './utils'
@@ -14,6 +15,8 @@ const containerStyle = {
 const center = { lat: 50.4501, lng: 30.5234 }
 
 export const GoogleMaps = () => {
+  const router = useRouter()
+
   const {
     data = [],
     isSuccess,
@@ -39,6 +42,9 @@ export const GoogleMaps = () => {
                 icon={{
                   url: createGradientIcon(country?.name || ''),
                   scaledSize: new window.google.maps.Size(40, 40),
+                }}
+                onClick={() => {
+                  router.push(`/cities/${id}`)
                 }}
               />
             ))}
