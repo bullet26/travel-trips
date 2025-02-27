@@ -17,10 +17,10 @@
   &:focus-visible {
     border-color: $primary-color;
   }
-}
 
-[contentEditable='true']:empty:not(:focus):before {
-  content: attr(data-placeholder);
-  color: #666368;
-  font-size: 17px;
+  &.editable:empty:not(:focus):before {
+    content: attr(data-placeholder);
+    color: #666368;
+    font-size: 17px;
+  }
 }
