@@ -17,6 +17,7 @@ import { useContextActions, useTanstackMutation, useTanstackQuery } from 'hooks'
 import { placeSchema, transformForSelect, transformForTreeSelect } from './utils'
 import { FTSModule } from './fts'
 import s from './Form.module.scss'
+import { EditableDiv } from './elements'
 
 interface PlaceFormProps {
   mode: 'create' | 'update'
@@ -102,6 +103,10 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
     setValue('longitude', longitude)
   }
 
+  const setDescription = (value: string) => {
+    setValue('description', value)
+  }
+
   return (
     <>
       {images.map((item) => (
@@ -153,9 +158,8 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
                 name="description"
                 control={control}
                 render={({ field }) => (
-                  <Input.TextArea
-                    autoSize
-                    style={{ resize: 'none' }}
+                  <EditableDiv
+                    setValue={setDescription}
                     {...field}
                     placeholder="Saint Sophia Cathedral in Kyiv, Ukraine, is an architectural monument ..."
                   />

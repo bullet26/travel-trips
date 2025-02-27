@@ -41,7 +41,10 @@ const Place = () => {
           <div className={s.addressWrapper}>
             <span>Address:</span> <span className={s.address}>{place.address}</span>
           </div>
-          <div className={s.description}>{place.description}</div>
+          <div
+            className={s.description} // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{ __html: place.description as TrustedHTML }}
+          />
         </>
       )}
     </div>
