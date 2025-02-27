@@ -47,6 +47,12 @@ a {
   text-decoration: none;
 }
 
+[contentEditable='true']:empty:not(:focus):before {
+  content: attr(data-placeholder);
+  color: #666368;
+  font-size: 17px;
+}
+
 // google maps override style
 .pac-container {
   background-color: $dark;
