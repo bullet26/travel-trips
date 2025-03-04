@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useTanstackLazyQuery, useTanstackQuery } from 'hooks'
 import { UserNestInfo, TripsNest } from 'types'
 import s from './Trips.module.scss'
+import clsx from 'clsx'
 
 const Trips = () => {
   const { data: user } = useTanstackQuery<UserNestInfo>({
@@ -34,7 +35,13 @@ const Trips = () => {
       <div className={s.tripsWrapper}>
         {trips?.map((item) => (
           <Link href={`/trips/${item.id}`} key={item.id}>
-            <Button type="text">{item.title}</Button>
+            <Button
+              type="text"
+              className={clsx({
+                [s.placeBtn]: new Date(item.finishDate).getFullYear() === new Date().getFullYear(),
+              })}>
+              {item.title}
+            </Button>
           </Link>
         ))}
       </div>

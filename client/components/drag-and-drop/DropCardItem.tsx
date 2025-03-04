@@ -91,11 +91,7 @@ export const DropCardItem = (props: DropCardItemProps) => {
       {isShowGM ? (
         <div className={s.gm}>
           <span className={s.gmText}>Open in Google Map</span>
-          <GPS
-            width={30}
-            style={{ cursor: 'pointer' }}
-            onClick={() => openPlacesGoogleMaps(places)}
-          />
+          <GPS style={{ cursor: 'pointer' }} onClick={() => openPlacesGoogleMaps(places)} />
         </div>
       ) : (
         ''
