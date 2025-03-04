@@ -21,9 +21,7 @@
 
 .tripsWrapper {
   display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-  column-gap: 25px;
+  flex-direction: column;
   row-gap: 15px;
 }
 

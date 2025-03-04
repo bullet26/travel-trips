@@ -1,10 +1,13 @@
 'use client'
 
 import { useRef, useEffect, CSSProperties } from 'react'
+import Image from 'next/image'
 import { useDrop } from 'react-dnd'
 import { Spin } from 'antd'
 import { useTanstackLazyQuery } from 'hooks'
-import { TripDayNest, UnassignedPlacesNest, WishlistNest } from 'types'
+import { GPS } from 'assets'
+import { PlaceNest, TripDayNest, UnassignedPlacesNest, WishlistNest } from 'types'
+import { openPlacesGoogleMaps } from 'utils'
 import { DragCard } from './DragCard'
 import s from './DnD.module.scss'
 
@@ -61,7 +64,7 @@ export const DropCardItem = (props: DropCardItemProps) => {
 
   let isLoading
   let isError
-  let places
+  let places: Pick<PlaceNest, 'latitude' | 'longitude' | 'id' | 'name' | 'images'>[] | undefined
 
   if (type === 'up') {
     isLoading = isLoadingUp
@@ -81,22 +84,40 @@ export const DropCardItem = (props: DropCardItemProps) => {
     backgroundColor: `${isActive ? 'darkred' : '#141414'}`,
   }
 
+  const isShowGM = places && places?.length
+
   return (
     <div ref={dropRef} className={s.dayItem} style={{ ...style, ...dropStyle }}>
       {isLoading && <Spin size="large" />}
-      {places?.map((item) => (
-        <DragCard
-          key={`place-${type}-${item.id}`}
-          type={type}
-          placeId={item.id}
-          isEditMode={isEditMode}
-          dragType={dragType}
-          title={item.name}
-          imgUrl={item?.images?.at(0)?.url}
-          parentCellId={id}
-          {...item}
-        />
-      ))}
+      {isShowGM ? (
+        <div className={s.gm}>
+          <span className={s.gmText}>Open in Google Map</span>
+          <Image
+            src={GPS}
+            alt="GPS"
+            width={30}
+            style={{ cursor: 'pointer' }}
+            onClick={() => openPlacesGoogleMaps(places)}
+          />
+        </div>
+      ) : (
+        ''
+      )}
+      <div className={s.placeWrapper}>
+        {places?.map((item) => (
+          <DragCard
+            key={`place-${type}-${item.id}`}
+            type={type}
+            placeId={item.id}
+            isEditMode={isEditMode}
+            dragType={dragType}
+            title={item.name}
+            imgUrl={item?.images?.at(0)?.url}
+            parentCellId={id}
+            {...item}
+          />
+        ))}
+      </div>
       {isError && <div style={{ color: '#fff' }}>Something went wrong</div>}
     </div>
   )

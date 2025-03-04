@@ -34,7 +34,9 @@ const Wishlists = () => {
       </Link>
       <div className={s.wishlistsWrapper}>
         {wishlists?.map((item) => (
-          <Card key={item.id} title={item.title} routeHref={`/wishlists/${item.id}`} />
+          <Link href={`/wishlists/${item.id}`} key={item.id}>
+            <Button type="text">{item.title}</Button>
+          </Link>
         ))}
       </div>
     </div>

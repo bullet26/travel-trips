@@ -18,7 +18,7 @@ export interface WishlistNest extends ICreateWishlist {
   id: number
   userId: number
   comment: string | null
-  places: Pick<PlaceNest, 'id' | 'name' | 'images'>[]
+  places: Pick<PlaceNest, 'id' | 'name' | 'images' | 'latitude' | 'longitude'>[]
   createdAt: Date
   updatedAt: Date
 }

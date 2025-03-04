@@ -2,10 +2,13 @@
 
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
+import Image from 'next/image'
 import { Tag } from 'antd'
 import { useTanstackQuery } from 'hooks'
 import { PlaceNest } from 'types'
 import { ImageCarousel } from 'components'
+import { GPS } from 'assets'
+import { openGoogleMaps } from 'utils'
 import s from './Places.module.scss'
 
 const Place = () => {
@@ -40,7 +43,15 @@ const Place = () => {
           ))}
           <div className={s.addressWrapper}>
             <span>Address:</span> <span className={s.address}>{place.address}</span>
+            <Image
+              src={GPS}
+              alt="GPS"
+              width={30}
+              style={{ cursor: 'pointer' }}
+              onClick={() => openGoogleMaps(place)}
+            />
           </div>
+
           <div
             className={s.description} // eslint-disable-next-line react/no-danger
             dangerouslySetInnerHTML={{ __html: place.description as TrustedHTML }}

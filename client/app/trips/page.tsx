@@ -34,12 +34,9 @@ const Trips = () => {
       </Link>
       <div className={s.tripsWrapper}>
         {trips?.map((item) => (
-          <Card
-            key={item.id}
-            imgUrl={item.images?.at(0)?.url}
-            title={item.title}
-            routeHref={`/trips/${item.id}`}
-          />
+          <Link href={`/trips/${item.id}`} key={item.id}>
+            <Button type="text">{item.title}</Button>
+          </Link>
         ))}
       </div>
     </>
