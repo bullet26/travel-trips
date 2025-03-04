@@ -35,7 +35,7 @@ export class TripsService {
     const finishDate = normalizeDate(finishDateString);
     const startDate = normalizeDate(startDateString);
 
-    if (finishDate.getTime() <= startDate.getTime()) {
+    if (finishDate.getTime() < startDate.getTime()) {
       throw new BadRequestException(
         'The end date of the trip must be later than the start date.',
       );

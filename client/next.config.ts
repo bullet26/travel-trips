@@ -1,6 +1,16 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+  experimental: {
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+    },
+  },
   images: {
     remotePatterns: [
       {
@@ -14,16 +24,6 @@ const nextConfig: NextConfig = {
   },
   sassOptions: {
     silenceDeprecations: ['legacy-js-api'],
-  },
-  experimental: {
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-      },
-    },
   },
 }
 
