@@ -1,7 +1,6 @@
 'use client'
 
 import { useRef, useEffect, CSSProperties } from 'react'
-import Image from 'next/image'
 import { useDrop } from 'react-dnd'
 import { Spin } from 'antd'
 import { useTanstackLazyQuery } from 'hooks'

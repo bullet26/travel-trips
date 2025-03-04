@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import Image from 'next/image'
 import { Tag } from 'antd'
 import { useTanstackQuery } from 'hooks'
 import { PlaceNest } from 'types'

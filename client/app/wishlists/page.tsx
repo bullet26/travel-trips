@@ -5,7 +5,6 @@ import { Button } from 'antd'
 import { useTanstackLazyQuery, useTanstackQuery } from 'hooks'
 import Link from 'next/link'
 import { UserNestInfo, WishlistNest } from 'types'
-import { Card } from 'components'
 import s from './Wishlists.module.scss'
 
 const Wishlists = () => {

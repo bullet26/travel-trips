@@ -5,7 +5,6 @@ import { Button } from 'antd'
 import Link from 'next/link'
 import { useTanstackLazyQuery, useTanstackQuery } from 'hooks'
 import { UserNestInfo, TripsNest } from 'types'
-import { Card } from 'components'
 import s from './Trips.module.scss'
 
 const Trips = () => {
