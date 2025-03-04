@@ -15,13 +15,18 @@ const nextConfig: NextConfig = {
   sassOptions: {
     silenceDeprecations: ['legacy-js-api'],
   },
+  webpack: (config) => {
+    if (!config) {
+      throw new Error('Webpack config is undefined')
+    }
 
-  webpack(config) {
     config.module.rules.push({
       test: /\.svg$/i,
       issuer: /\.[jt]sx?$/,
       use: ['@svgr/webpack'],
     })
+
+    return config
   },
 }
 
