@@ -43,19 +43,7 @@ const Place = () => {
           ))}
           <div className={s.addressWrapper}>
             <span>Address:</span> <span className={s.address}>{place.address}</span>
-            <GPS
-              width={30}
-              height={30}
-              style={{ cursor: 'pointer' }}
-              onClick={() => openGoogleMaps(place)}
-            />
-            {/* <Image
-              src={GPS}
-              alt="GPS"
-              width={30}
-              style={{ cursor: 'pointer' }}
-              onClick={() => openGoogleMaps(place)}
-            /> */}
+            <GPS width={30} style={{ cursor: 'pointer' }} onClick={() => openGoogleMaps(place)} />
           </div>
 
           <div
