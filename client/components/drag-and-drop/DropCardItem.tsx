@@ -1,10 +1,10 @@
 'use client'
 
 import { useRef, useEffect, CSSProperties } from 'react'
+import Image from 'next/image'
 import { useDrop } from 'react-dnd'
 import { Spin } from 'antd'
 import { useTanstackLazyQuery } from 'hooks'
-import GPS from 'public/gps.svg'
 import { PlaceNest, TripDayNest, UnassignedPlacesNest, WishlistNest } from 'types'
 import { openPlacesGoogleMaps } from 'utils'
 import { DragCard } from './DragCard'
@@ -91,7 +91,14 @@ export const DropCardItem = (props: DropCardItemProps) => {
       {isShowGM ? (
         <div className={s.gm}>
           <span className={s.gmText}>Open in Google Map</span>
-          <GPS style={{ cursor: 'pointer' }} onClick={() => openPlacesGoogleMaps(places)} />
+          <Image
+            src="/gps.svg"
+            alt="GPS"
+            width={30}
+            height={30}
+            style={{ cursor: 'pointer' }}
+            onClick={() => openPlacesGoogleMaps(places)}
+          />
         </div>
       ) : (
         ''

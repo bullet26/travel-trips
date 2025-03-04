@@ -1,12 +1,12 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import { Tag } from 'antd'
 import { useTanstackQuery } from 'hooks'
 import { PlaceNest } from 'types'
 import { ImageCarousel } from 'components'
-import GPS from 'public/gps.svg'
 import { openGoogleMaps } from 'utils'
 import s from './Places.module.scss'
 
@@ -42,7 +42,14 @@ const Place = () => {
           ))}
           <div className={s.addressWrapper}>
             <span>Address:</span> <span className={s.address}>{place.address}</span>
-            <GPS width={30} style={{ cursor: 'pointer' }} onClick={() => openGoogleMaps(place)} />
+            <Image
+              src="/gps.svg"
+              alt="GPS"
+              width={30}
+              height={30}
+              style={{ cursor: 'pointer' }}
+              onClick={() => openGoogleMaps(place)}
+            />
           </div>
 
           <div
