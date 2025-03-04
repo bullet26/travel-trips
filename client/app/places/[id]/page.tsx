@@ -6,7 +6,7 @@ import { Tag } from 'antd'
 import { useTanstackQuery } from 'hooks'
 import { PlaceNest } from 'types'
 import { ImageCarousel } from 'components'
-import { GPS } from 'assets'
+import GPS from 'assets/gps.svg'
 import { openGoogleMaps } from 'utils'
 import s from './Places.module.scss'
 
