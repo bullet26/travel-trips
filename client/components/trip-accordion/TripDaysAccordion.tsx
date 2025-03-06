@@ -1,10 +1,11 @@
 'use client'
 import { useState } from 'react'
-import { Button, Collapse } from 'antd'
+import { Button, Collapse, Radio, RadioChangeEvent } from 'antd'
 import { ArrowUpOutlined, ArrowDownOutlined, SettingOutlined } from '@ant-design/icons'
 import { formatToDateString } from 'utils'
 import { DropCardItem, SearchPlacePanel } from 'components'
 import s from './TripDaysAccordion.module.scss'
+import { PlacesFromCity } from './elements'
 
 interface TripDaysAccordionProps {
   unassignedPlacesId: number
@@ -17,8 +18,13 @@ export const TripDaysAccordion = (props: TripDaysAccordionProps) => {
   const dragType = 'trip'
 
   const [isEditMode, setEditModeStatus] = useState(false)
+  const [addSource, setSource] = useState<'search' | 'city'>('search')
 
   const onEditClick = () => setEditModeStatus((prevState) => !prevState)
+
+  const onChangeRadio = (e: RadioChangeEvent) => {
+    setSource(e.target.value)
+  }
 
   const items = [
     {
@@ -64,7 +70,20 @@ export const TripDaysAccordion = (props: TripDaysAccordionProps) => {
           expandIcon={({ isActive }) => (isActive ? <ArrowUpOutlined /> : <ArrowDownOutlined />)}
           style={{ backgroundColor: '#141414', flex: 1 }}
         />
-        {isEditMode && <SearchPlacePanel dragType={dragType} />}
+        {isEditMode && (
+          <div className={s.addWrapper}>
+            <Radio.Group
+              value={addSource}
+              onChange={onChangeRadio}
+              options={[
+                { value: 'search', label: 'Search' },
+                { value: 'city', label: 'All places in city' },
+              ]}
+            />
+            {addSource === 'search' && <SearchPlacePanel dragType={dragType} />}
+            {addSource === 'city' && <PlacesFromCity dragType={dragType} />}
+          </div>
+        )}
       </div>
     </>
   )

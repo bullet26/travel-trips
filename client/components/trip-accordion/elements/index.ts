@@ -1,0 +1,1 @@
+export { PlacesFromCity } from './PlacesFromCity'

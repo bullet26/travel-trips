@@ -1,0 +1,39 @@
+@import '../../../styles/variables.scss';
+
+.wrapper,
+.placesWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 7px;
+  row-gap: 5px;
+}
+
+.placesWrapper {
+  max-height: 40vh;
+  overflow: auto;
+
+  /* width */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  /* Track */
+  &::-webkit-scrollbar-track {
+    background-color: $dark;
+  }
+
+  /* button */
+  &::-webkit-scrollbar-thumb {
+    background-color: #000;
+    outline: 1px solid $light;
+    border-radius: 10px;
+    &:hover {
+      background: $primary-color;
+      outline: 1px solid #000;
+    }
+  }
+}
+
+.active {
+  border: 2px solid $primary-color !important;
+}

@@ -10,3 +10,10 @@
   align-items: flex-start;
   column-gap: 25px;
 }
+
+.addWrapper {
+  display: flex;
+  flex-direction: column;
+  row-gap: 12px;
+  width: 300px;
+}
