@@ -3,11 +3,13 @@
 import { useRef, useEffect, CSSProperties } from 'react'
 import Image from 'next/image'
 import { useDrop } from 'react-dnd'
-import { Spin } from 'antd'
-import { useTanstackLazyQuery } from 'hooks'
+import { Button, Spin } from 'antd'
+import { SnippetsOutlined } from '@ant-design/icons'
+import { useAccordionContextActions, useAccordionContextValues, useTanstackLazyQuery } from 'hooks'
 import { PlaceNest, TripDayNest, UnassignedPlacesNest, WishlistNest } from 'types'
 import { openPlacesGoogleMaps } from 'utils'
 import { DragCard } from './DragCard'
+import { useDropEnd } from './hooks'
 import s from './DnD.module.scss'
 
 interface DropCardItemProps {
@@ -37,6 +39,10 @@ export const DropCardItem = (props: DropCardItemProps) => {
     })
 
   const dropRef = useRef<HTMLDivElement>(null)
+
+  const mutation = useDropEnd()
+  const { setCutPlace } = useAccordionContextActions()
+  const { cutPlace } = useAccordionContextValues()
 
   const [{ canDrop, isOver }, dropConnector] = useDrop(() => ({
     accept: dragType,
@@ -79,6 +85,15 @@ export const DropCardItem = (props: DropCardItemProps) => {
     places = wlData?.places || []
   }
 
+  const isParentSourcePlace = places?.some((item) => item.id === cutPlace?.placeId)
+
+  const onPasteClick = () => {
+    if (!isParentSourcePlace && !!cutPlace) {
+      mutation(cutPlace, { targetId: id, targetType: type })
+    }
+    setCutPlace(null)
+  }
+
   const dropStyle = {
     backgroundColor: `${isActive ? 'darkred' : '#141414'}`,
   }
@@ -100,6 +115,13 @@ export const DropCardItem = (props: DropCardItemProps) => {
             onClick={() => openPlacesGoogleMaps(places)}
           />
         </div>
+      ) : (
+        ''
+      )}
+      {cutPlace?.placeId ? (
+        <Button icon={<SnippetsOutlined />} className={s.deleteBtn} onClick={onPasteClick}>
+          {isParentSourcePlace ? 'Deselect' : ' Paste here'}
+        </Button>
       ) : (
         ''
       )}

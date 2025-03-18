@@ -4,6 +4,16 @@
   margin-bottom: 7px;
 }
 
+.btnWrapper {
+  display: flex;
+  justify-content: space-between;
+  column-gap: 5px;
+
+  button {
+    flex: 1;
+  }
+}
+
 .card {
   cursor: move;
 }

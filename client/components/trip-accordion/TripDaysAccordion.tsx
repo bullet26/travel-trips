@@ -4,8 +4,9 @@ import { Button, Collapse, Radio, RadioChangeEvent } from 'antd'
 import { ArrowUpOutlined, ArrowDownOutlined, SettingOutlined } from '@ant-design/icons'
 import { formatToDateString } from 'utils'
 import { DropCardItem, SearchPlacePanel } from 'components'
-import s from './TripDaysAccordion.module.scss'
 import { PlacesFromCity } from './elements'
+import { AccordionContextProvider } from 'components/providers'
+import s from './TripDaysAccordion.module.scss'
 
 interface TripDaysAccordionProps {
   unassignedPlacesId: number
@@ -62,14 +63,16 @@ export const TripDaysAccordion = (props: TripDaysAccordionProps) => {
         />
       </div>
       <div className={s.accordionWrapper}>
-        <Collapse
-          items={items}
-          size="large"
-          ghost
-          expandIconPosition="end"
-          expandIcon={({ isActive }) => (isActive ? <ArrowUpOutlined /> : <ArrowDownOutlined />)}
-          style={{ backgroundColor: '#141414', flex: 1 }}
-        />
+        <AccordionContextProvider>
+          <Collapse
+            items={items}
+            size="large"
+            ghost
+            expandIconPosition="end"
+            expandIcon={({ isActive }) => (isActive ? <ArrowUpOutlined /> : <ArrowDownOutlined />)}
+            style={{ backgroundColor: '#141414', flex: 1 }}
+          />
+        </AccordionContextProvider>
         {isEditMode && (
           <div className={s.addWrapper}>
             <Radio.Group

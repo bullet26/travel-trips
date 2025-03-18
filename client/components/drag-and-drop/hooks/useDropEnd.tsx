@@ -52,7 +52,7 @@ export const useDropEnd = () => {
       sourceType: 'up' | 'td' | 'wl' | 'searchResult'
       sourceId: number | null
     },
-    dropItem: { dropEffect: string; targetId: number; targetType: 'up' | 'td' | 'wl' } | null,
+    dropItem: { dropEffect?: string; targetId: number; targetType: 'up' | 'td' | 'wl' } | null,
   ) => {
     if (!dragItem || !dropItem) return null
 

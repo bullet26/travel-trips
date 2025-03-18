@@ -1,10 +1,11 @@
 'use client'
 
 import { useRef } from 'react'
-import { DeleteOutlined } from '@ant-design/icons'
+import { DeleteOutlined, ScissorOutlined } from '@ant-design/icons'
 import { Button, Card as AntCard } from 'antd'
 import { useDrag } from 'react-dnd'
 import { Card } from 'components'
+import { useAccordionContextActions, useAccordionContextValues } from 'hooks'
 import { useDropEnd, useDeleteCard } from './hooks'
 import s from './DnD.module.scss'
 
@@ -26,6 +27,9 @@ export const DragCard = (props: DragCardProps) => {
   const mutation = useDropEnd()
   const deleteCard = useDeleteCard()
 
+  const { setCutPlace } = useAccordionContextActions()
+  const { cutPlace } = useAccordionContextValues()
+
   const [{ isDragging }, dragConnector] = useDrag(() => ({
     type: dragType,
     item: { placeId, sourceType: type, sourceId: parentCellId },
@@ -39,7 +43,7 @@ export const DragCard = (props: DragCardProps) => {
 
   dragConnector(dragRef)
 
-  const isActive = isEditMode && isDragging
+  const isActive = (isEditMode && isDragging) || (isEditMode && cutPlace?.placeId === placeId)
 
   const dragStyle = {
     opacity: isActive ? 0.3 : 1,
@@ -51,6 +55,10 @@ export const DragCard = (props: DragCardProps) => {
     if (parentCellId && type !== 'searchResult') {
       deleteCard({ id: parentCellId, type, placeId })
     }
+  }
+
+  const onCutClick = () => {
+    setCutPlace({ placeId, sourceType: type, sourceId: parentCellId })
   }
 
   return (
@@ -70,9 +78,13 @@ export const DragCard = (props: DragCardProps) => {
       {(type === 'up' || type === 'td' || type === 'wl') && (
         <div>
           {isEditMode && (
-            <Button icon={<DeleteOutlined />} className={s.deleteBtn} onClick={onDeleteClick}>
-              Delete from trip
-            </Button>
+            <div className={s.btnWrapper}>
+              <Button icon={<DeleteOutlined />} className={s.deleteBtn} onClick={onDeleteClick} />
+
+              {(type === 'up' || type === 'td') && (
+                <Button icon={<ScissorOutlined />} className={s.deleteBtn} onClick={onCutClick} />
+              )}
+            </div>
           )}
           <Card
             key={`${type}_${placeId}`}

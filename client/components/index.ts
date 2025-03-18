@@ -6,6 +6,7 @@ export {
   ContextValue,
   ContextActions,
   DndProvider,
+  type CPType,
 } from './providers'
 export { Header } from './header'
 export {
