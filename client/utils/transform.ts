@@ -7,11 +7,10 @@ dayjs.extend(timezone)
 const TZ = 'Europe/Kyiv'
 
 export const formatToDateString = (value: string | Date): string => {
-  const date = value instanceof Date ? value : new Date(value)
-
-  if (isNaN(date.getTime())) {
-    console.error('Invalid date provided')
+  if (!dayjs(value).isValid()) {
+    console.error('Invalid date provided', value)
+    return 'unknown'
   }
 
-  return dayjs(date).tz(TZ).format('DD MMMM, YYYY')
+  return dayjs.utc(value).tz(TZ).format('DD MMMM, YYYY')
 }
