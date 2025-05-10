@@ -12,5 +12,5 @@ export const formatToDateString = (value: string | Date): string => {
     return 'unknown'
   }
 
-  return dayjs.utc(value).tz(TZ).format('DD MMMM, YYYY')
+  return dayjs(value).tz(TZ).format('DD MMMM, YYYY')
 }
