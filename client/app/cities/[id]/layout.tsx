@@ -18,7 +18,10 @@ export async function generateMetadata({
     openGraph: {
       title: city.name,
       description: `Country: ${city.country?.name}, places: ${
-        city.places?.slice(0, 20).join(', ') || ''
+        city.places
+          ?.map((item) => item.name)
+          .slice(0, 20)
+          .join(', ') || ''
       }`,
       url: `${origin}/cities/${id}`,
       images: [
