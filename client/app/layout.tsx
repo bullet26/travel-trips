@@ -25,7 +25,10 @@ const geistMono = localFont({
 })
 
 export const metadata: Metadata = {
-  title: 'Travel App',
+  title: {
+    template: '%s | Travel App',
+    default: 'Travel App',
+  },
   description:
     "This project is designed to help you keep track of the places you've visited, your impressions, and the photos you've taken. You can also create wishlists of places you'd like to visit, with notes for future trips.",
 }

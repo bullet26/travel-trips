@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button, Dropdown, MenuProps } from 'antd'
@@ -6,10 +7,18 @@ import { LogoutOutlined, SettingOutlined } from '@ant-design/icons'
 import s from '../../Header.module.scss'
 
 export const Profile = () => {
-  const name = getCookie('name')
-  const email = getCookie('email')
+  const [name, setName] = useState<string | null>()
+  const [email, setEmail] = useState<string | null>()
 
   const router = useRouter()
+
+  useEffect(() => {
+    const name = getCookie('name')
+    const email = getCookie('email')
+
+    if (name) setName(name)
+    if (email) setEmail(email)
+  }, [])
 
   const logout = () => {
     deleteCookie('accessToken')
@@ -21,7 +30,7 @@ export const Profile = () => {
   const items: MenuProps['items'] = [
     {
       key: '1',
-      label: email,
+      label: email || 'email',
       disabled: true,
     },
     {

@@ -18,7 +18,7 @@ import {
   AddTagDto,
   UpdateTagsDto,
 } from './dto';
-import { Roles } from 'src/auth';
+import { Public, Roles } from 'src/auth';
 
 @Controller('places')
 export class PlacesController {
@@ -44,6 +44,7 @@ export class PlacesController {
     return this.placesService.findAll();
   }
 
+  @Public()
   @Get(':id')
   findById(@Param('id') id: string) {
     return this.placesService.findById(Number(id));

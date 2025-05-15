@@ -13,7 +13,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CitiesService } from './cities.service';
 import { CreateCityDto, UpdateCityDto } from './dto';
-import { Roles } from 'src/auth';
+import { Public, Roles } from 'src/auth';
 
 @Controller('cities')
 export class CitiesController {
@@ -39,6 +39,7 @@ export class CitiesController {
     return this.citiesService.findAll();
   }
 
+  @Public()
   @Get(':id')
   async findById(@Param('id') id: string) {
     return this.citiesService.findById(Number(id));

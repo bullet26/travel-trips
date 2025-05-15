@@ -73,11 +73,15 @@ async function getRoleAndSetAuthCookies(
   return response
 }
 
-function redirectUnauth(pathname: string) {
-  return !pathname.includes('login') && !pathname.includes('registration')
+const loginPaths = ['login', 'registration']
+const publicPaths = ['countries', 'cities', 'places', 'tags']
+
+function isPublicPath(pathname: string) {
+  return [...loginPaths, ...publicPaths].some((item) => new RegExp(item, 'i').test(pathname))
 }
-function redirectAuth(pathname: string) {
-  return pathname.includes('login') || pathname.includes('registration')
+
+function isLoginPaths(pathname: string) {
+  return loginPaths.some((item) => new RegExp(item, 'i').test(pathname))
 }
 
 export function authMiddleware(middleware: CustomMiddleware): CustomMiddleware {
@@ -101,11 +105,11 @@ export function authMiddleware(middleware: CustomMiddleware): CustomMiddleware {
       }
     }
 
-    if (!tokenAccess && !tokenRefresh && redirectUnauth(pathname)) {
+    if (!tokenAccess && !tokenRefresh && !isPublicPath(pathname)) {
       return NextResponse.redirect(new URL('/login', request.url))
     }
 
-    if (tokenAccess && tokenRefresh && redirectAuth(pathname)) {
+    if (tokenAccess && tokenRefresh && isLoginPaths(pathname)) {
       return NextResponse.redirect(new URL('/', request.url))
     }
 

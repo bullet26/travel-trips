@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'All my wishlists 🗺️',
+  title: 'My wishlists 🗺️',
 }
 
 const WishlistsLayout = ({

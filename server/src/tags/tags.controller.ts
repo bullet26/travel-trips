@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { TagsService } from './tags.service';
 import { CreateTagDto, UpdateTagDto } from './dto';
-import { Roles } from 'src/auth';
+import { Public, Roles } from 'src/auth';
 
 @Controller('tags')
 export class TagsController {
@@ -21,11 +21,13 @@ export class TagsController {
     return this.tagsService.create(createTagDto);
   }
 
+  @Public()
   @Get()
   findAll() {
     return this.tagsService.findAll();
   }
 
+  @Public()
   @Get(':id')
   findById(@Param('id') id: string) {
     return this.tagsService.findById(Number(id));
