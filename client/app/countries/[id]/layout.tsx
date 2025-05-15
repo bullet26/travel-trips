@@ -17,7 +17,7 @@ export async function generateMetadata({
     title: country.name,
     openGraph: {
       title: country.name,
-      description: `Country ${country.name} with id ${id}`,
+      description: `Cities: ${country.cities?.slice(0, 20).join(', ') || ''}`,
       url: `${origin}/countries/${id}`,
       images: [
         {

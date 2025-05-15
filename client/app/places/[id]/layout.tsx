@@ -17,7 +17,10 @@ export async function generateMetadata({
     title: place.name,
     openGraph: {
       title: place.name,
-      description: `Place ${place.name} with id ${id}`,
+      description: `City: ${place.city?.name}. ${place.description
+        ?.split(' ')
+        .slice(0, 25)
+        .join(' ')}...`,
       url: `${origin}/places/${id}`,
       images: [
         {
