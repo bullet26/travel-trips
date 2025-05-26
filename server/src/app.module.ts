@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 import { Places_Wishlists, Wishlist, WishlistsModule } from './wishlists';
 import { User, UsersModule } from './users';
@@ -57,6 +58,14 @@ import { SearchModule } from './search';
       autoLoadModels: true,
       synchronize: true,
     }),
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 60000, // the time to live in milliseconds
+          limit: 10, // the maximum number of requests within the ttl
+        },
+      ],
+    }),
     UsersModule,
     RolesModule,
     AuthModule,
@@ -83,7 +92,10 @@ import { SearchModule } from './search';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
-
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
     JwtStrategy,
     CloudinaryProvider,
   ],
