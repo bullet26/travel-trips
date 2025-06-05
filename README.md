@@ -16,4 +16,4 @@ This project is designed to help you keep track of the places you've visited, yo
 
 - **Frontend:** Deployed on Vercel using Next.js.
 - **Backend:** Deployed on Render using NestJS. 
-- **Database:** PostgreSQL on Neon, managed through Sequelize ORM.
+- **Database:** PostgreSQL on Neon, managed through Sequelize ORM. <a href="https://drawsql.app/teams/-2121/diagrams/trip-project"> DB<a/>
