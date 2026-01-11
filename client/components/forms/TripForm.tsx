@@ -65,7 +65,8 @@ export const TripForm: FC<TripFormProps> = (props) => {
       title: '',
       userId: 0,
     },
-    resolver: yupResolver(tripSchema),
+    // !fix for Yup's optional() doesn't play nice with yupResolver
+    resolver: yupResolver(tripSchema as any),
   })
 
   useEffect(() => {

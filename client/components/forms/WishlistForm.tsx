@@ -60,7 +60,8 @@ export const WishlistForm: FC<WishlistFormProps> = (props) => {
       title: '',
       userId: 0,
     },
-    resolver: yupResolver(wishlistSchema),
+    // !fix for Yup's optional() doesn't play nice with yupResolver
+    resolver: yupResolver(wishlistSchema as any),
   })
 
   useEffect(() => {

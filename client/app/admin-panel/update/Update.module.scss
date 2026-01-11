@@ -1,4 +1,4 @@
-@import '../../../styles/variables.scss';
+@use '../../../styles/variables.scss' as *;
 
 .wrapper {
   display: grid;
@@ -6,8 +6,6 @@
   column-gap: 25px;
   row-gap: 15px;
 }
-
-
 
 .active {
   border: 2px solid $primary-color !important;

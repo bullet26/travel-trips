@@ -69,8 +69,7 @@ export const placeSchema = yup
     address: yup.string().min(10).required(),
     latitude: yup.number().min(-90).max(90).required(),
     longitude: yup.number().min(-180).max(180).required(),
-    // TODO !fix conflict with ICreatePlace where tagIds is optional fix later
-    // tagIds: yup.array().optional().of(yup.number().integer().positive().required()),
+    tagIds: yup.array().optional().of(yup.number().integer().positive().required()),
     translations: yup.array().of(yup.string().min(4).required()).min(1).required(),
   })
   .required()

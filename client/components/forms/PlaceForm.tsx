@@ -69,7 +69,8 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
       name: '',
       translations: [''],
     },
-    resolver: yupResolver(placeSchema),
+    // !fix for Yup's tagIds optional() doesn't play nice with yupResolver
+    resolver: yupResolver(placeSchema as any),
   })
 
   useEffect(() => {
