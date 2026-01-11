@@ -9,6 +9,7 @@ import {
   IsString,
 } from 'class-validator';
 import { transformArrayInFormData } from 'src/utils';
+import { transformStringToArrayInFormData } from 'src/utils/transform';
 
 export class CreatePlaceDto {
   @Type(() => Number)
@@ -41,6 +42,7 @@ export class CreatePlaceDto {
   @IsNumber({}, { each: true })
   readonly tagIds?: string[] | string;
 
+  @Transform(({ value }) => transformStringToArrayInFormData(value))
   @IsArray()
   @ArrayNotEmpty()
   translations: string[];

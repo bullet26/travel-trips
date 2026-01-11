@@ -13,6 +13,13 @@ export const transformArrayInFormData = (value: string | string[]) => {
   }
 };
 
+export const transformStringToArrayInFormData = (value: string | string[]) => {
+  if (typeof value === 'string') {
+    return [value];
+  }
+  return value;
+};
+
 export const normalizeDate = (dateString: string | Date): Date => {
   return dateString instanceof Date
     ? dateString

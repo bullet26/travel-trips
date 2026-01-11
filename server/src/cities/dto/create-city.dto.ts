@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   ArrayNotEmpty,
   IsArray,
@@ -8,6 +8,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { transformStringToArrayInFormData } from 'src/utils/transform';
 
 export class CreateCityDto {
   @Type(() => Number)
@@ -28,6 +29,7 @@ export class CreateCityDto {
   @IsOptional()
   readonly file?: Express.Multer.File;
 
+  @Transform(({ value }) => transformStringToArrayInFormData(value))
   @IsArray()
   @ArrayNotEmpty()
   translations: string[];
