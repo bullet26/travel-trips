@@ -61,7 +61,7 @@ import { SearchModule } from './search';
     ThrottlerModule.forRoot({
       throttlers: [
         {
-          ttl: 60000, // the time to live in milliseconds
+          ttl: 10000, // the time to live in milliseconds
           limit: 10, // the maximum number of requests within the ttl
         },
       ],

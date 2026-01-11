@@ -86,7 +86,7 @@ export const PlaceForm: FC<PlaceFormProps> = (props) => {
 
     Object.entries(values).forEach(([key, value]) => {
       if (Array.isArray(value)) {
-        value.forEach((v) => formData.append(`${key}[]`, v))
+        value.forEach((v) => formData.append(key, v))
       } else {
         formData.set(key, value)
       }
