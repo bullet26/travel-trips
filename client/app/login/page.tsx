@@ -12,8 +12,6 @@ export const metadata: Metadata = {
 }
 
 const Login = async () => {
-  console.log(loginImg)
-
   return (
     <Suspense>
       <div className={s.page}>
