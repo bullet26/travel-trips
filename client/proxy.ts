@@ -3,4 +3,4 @@ import { chain, authMiddleware, actualizeUserData, roleGuardMiddleware } from 'm
 export default chain([authMiddleware, actualizeUserData, roleGuardMiddleware])
 
 //Skip Next.js middleware for static and public files & api
-export const config = { matcher: '/((?!.*\\.).*)' }
+export const config = { matcher: '/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)' }
