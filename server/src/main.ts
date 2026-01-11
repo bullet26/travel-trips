@@ -1,9 +1,8 @@
 import { NestFactory, HttpAdapterHost } from '@nestjs/core';
 import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
-import { ValidationPipe } from './pipes';
 import { CatchEverythingFilter } from './error-handler';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 
 const start = async () => {
   const PORT = process.env.PORT || 5000;
@@ -17,7 +16,12 @@ const start = async () => {
     credentials: true,
   });
   app.use(cookieParser());
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+    }),
+  );
 
   const httpAdapterHost = app.get(HttpAdapterHost);
   app.useGlobalFilters(new CatchEverythingFilter(httpAdapterHost));
